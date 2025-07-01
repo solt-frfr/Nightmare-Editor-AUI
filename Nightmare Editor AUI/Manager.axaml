@@ -1,0 +1,235 @@
+﻿<Window x:Class="Nightmare_Editor.Manager"
+        xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Nightmare_Editor"
+        mc:Ignorable="d"
+        Title="Exam Editor" Height="450" Width="800" Icon="/Assets/dreameater.ico">
+    <Window.Background>
+        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="#ADD8E6" Offset="0"/>
+            <GradientStop Color="#FFA580" Offset="1"/>
+        </LinearGradientBrush>
+    </Window.Background>
+	<!--<Window.Resources>
+        <Style x:Key="Transparent Button" TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <ContentPresenter 
+                        HorizontalAlignment="Center" 
+                        VerticalAlignment="Center" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>-->
+    <Grid Margin="10" ColumnDefinitions="3*,2*" RowDefinitions="1*,3*,0.5*">
+        <Grid RowDefinitions="2*">
+            <Grid VerticalAlignment="Bottom" ColumnDefinitions="*,*,*">
+                <Grid Grid.Column="0">
+                    <Button Name="ModsButton" Margin="5" Click="Mods_Click" Cursor="Hand">
+						<Image Name="ModsImage" Source="/Images/ModsSel.png"/>
+                    </Button>
+                </Grid>
+                <Grid Grid.Column="1">
+                    <Button Name="MusicButton" Margin="5" Click="Music_Click" Cursor="Hand">
+						<Image Name="MusicImage" Source="/Images/SettingsUnsel.png"/>
+                    </Button>
+                </Grid>
+                <Grid Grid.Column="2">
+                    <Button Name="SettingsButton" Margin="5" Click="Settings_Click" Cursor="Hand">
+						<Image Name="SettingsImage" Source="/Images/SettingsUnsel.png"/>
+                    </Button>
+                </Grid>
+            </Grid>
+        </Grid>
+        <Grid ColumnDefinitions="*,*" RowDefinitions="4.5*,0.5*,4.5*,1.5*" Grid.RowSpan="2" Grid.Column="1" Name="ModContent" IsVisible="True" Margin="10,10,10,0">
+            <Image Name="Preview" Source="/Images/Preview0.png" Stretch="Uniform" VerticalAlignment="Top" HorizontalAlignment="Center"  Grid.ColumnSpan="2" RenderOptions.BitmapInterpolationMode="HighQuality"/>
+            <Grid Grid.ColumnSpan="2" Grid.RowSpan="2" Grid.Row="2">
+                <TextBox Name="DescBox" Classes="NoHover" FontSize="12" Background="#F04080" BorderBrush="White" Foreground="#ffffff" TextWrapping="WrapWithOverflow" IsReadOnly="True" Text="Make Sora and Riku's mark of mastery exam your own. You're seeing this because this mod has no description, or no mod is selected.&#xA;&#xA;Don't see a mod? The ID and folder names must match.&#xA;&#xA;Confused about the buttons at the bottom? Hover over them for more info."/>
+            </Grid>
+        </Grid>
+        <Grid RowDefinitions="4*" Grid.Row="1" Name="Mods" IsVisible="True">
+            <DataGrid Name="ModDataGrid"  Grid.Column="0" Grid.Row="0" Margin="10"
+                      RowBackground="Black" AutoGenerateColumns="False" SelectionChanged="currentrow" Background="#ADD8E6" SelectionMode="Single" BorderBrush="#F04080" Foreground="White" ItemsSource="{Binding mods}">
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="On" Width="auto">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox Name="RowCheckBox" IsChecked="{Binding IsChecked}" Cursor="Hand" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" IsReadOnly="True" Width="4*"/>
+                    <DataGridTextColumn Header="Author" Binding="{Binding Authors}" IsReadOnly="True" Width="2*"/>
+                    <DataGridTemplateColumn Header="Link" Width="32">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Name="LinkButton" CommandParameter="{Binding Link}" Click="OpenLink_Click" Cursor="Hand">
+                                    <Image Name="LinkImage" Source="{Binding LinkImage}" RenderTransform="56,56"/>
+                                </Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+                <DataGrid.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Open Folder"
+                      Click="Folder_OnClick"
+                      CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent}"/>
+                        <MenuItem Header="Edit Metadata"
+                      Click="Edit_OnClick"
+                      CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent}"/>
+                        <MenuItem Header="Zip Mod"
+                      Click="Zip_OnClick"
+                      CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent}"/>
+                        <MenuItem Header="Delete"
+                      Click="Delete_OnClick"
+                      CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent}"/>
+                    </ContextMenu>
+                </DataGrid.ContextMenu>
+            </DataGrid>
+        </Grid>
+        <Grid ColumnDefinitions="*,*,*,*,5*,*,*,*,*" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,5,0,0">
+            <Button Name="DeployButton" Click="Deploy_Click" Grid.Column="0" Cursor="Hand" ToolTip.Tip="Deploy mods to selected folder.">
+                <Button.Template>
+                    <ControlTemplate>
+                        <Image Name="DeployImage" Source="/Images/Deploy.png" RenderOptions.BitmapInterpolationMode="HighQuality"/>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+            <Button Name="NewButton" Click="New_OnClick" Grid.Column="4" Cursor="Hand" ToolTip.Tip="Go to Nightmare Editor" HorizontalAlignment="Left">
+                <Button.Template>
+                    <ControlTemplate>
+                        <Image Name="NewImage" Source="/Images/nightmare.png" RenderOptions.BitmapInterpolationMode="HighQuality"/>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+            <Button Name="RefreshButton" Click="Refresh_Click" Grid.Column="1" Cursor="Hand" ToolTip.Tip="Refresh mods and settings.">
+                <Button.Template>
+                    <ControlTemplate>
+                        <Image Name="RefreshImage" Source="/Images/Refresh.png" RenderOptions.BitmapInterpolationMode="HighQuality"/>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+            <Button Name="OpenFolderButton" Click="OpenFolder_Click" Grid.Column="2" Cursor="Hand" ToolTip.Tip="Open the mods folder.">
+                <Button.Template>
+                    <ControlTemplate>
+                        <Image Name="OpenFolderImage" Source="/Images/OpenFolder.png" RenderOptions.BitmapInterpolationMode="HighQuality"/>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+            <Button Name="InstallArchiveButton" Click="InstallArchive_Click" Grid.Column="3" Cursor="Hand" ToolTip.Tip="Install a mod from an archive.">
+                <Button.Template>
+                    <ControlTemplate>
+                        <Image Name="InstallArchiveImage" Source="/Images/InstallArchive.png" RenderOptions.BitmapInterpolationMode="HighQuality"/>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+            <Button Name="DownloadButton" Click="Download_Click" Grid.Column="7" Cursor="Hand" Grid.ColumnSpan="2">
+                <Button.Template>
+                    <ControlTemplate>
+                        <Image Name="DownloadImage" Source="/Images/DownloadUnsel.png" RenderOptions.BitmapInterpolationMode="HighQuality"/>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+            <TextBlock Foreground="#e8feff" Grid.ColumnSpan="2" Grid.Column="5" HorizontalAlignment="Center" Text="Find More" VerticalAlignment="Center" FontSize="25" FontWeight="SemiBold"/>
+        </Grid>
+        <Grid Name="SettingsWindow" ColumnDefinitions="*,*" Grid.Row="1" Grid.ColumnSpan="2" IsVisible="False">
+            <Grid Background="#005ada" ColumnDefinitions="*,2*" RowDefinitions="*,*,*,*,*,*,*,*">
+                <TextBlock Text="Settings" Foreground="White" FontSize="25" FontWeight="SemiBold" TextDecorations="Underline"/>
+                <TextBlock Text="Output Path" Foreground="White" FontSize="18" Grid.Row="1" ToolTip.Tip="After clicking Deploy, the mods will be placed in this path." VerticalAlignment="Center"/>
+                <TextBlock Text="Default Preview" Foreground="White" FontSize="18" Grid.Row="2" ToolTip.Tip="The preview that will show up if none is found." VerticalAlignment="Center"/>
+                <Grid Grid.Row="1" Grid.Column="1" Margin="5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="3*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Name="PathButton" ToolTip.Tip="After clicking Deploy, the mods will be placed in this path." Click="Path_Click">Browse</Button>
+                    <TextBox Name="PathBox" Classes="NoHover" ToolTip.Tip="After clicking Deploy, the mods will be placed in this path." IsEnabled="False" Grid.Column="1" Foreground="#b8dffd" Background="#003e94" TextChanged="PathBox_TextChanged"/>
+                </Grid>
+                <ComboBox Name="DefPrevBox" Grid.Row="2" Grid.Column="1" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" SelectionChanged="DefPrevBox_SelectionChanged">
+                    <ComboBoxItem IsSelected="True" Content="Dream Drop Distance"/>
+                    <ComboBoxItem Content="Final Chapter Prologue"/>
+                    <ComboBoxItem Content="The World Ends With You"/>
+                    <ComboBoxItem Content="Vacant House"/>
+                </ComboBox>
+                <Button Grid.ColumnSpan="2" Grid.Row="4" Grid.RowSpan="2" FontWeight="Bold" FontSize="45" BorderThickness="5" Click="File_Unpack">
+                    Unpack Files
+                </Button>
+                <TextBlock Grid.ColumnSpan="2" Grid.Row="6" Text="Press 1 and Enter when the Romhacking Suite window appears." Foreground="White" HorizontalAlignment="Center" FontWeight="SemiBold"/>
+                <TextBlock Grid.ColumnSpan="2" Grid.Row="6" Text="Press any key when ''Done!'' appears." Foreground="White" VerticalAlignment="Bottom" HorizontalAlignment="Center" FontWeight="SemiBold"/>
+            </Grid>
+            <Grid Grid.Column="1" Background="#005ada">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="7*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="About Exam Editor" Foreground="White" FontSize="25" FontWeight="SemiBold" TextDecorations="Underline"/>
+                <TextBox IsReadOnly="True" Classes="NoHover" Grid.Row="1" Focusable="False" Foreground="#b8dffd" Background="#005ada" BorderThickness="0" FontSize="12" ScrollViewer.VerticalScrollBarVisibility="Auto" TextWrapping="WrapWithOverflow" Text="Exam Editor is a mod manager made by Solt11.&#xA;Current Version: Open Beta&#xD;&#xA;&#xD;&#xA;Nightmare Editor is the real program, and I go more in-depth on my explanations about what and why I made this in the FAQ section of Nightmare Editor's Help Window.&#xD;&#xA;&#xD;&#xA;Q: Isn't this just Pulsar?&#xD;&#xA;A: Yes."/>
+            </Grid>
+        </Grid>
+        <Grid Name="MusicWindow" Grid.Row="1" Grid.ColumnSpan="2" IsVisible="True">
+            <Grid Background="#005ada" ColumnDefinitions="*,2*" RowDefinitions="*,*,*,*,*,*,*,*">
+                <TextBlock Text="Music Selector" Foreground="White" FontSize="25" FontWeight="SemiBold" TextDecorations="Underline"/>
+                <TextBlock Text="This was done quickly and is not cleaned up. It will be before release." Foreground="White" FontSize="18" Grid.Row="1" Grid.ColumnSpan="2" VerticalAlignment="Center"/>
+                <TextBlock Text="Traverse Town Field Theme" Foreground="White" FontSize="18" Grid.Row="2" VerticalAlignment="Center"/>
+                <TextBlock Text="Traverse Town Battle Theme" Foreground="White" FontSize="18" Grid.Row="3" VerticalAlignment="Center"/>
+                <TextBlock Text="The Grid Field Theme" Foreground="White" FontSize="18" Grid.Row="4" VerticalAlignment="Center"/>
+                <TextBlock Text="The Grid Battle Theme" Foreground="White" FontSize="18" Grid.Row="5" VerticalAlignment="Center"/>
+                <TextBlock Text="TWTNW Field Theme" Foreground="White" FontSize="18" Grid.Row="6" VerticalAlignment="Center"/>
+                <TextBlock Text="TWTNW Battle Theme" Foreground="White" FontSize="18" Grid.Row="7" VerticalAlignment="Center"/>
+                <ComboBox Name="TTF" Grid.Row="2" Grid.Column="1" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Stretch" SelectionChanged="TTF_SelectionChanged">
+                    <ComboBoxItem IsSelected="True" Content="Traverse in Trance (from Dream Drop Distance)"/>
+                    <ComboBoxItem Content="Traverse Town (from Kingdom Hearts)"/>
+                    <ComboBoxItem Content="Traverse Town (from HD I.5 ReMIX)"/>
+                    <ComboBoxItem Content="Traverse Town (from Chain of Memories)"/>
+                    <ComboBoxItem Content="Traverse Town (from coded)"/>
+                    <ComboBoxItem Content="Traverse Town (from Re:coded)"/>
+                </ComboBox>
+                <ComboBox Name="TTB" Grid.Row="3" Grid.Column="1" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Stretch" SelectionChanged="TTB_SelectionChanged">
+                    <ComboBoxItem IsSelected="True" Content="Hand to Hand (from Dream Drop Distance)"/>
+                    <ComboBoxItem Content="Hand in Hand (from Kingdom Hearts)"/>
+                    <ComboBoxItem Content="Hand in Hand (from HD I.5 ReMIX)"/>
+                    <ComboBoxItem Content="Hand in Hand (from Chain of Memories)"/>
+                    <ComboBoxItem Content="Night of Fate (from Kingdom Hearts)"/>
+                    <ComboBoxItem Content="Night of Fate (from HD I.5 ReMIX)"/>
+                    <ComboBoxItem Content="Night of Fate (from coded)"/>
+                    <ComboBoxItem Content="Night of Fate (from Re:coded)"/>
+                </ComboBox>
+                <ComboBox Name="TGF" Grid.Row="4" Grid.Column="1" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Stretch" SelectionChanged="TGF_SelectionChanged">
+                    <ComboBoxItem IsSelected="True" Content="Access the Grid (from Dream Drop Distance)"/>
+                    <ComboBoxItem Content="Space Paranoids (from Kingdom Hearts II)"/>
+                    <ComboBoxItem Content="Space Paranoids (from HD II.5 ReMIX)"/>
+                </ComboBox>
+                <ComboBox Name="TGB" Grid.Row="5" Grid.Column="1" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Stretch" SelectionChanged="TGB_SelectionChanged">
+                    <ComboBoxItem IsSelected="True" Content="Digital Domination (from Dream Drop Distance)"/>
+                    <ComboBoxItem Content="Byte Bashing (from Kingdom Hearts II)"/>
+                    <ComboBoxItem Content="Byte Bashing (from HD II.5 ReMIX)"/>
+                    <ComboBoxItem Content="Byte Striking (from HD II.5 ReMIX)"/>
+                </ComboBox>
+                <ComboBox Name="NWF" Grid.Row="6" Grid.Column="1" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Stretch" SelectionChanged="NWF_SelectionChanged">
+                    <ComboBoxItem IsSelected="True" Content="Sacred Distance (from Dream Drop Distance)"/>
+                    <ComboBoxItem Content="Sacred Moon (from Kingdom Hearts II)"/>
+                    <ComboBoxItem Content="Sacred Moon (from HD II.5 ReMIX)"/>
+                    <ComboBoxItem Content="Sacred Moon (from 358/2 Days)"/>
+                    <ComboBoxItem Content="Sacred Moon (from Birth by Sleep &amp; 358/2 Days Original Soundtrack)"/>
+                    <ComboBoxItem Content="Mystic Moon (from 358/2 Days)"/>
+                    <ComboBoxItem Content="Mystic Moon (from Birth by Sleep &amp; 358/2 Days Original Soundtrack)"/>
+                </ComboBox>
+                <ComboBox Name="NWB" Grid.Row="7" Grid.Column="1" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Stretch" SelectionChanged="NWB_SelectionChanged">
+                    <ComboBoxItem IsSelected="True" Content="Deep Drop (from Dream Drop Distance)"/>
+                    <ComboBoxItem Content="Deep Drive (from Kingdom Hearts II)"/>
+                    <ComboBoxItem Content="Deep Drive (from HD II.5 ReMIX)"/>
+                    <ComboBoxItem Content="Critical Drive (from 358/2 Days)"/>
+                    <ComboBoxItem Content="Critical Drive (from Birth by Sleep &amp; 358/2 Days Original Soundtrack)"/>
+                </ComboBox>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

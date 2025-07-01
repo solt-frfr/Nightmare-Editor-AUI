@@ -1,0 +1,10 @@
+Hand in Hand
+475000 start
+3263600 loop
+3271500 loop (com)
+
+Night of Fate
+752850 start
+3215000 loop
+3214250 loop (coded)
+3215500 loop (recoded)

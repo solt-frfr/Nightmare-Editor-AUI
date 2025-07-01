@@ -1,0 +1,203 @@
+﻿<Window x:Class="Nightmare_Editor.AnimWindow"
+        xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Nightmare_Editor"
+        mc:Ignorable="d"
+        Title="Nightmare Animation Studio" Height="450" Width="800" Background="Black">
+    
+    <Grid Margin="5">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="125"/>
+            <ColumnDefinition Width="125"/>
+            <ColumnDefinition Width="125"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="45"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="45"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="2" Panel.ZIndex="8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="5*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Button Click="Help_Click" Background="Transparent" BorderBrush="Transparent" Cursor="Hand" Grid.RowSpan="2">
+                <Image Source="/Images/help.png" RenderOptions.BitmapInterpolationMode="HighQuality"/>
+            </Button>
+            <TextBox Text="Load Project" PointerReleased="Load_Click" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Row="0" Grid.Column="1" IsReadOnly="True" Focusable="False" Cursor="Hand"/>
+            <TextBox Text="Import TXA" PointerReleased="Import_Click" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Row="1" Grid.Column="1" IsReadOnly="True" Focusable="False" Cursor="Hand"/>
+        </Grid>
+        <Grid Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <TextBox Text="Save" PointerReleased="Save_Click" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Row="0" Grid.Column="0" IsReadOnly="True" Focusable="False" Cursor="Hand" FontSize="25"/>
+            <TextBox Text="Export" PointerReleased="Export_Click" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Row="0" Grid.Column="1" IsReadOnly="True" Focusable="False" Cursor="Hand" FontSize="25"/>
+            <Button Grid.Column="2" Click="Reverse_Rebirth" Background="Transparent" BorderBrush="Transparent" Cursor="Hand" ToolTip.Tip="Go to Exam Editor">
+                <!--This is my program and I can call the functions whatever I want nihihihihi >:)-->
+                <Image Source="/Images/return.png" RenderOptions.BitmapInterpolationMode="HighQuality"/>
+            </Button>
+        </Grid>
+        <Grid Name="Blackout" Grid.ColumnSpan="2" Grid.RowSpan="3" Panel.ZIndex="1" IsVisible="False" Background="Black" Opacity="0.25"/>
+        <Grid Grid.Row="1" Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="20"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="20"/>
+            </Grid.RowDefinitions>
+            <TextBox Name="File" Focusable="False" IsReadOnly="True" Grid.Row="0"/>
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="1">
+                <Grid Grid.Row="1">
+                    <Grid.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Save Texture"
+                              Click="SaveTex_Click" IsVisible="True"/>
+                            <MenuItem Header="Remove Texture" Name="remove1"
+                              Click="RemoveTex" IsVisible="True"/>
+                        </ContextMenu>
+                    </Grid.ContextMenu>
+                    <StackPanel x:Name="Textures" VerticalAlignment="Top">
+                        <!-- TextBox controls will be added here dynamically -->
+                    </StackPanel>
+                </Grid>
+            </ScrollViewer>
+            <TextBox Text="Add Texture" PointerReleased="AddText_Click" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Row="2" Grid.Column="0" IsReadOnly="True" Focusable="False" Cursor="Hand"/>
+        </Grid>
+        <Grid Grid.Row="1" Grid.Column="1" Grid.RowSpan="2">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="1">
+                <Grid Grid.Row="1">
+                    <StackPanel x:Name="Files" VerticalAlignment="Top">
+                        <!-- TextBox controls will be added here dynamically -->
+                    </StackPanel>
+                </Grid>
+            </ScrollViewer>
+        </Grid>
+        <Grid Grid.Row="1" Grid.Column="2" Grid.RowSpan="2">
+            <ScrollViewer Name="Files2_Scroll" VerticalScrollBarVisibility="Auto" Grid.Row="2">
+                <Grid Grid.Row="1">
+                    <StackPanel x:Name="Files2" VerticalAlignment="Top">
+                        <!-- TextBox controls will be added here dynamically -->
+                    </StackPanel>
+                </Grid>
+            </ScrollViewer>
+        </Grid>
+        <Grid Name="InfoWindow" Grid.RowSpan="3" Grid.Column="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="75"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="106"/>
+            </Grid.RowDefinitions>
+            <Grid Name="FileInfo" Grid.Column="1" Grid.Row="1" Margin="5" HorizontalAlignment="Stretch" IsVisible="True">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <ComboBox Name="FileName" Foreground="Black" FontWeight='SemiBold' BorderBrush="White" Background="#323b4a" VerticalContentAlignment="Center" Grid.Column="1" Focusable="False" SelectionChanged="FileName_SelectionChanged"/>
+                <TextBox Text="Texture:" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" Grid.Row="0" IsReadOnly="True" Focusable="False"/>
+                <TextBox Text="Destination:" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" Grid.Row="1" IsReadOnly="True" Focusable="False"/>
+                <TextBox Text="Length?:" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" Grid.Row="2" IsReadOnly="True" Focusable="False"/>
+                <TextBox Text="Length? 2:" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" Grid.Row="3" IsReadOnly="True" Focusable="False"/>
+                <TextBox Name="Destination" Text="some texture" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" HorizontalContentAlignment="Right" Grid.Row="1" Grid.Column="1" IsReadOnly="True" Focusable="False"/>
+                <TextBox Name="Length" Text="0" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" HorizontalContentAlignment="Right" Grid.Row="2" Grid.Column="1" TextChanged="Length_TextChanged" TextInput="NumbersOnly"/>
+                <TextBox Name="Length2" Text="0" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" HorizontalContentAlignment="Right" Grid.Row="3" Grid.Column="1" TextChanged="Length2_TextChanged"  TextInput="NumbersOnly"/>
+            </Grid>
+            <Grid Name="TexInfo" Grid.ColumnSpan="2" Grid.Row="1" Margin="5" HorizontalAlignment="Stretch" IsVisible="False">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <TextBox Text="Destination Texture:" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" Grid.Row="0" IsReadOnly="True" Focusable="False"/>
+                <TextBox Text="Destination Size:" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" Grid.Row="1" IsReadOnly="True" Focusable="False"/>
+                <TextBox Text="Destination Format:" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" Grid.Row="2" IsReadOnly="True" Focusable="False"/>
+                <TextBox Name="Tex" Text="Texture" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" HorizontalContentAlignment="Right" Grid.Row="0" Grid.Column="1" IsReadOnly="True" Focusable="False"/>
+                <TextBox Name="TexSize" Text="0x0" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" HorizontalContentAlignment="Right" Grid.Row="1" Grid.Column="1" IsReadOnly="True" Focusable="False"/>
+                <TextBox Name="TexFormat" Text="idk probably etc" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" HorizontalContentAlignment="Right" Grid.Row="2" Grid.Column="1" IsReadOnly="True" Focusable="False"/>
+                <Grid Grid.ColumnSpan="2" Grid.Row="4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Button Click="Link_Click" Foreground="Blue" FontWeight='Black' BorderBrush="Gray" FontStyle="Italic" Background="White" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Row="3" Cursor="Hand" Grid.Column="0">
+                        <TextBlock Text="Replace Texture" TextDecorations="Underline" />
+                    </Button>
+                    <Button Click="SaveTex_Click" Foreground="Blue" FontWeight='Black' BorderBrush="Gray" FontStyle="Italic" Background="White" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Row="3" Cursor="Hand" Grid.Column="1">
+                        <TextBlock Text="Save Texture" TextDecorations="Underline" />
+                    </Button>
+                </Grid>
+            </Grid>
+            <Grid Grid.ColumnSpan="3" Background="Black">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="158"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="158"/>
+                </Grid.RowDefinitions>
+                <Grid Grid.ColumnSpan="2" Grid.RowSpan="2" Margin="5" Background="DarkGray">
+                    <Rectangle Name="TransRights" Stretch="Fill">
+                        <Rectangle.Fill>
+							<ImageBrush Source="Images/transrights.png"
+								TileMode="Tile"
+                                DestinationRect="0,0,64,64"
+                                Stretch="None" />
+                        </Rectangle.Fill>
+                    </Rectangle>
+                    <Image Name="Texture" Source="Images/plus.png" RenderOptions.BitmapInterpolationMode="HighQuality" Margin="0,0,0,20"/>
+                    <Grid VerticalAlignment="Bottom">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox Text="Nearest Neighbor" PointerReleased="MNN_Click" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Column="0" IsReadOnly="True" Focusable="False" Cursor="Hand" Height="20"/>
+                        <TextBox Text="Linear Scaling" PointerReleased="MLS_Click" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Column="1" IsReadOnly="True" Focusable="False" Cursor="Hand" Height="20"/>
+                    </Grid>
+                </Grid>
+            </Grid>
+            <Grid Grid.Row="1" Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="20"/>
+                </Grid.RowDefinitions>
+                <ScrollViewer Name="Files3_Scroll" VerticalScrollBarVisibility="Auto">
+                    <Grid Grid.Row="1">
+                        <Grid.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Remove Frame" Name="remove3"
+                              Click="RemoveFile3" IsVisible="True"/>
+                            </ContextMenu>
+                        </Grid.ContextMenu>
+                        <StackPanel x:Name="Files3" VerticalAlignment="Top">
+                            <!-- TextBox controls will be added here dynamically -->
+                        </StackPanel>
+                    </Grid>
+                </ScrollViewer>
+                <TextBox Name="AddFrame" Text="Add Frame" PointerReleased="AddFrame_Click" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Row="2" Grid.Column="0" IsReadOnly="True" Focusable="False" Cursor="Hand"/>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

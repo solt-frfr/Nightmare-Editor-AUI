@@ -1,0 +1,66 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Nightmare_Editor_AUI.App"
+             xmlns:local="using:Nightmare_Editor_AUI"
+             RequestedThemeVariant="Default">
+             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+    <Application.DataTemplates>
+        <local:ViewLocator/>
+    </Application.DataTemplates>
+  
+    <Application.Styles>
+		<FluentTheme />
+		<StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>
+		<Style Selector="TextBox.NoHover">
+			<Setter Property="Focusable" Value="False"/>
+			<Setter Property="Foreground"
+				Value="White" />
+			<Setter Property="Template">
+				<ControlTemplate>
+					<Border Background="{TemplateBinding Background}"
+							BorderBrush="{TemplateBinding BorderBrush}"
+							BorderThickness="{TemplateBinding BorderThickness}">
+						<ScrollViewer x:Name="PART_ContentHost">
+							<TextPresenter x:Name="PART_TextPresenter"
+										   Text="{TemplateBinding Text, Mode=TwoWay}"
+										   Margin="{TemplateBinding Padding}"
+										   TextWrapping="{TemplateBinding TextWrapping}"
+										   VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+										   HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
+						</ScrollViewer>
+					</Border>
+				</ControlTemplate>
+			</Setter>
+		</Style>
+		<Style Selector="Button.QueueButtons">
+			<Setter Property="Background"
+				Value="#3F72AF" />
+			<Setter Property="Foreground"
+				Value="White" />
+			<Setter Property="Template">
+				<ControlTemplate>
+					<ContentPresenter x:Name="PART_ContentPresenter"
+						Background="{TemplateBinding Background}"
+						BorderBrush="{TemplateBinding BorderBrush}"
+						BorderThickness="{TemplateBinding BorderThickness}"
+						CornerRadius="{TemplateBinding CornerRadius}"
+						Content="{TemplateBinding Content}"
+						ContentTemplate="{TemplateBinding ContentTemplate}"
+						Padding="{TemplateBinding Padding}"
+						RecognizesAccessKey="True"
+						HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+						VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+				</ControlTemplate>
+			</Setter>
+		</Style>
+		<Style Selector="Button.QueueButtons:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background"
+				Value="#BEE6FD" />
+			<Setter Property="TextBlock.Foreground"
+				Value="White" />
+			<Setter Property="BorderBrush"
+				Value="#4080F0" />
+		</Style>
+    </Application.Styles>
+</Application>

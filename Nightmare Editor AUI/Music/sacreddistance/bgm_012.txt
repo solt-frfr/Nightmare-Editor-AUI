@@ -1,0 +1,12 @@
+Sacred Moon
+600000 start
+4713500 loop
+
+Sacred Moon (days)
+310000 start
+4047000 loop
++300000 (hd)
+
+Mystic Moon
+600000 start
+5048000 loop

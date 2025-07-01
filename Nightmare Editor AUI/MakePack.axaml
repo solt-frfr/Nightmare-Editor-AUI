@@ -1,0 +1,34 @@
+﻿<Window x:Class="Pulsar.MakePack"
+        xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Pulsar"
+        mc:Ignorable="d"
+        Title="Create Mod" Width="300" CanResize="False" Background="#e43079">
+    <Grid ColumnDefinitions="*,2*" RowDefinitions="30,90,30,30,30,30,40">
+        <TextBlock Text="Name" Foreground="#ffd9da" Grid.Row="0" FontWeight="ExtraBold" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <TextBlock Text="Description" Foreground="#ffd9da" Grid.Row="1" FontWeight="ExtraBold" FontSize="15" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Top"/>
+        <TextBlock Text="Author" Foreground="#ffd9da" Grid.Row="2" FontWeight="ExtraBold" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <TextBlock Text="Link" ToolTip.Tip="Gamebanana or other source link. Gamebanana links allow updates to happen automatically." Foreground="#ffd9da" Grid.Row="3" FontWeight="ExtraBold" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <TextBlock Text="ID" ToolTip.Tip="Helps to differenciate mods that happen to have the same name. Will be used as the folder name."  Foreground="#ffd9da" Grid.Row="4" FontWeight="ExtraBold" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <TextBlock Text="Preview" ToolTip.Tip="Encoding may take a moment if including a preview." Foreground="#ffd9da" Grid.Row="5" FontWeight="ExtraBold" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <TextBox Name="NameBox" TextChanged="NameChanged" Margin="5" Grid.Column="1" Grid.Row="0" Foreground="#ffd9da" Background="#a10943"/>
+        <TextBox Name="DescBox" TextWrapping="WrapWithOverflow" AcceptsReturn="True" Margin="5" Grid.Column="1" Grid.Row="1" Foreground="#ffd9da" Background="#a10943"/>
+        <TextBox Name="AuthorBox" ToolTip.Tip="''Subcategory'' on Gamebanana." Margin="5" Grid.Column="1" Grid.Row="2" Foreground="#ffd9da" Background="#a10943"/>
+        <TextBox Name="LinkBox" ToolTip.Tip="Gamebanana or other source link." Margin="5" Grid.Column="1" Grid.Row="3" Foreground="#ffd9da" Background="#a10943"/>
+        <TextBox Name="IDBox" TextChanged="IDChanged" KeyDown="IDBox_KeyDown" ToolTip.Tip="Helps to differenciate mods that happen to have the same name. Will be used as the folder name." Margin="5" Grid.Column="1" Grid.Row="4" Foreground="#ffd9da" Background="#a10943"/>
+        <Grid Grid.Row="5" Grid.Column="1" Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="3*"/>
+            </Grid.ColumnDefinitions>
+            <Button Name="OpenButton" Click="Open_Click" Height="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="11">Open</Button>
+            <TextBox Name="PreviewBox" ToolTip.Tip="Encoding may take a moment if including a preview." IsReadOnly="True" Grid.Column="1" Grid.Row="6" Foreground="#ffd9da" Background="#a10943"/>
+        </Grid>
+		<Grid Grid.Row="6" Grid.ColumnSpan="2" ColumnDefinitions="*,*">
+			<Button Name="Cancel" Grid.Column="1" Click="Cancel_Click" Margin="35,5,35,5">Cancel</Button>
+			<Button Name="Confirm" Click="Confirm_Click" Margin="35,5,35,5">Confirm</Button>
+		</Grid>
+    </Grid>
+</Window>

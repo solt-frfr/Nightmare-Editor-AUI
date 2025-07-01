@@ -1,0 +1,7 @@
+Byte Bashing
+150000 start
+2834000 loop
+
+Byte Striking
+150000 start
+2593500 loop
