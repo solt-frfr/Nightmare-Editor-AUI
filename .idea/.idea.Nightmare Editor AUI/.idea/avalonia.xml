@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AvaloniaProject">
+    <option name="projectPerEditor">
+      <map>
+        <entry key="Nightmare Editor AUI/AnimWindow.axaml" value="Nightmare Editor AUI/Nightmare Editor AUI.csproj" />
+        <entry key="Nightmare Editor AUI/Editor.axaml" value="Nightmare Editor AUI/Nightmare Editor AUI.csproj" />
+        <entry key="Nightmare Editor AUI/Help.axaml" value="Nightmare Editor AUI/Nightmare Editor AUI.csproj" />
+        <entry key="Nightmare Editor AUI/MakePack.axaml" value="Nightmare Editor AUI/Nightmare Editor AUI.csproj" />
+        <entry key="Nightmare Editor AUI/Manager.axaml" value="Nightmare Editor AUI/Nightmare Editor AUI.csproj" />
+        <entry key="Nightmare Editor AUI/PickText.axaml" value="Nightmare Editor AUI/Nightmare Editor AUI.csproj" />
+      </map>
+    </option>
+  </component>
+</project>

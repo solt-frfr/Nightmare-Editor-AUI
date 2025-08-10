@@ -263,82 +263,69 @@ namespace Nightmare_Editor.NewTools
             int tileIndex = 0;
 
             for (int tileY = 0; tileY < tilesPerCol; tileY++)
+            for (int tileX = 0; tileX < tilesPerRow; tileX++)
             {
-                for (int tileX = 0; tileX < tilesPerRow; tileX++)
+                int tileBaseOffset = tileIndex * tileSizeInBytes;
+
+                for (int subY = 0; subY < subtiles; subY++)
+                for (int subX = 0; subX < subtiles; subX++)
+                for (int miniY = 0; miniY < minitiles; miniY++)
+                for (int miniX = 0; miniX < minitiles; miniX++)
+                for (int py = 0; py < miniSize; py++)
+                for (int px = 0; px < miniSize; px++)
                 {
-                    int tileBaseOffset = tileIndex * tileSizeInBytes;
+                    // Compute relative pixel position in tile
+                    int localX = subX * (minitiles * miniSize) + miniX * miniSize + px;
+                    int localY = subY * (minitiles * miniSize) + miniY * miniSize + py;
 
-                    for (int subY = 0; subY < subtiles; subY++)
+                    int imgX = tileX * tileSize + localX;
+                    int imgY = tileY * tileSize + localY;
+
+                    if (imgX >= width || imgY >= height)
+                        continue;
+
+                    int pixelIndexInTile =
+                        (((subY * subtiles + subX) * minitiles * minitiles) +
+                         (miniY * minitiles + miniX)) * (miniSize * miniSize)
+                        + (py * miniSize + px);
+
+                    int byteOffset = tileBaseOffset + pixelIndexInTile * bytesPerPixel;
+
+                    byte r = 0x00;
+                    byte g = 0x00;
+                    byte b = 0x00;
+                    byte a = 0x00;
+                    try
                     {
-                        for (int subX = 0; subX < subtiles; subX++)
+                        if (alpha)
                         {
-                            for (int miniY = 0; miniY < minitiles; miniY++)
-                            {
-                                for (int miniX = 0; miniX < minitiles; miniX++)
-                                {
-                                    for (int py = 0; py < miniSize; py++)
-                                    {
-                                        for (int px = 0; px < miniSize; px++)
-                                        {
-                                            // Compute relative pixel position in tile
-                                            int localX = subX * (minitiles * miniSize) + miniX * miniSize + px;
-                                            int localY = subY * (minitiles * miniSize) + miniY * miniSize + py;
-
-                                            int imgX = tileX * tileSize + localX;
-                                            int imgY = tileY * tileSize + localY;
-
-                                            if (imgX >= width || imgY >= height)
-                                                continue;
-
-                                            int pixelIndexInTile =
-                                                (((subY * subtiles + subX) * minitiles * minitiles) +
-                                                 (miniY * minitiles + miniX)) * (miniSize * miniSize)
-                                                + (py * miniSize + px);
-
-                                            int byteOffset = tileBaseOffset + pixelIndexInTile * bytesPerPixel;
-
-                                            byte r = 0x00;
-                                            byte g = 0x00;
-                                            byte b = 0x00;
-                                            byte a = 0x00;
-                                            try
-                                            {
-                                                if (alpha)
-                                                {
-                                                    r = rawData[byteOffset + 3];
-                                                    g = rawData[byteOffset + 2];
-                                                    b = rawData[byteOffset + 1];
-                                                    a = rawData[byteOffset + 0];
-                                                    image32.DangerousGetPixelRowMemory(imgY).Span[imgX] = new Rgba32(r, g, b, a);
-                                                }
-                                                else
-                                                {
-                                                    r = rawData[byteOffset + 2];
-                                                    g = rawData[byteOffset + 1];
-                                                    b = rawData[byteOffset + 0];
-                                                    image24.DangerousGetPixelRowMemory(imgY).Span[imgX] = new Rgb24(r, g, b);
-                                                }
-                                            }
-                                            catch
-                                            {
-                                                if (alpha)
-                                                {
-                                                    return image32;
-                                                }
-                                                else
-                                                {
-                                                    return image24;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                            r = rawData[byteOffset + 3];
+                            g = rawData[byteOffset + 2];
+                            b = rawData[byteOffset + 1];
+                            a = rawData[byteOffset + 0];
+                            image32.DangerousGetPixelRowMemory(imgY).Span[imgX] = new Rgba32(r, g, b, a);
+                        }
+                        else
+                        {
+                            r = rawData[byteOffset + 2];
+                            g = rawData[byteOffset + 1];
+                            b = rawData[byteOffset + 0];
+                            image24.DangerousGetPixelRowMemory(imgY).Span[imgX] = new Rgb24(r, g, b);
                         }
                     }
-
-                    tileIndex++;
+                    catch
+                    {
+                        if (alpha)
+                        {
+                            return image32;
+                        }
+                        else
+                        {
+                            return image24;
+                        }
+                    }
                 }
+                tileIndex++;
             }
             if (alpha)
             {
@@ -432,56 +419,44 @@ namespace Nightmare_Editor.NewTools
             int tileIndex = 0;
 
             for (int tileY = 0; tileY < tilesPerCol; tileY++)
+            for (int tileX = 0; tileX < tilesPerRow; tileX++)
             {
-                for (int tileX = 0; tileX < tilesPerRow; tileX++)
+                int tileBaseOffset = tileIndex * tileSizeInBytes;
+
+                for (int subY = 0; subY < subtiles; subY++)
+                for (int subX = 0; subX < subtiles; subX++)
+                for (int miniY = 0; miniY < minitiles; miniY++)
+                for (int miniX = 0; miniX < minitiles; miniX++)
+                for (int py = 0; py < miniSize; py++)
+                for (int px = 0; px < miniSize; px++)
                 {
-                    int tileBaseOffset = tileIndex * tileSizeInBytes;
+                    // Compute relative pixel position in tile
+                    int localX = subX * (minitiles * miniSize) + miniX * miniSize + px;
+                    int localY = subY * (minitiles * miniSize) + miniY * miniSize + py;
 
-                    for (int subY = 0; subY < subtiles; subY++)
-                    {
-                        for (int subX = 0; subX < subtiles; subX++)
-                        {
-                            for (int miniY = 0; miniY < minitiles; miniY++)
-                            {
-                                for (int miniX = 0; miniX < minitiles; miniX++)
-                                {
-                                    for (int py = 0; py < miniSize; py++)
-                                    {
-                                        for (int px = 0; px < miniSize; px++)
-                                        {
-                                            // Compute relative pixel position in tile
-                                            int localX = subX * (minitiles * miniSize) + miniX * miniSize + px;
-                                            int localY = subY * (minitiles * miniSize) + miniY * miniSize + py;
+                    int imgX = tileX * tileSize + localX;
+                    int imgY = tileY * tileSize + localY;
 
-                                            int imgX = tileX * tileSize + localX;
-                                            int imgY = tileY * tileSize + localY;
+                    if (imgX >= width || imgY >= height)
+                        continue;
 
-                                            if (imgX >= width || imgY >= height)
-                                                continue;
+                    int pixelIndexInTile =
+                        (((subY * subtiles + subX) * minitiles * minitiles) +
+                         (miniY * minitiles + miniX)) * (miniSize * miniSize)
+                        + (py * miniSize + px);
 
-                                            int pixelIndexInTile =
-                                                (((subY * subtiles + subX) * minitiles * minitiles) +
-                                                 (miniY * minitiles + miniX)) * (miniSize * miniSize)
-                                                + (py * miniSize + px);
+                    int byteOffset = tileBaseOffset + pixelIndexInTile * bytesPerPixel;
 
-                                            int byteOffset = tileBaseOffset + pixelIndexInTile * bytesPerPixel;
+                    Rgba32 rgba = new Rgba32();
+                    rgba = image32.DangerousGetPixelRowMemory(imgY).Span[imgX];
+                    newData[count + 3] = rgba.R;
+                    newData[count + 2] = rgba.G;
+                    newData[count + 1] = rgba.B;
+                    newData[count + 0] = rgba.A;
+                    count += 4;
 
-                                            Rgba32 rgba = new Rgba32();
-                                            rgba = image32.DangerousGetPixelRowMemory(imgY).Span[imgX];
-                                            newData[count + 3] = rgba.R;
-                                            newData[count + 2] = rgba.G;
-                                            newData[count + 1] = rgba.B;
-                                            newData[count + 0] = rgba.A;
-                                            count += 4;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    tileIndex++;
                 }
+                tileIndex++;
             }
             return newData;
         }

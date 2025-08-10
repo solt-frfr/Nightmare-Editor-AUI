@@ -7,7 +7,6 @@
         mc:Ignorable="d"
 		xmlns:md="clr-namespace:Markdown.Avalonia;assembly=Markdown.Avalonia"
 		xmlns:ctxt="clr-namespace:Markdown.Avalonia.Controls;assembly=Markdown.Avalonia"
-		xmlns:mdc="clr-namespace:Markdown.Avalonia.Decorations;assembly=Markdown.Avalonia"
         Title="Help" Height="450" Width="800" Background="Black">
     <Grid>
         <Grid.ColumnDefinitions>

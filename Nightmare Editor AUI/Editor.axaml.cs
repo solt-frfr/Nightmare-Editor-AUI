@@ -64,6 +64,18 @@ namespace Nightmare_Editor
         public bool flag2IsVisible = true;
         public bool flag3IsVisible = true;
 
+        public bool IsArc(string file)
+        {
+            if (Path.GetExtension(file) == ".pmo" || Path.GetExtension(file) == ".l2d" || Path.GetExtension(file) == ".fep" || Path.GetExtension(file) == ".pmp")
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
 
 
         public Editor()
@@ -142,7 +154,7 @@ namespace Nightmare_Editor
             Directory.CreateDirectory(Misc.Paths.current);
             var files = await this.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
             {
-                Title = "Select Mod Archive",
+                Title = "Select Game File",
                 AllowMultiple = false,
                 FileTypeFilter = Misc.FileFilters.all,
             });
@@ -156,11 +168,9 @@ namespace Nightmare_Editor
                 {
                     try
                     {
-                        
                         File.Copy(files[0].Path.LocalPath, Path.Combine(Misc.Paths.current, Path.GetFileName(files[0].Path.LocalPath)));
                         AddFile(Path.GetFileName(files[0].Path.LocalPath));
-                        File.Copy(files[0].Path.LocalPath, Path.Combine(Misc.Paths.toolkit, Path.GetFileName(files[0].Path.LocalPath)), true);
-                        Toolkit.RbinExtract(Path.GetFileName(files[0].Path.LocalPath));
+                        RBIN.Load(files[0].Path.LocalPath);
                     }
                     catch
                     {
@@ -173,7 +183,7 @@ namespace Nightmare_Editor
                     File.Copy(files[0].Path.LocalPath, Path.Combine(Misc.Paths.work, "User-Added", $"{files2.Length}-{Path.GetFileName(files[0].Path.LocalPath)}"), true);
                     CTT.Decode(Path.Combine(Misc.Paths.work, "User-Added", $"{files2.Length}-{Path.GetFileName(files[0].Path.LocalPath)}"));
                 }
-                else if (Path.GetExtension(files[0].Path.LocalPath) == ".pmo" || Path.GetExtension(files[0].Path.LocalPath) == ".l2d" || Path.GetExtension(files[0].Path.LocalPath) == ".fep" || Path.GetExtension(files[0].Path.LocalPath) == ".pmp")
+                else if (IsArc(files[0].Path.LocalPath))
                 {
                     string[] files2 = Directory.GetFiles(Path.Combine(Misc.Paths.work, "User-Added"), "*.*", SearchOption.AllDirectories);
                     File.Copy(files[0].Path.LocalPath, Path.Combine(Misc.Paths.work, "User-Added", $"{files2.Length}-{Path.GetFileName(files[0].Path.LocalPath)}"), true);
@@ -366,14 +376,9 @@ namespace Nightmare_Editor
 
         private void AddFile2(string filename)
         {
-            string zeros = "";
-            for (int i =  0; i < 4 - filename.Substring(0, filename.IndexOf('-')).Length; i++)
-            {
-                zeros += "0";
-            }
             TextBox newTextBox = new TextBox
             {
-                Name = "file" + zeros + filename.Substring(0, filename.IndexOf('-')),
+                Name = filename,
                 Text = filename,
                 IsReadOnly = true,
                 Width = 200,
@@ -398,14 +403,9 @@ namespace Nightmare_Editor
         }
         private void AddFile3(string filename)
         {
-            string zeros = "";
-            for (int i = 0; i < 4 - filename.Substring(0, filename.IndexOf('.')).Length; i++)
-            {
-                zeros += "0";
-            }
             TextBox newTextBox = new TextBox
             {
-                Name = "file" + zeros + filename.Substring(0, filename.IndexOf('.')),
+                Name = filename,
                 Text = filename,
                 IsReadOnly = true,
                 Width = 200,
@@ -853,8 +853,7 @@ namespace Nightmare_Editor
                     var result = await box.ShowAsPopupAsync(this);
                     if (result == ButtonResult.Yes)
                     {
-                        File.Copy(Path.Combine(Misc.Paths.current, textBox.Text), Path.Combine(Misc.Paths.toolkit, textBox.Text), true);
-                        Toolkit.RbinExtract(textBox.Text);
+                        RBIN.Load(Path.Combine(Misc.Paths.current, textBox.Text));
                     }
                     break;
                 }
@@ -922,8 +921,7 @@ namespace Nightmare_Editor
                 if (!string.IsNullOrWhiteSpace(file[0].Path.LocalPath))
                 {
                     File.Copy(file[0].Path.LocalPath, Path.Combine(Misc.Paths.current, selectedTextBox.Text), true);
-                    File.Copy(file[0].Path.LocalPath, Path.Combine(Misc.Paths.toolkit, selectedTextBox.Text), true);
-                    Toolkit.RbinExtract(Path.GetFileName(selectedTextBox.Text));
+                    RBIN.Load(file[0].Path.LocalPath);
                 }
             }
             catch (Exception ex)
@@ -967,19 +965,13 @@ namespace Nightmare_Editor
                 {
                     try
                     {
-                        if (Path.GetExtension(file[0].Path.LocalPath) == ".rbin")
-                        {
-                            File.Copy(file[0].Path.LocalPath, Path.Combine(Misc.Paths.current, selectedTextBox2.Text), true);
-                            File.Copy(file[0].Path.LocalPath, Path.Combine(Misc.Paths.toolkit, selectedTextBox2.Text), true);
-                            Toolkit.RbinExtract(Path.GetFileName(selectedTextBox2.Text));
-                        }
-                        else if (Path.GetExtension(file[0].Path.LocalPath) == ".ctt")
+                        if (Path.GetExtension(file[0].Path.LocalPath) == ".ctt")
                         {
                             File.Copy(file[0].Path.LocalPath, Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), selectedTextBox2.Text), true);
                             File.Copy(file[0].Path.LocalPath, Path.Combine(Misc.Paths.toolkit, selectedTextBox2.Text), true);
-                            Toolkit.CTTUnpack(Path.GetFileName(selectedTextBox2.Text), Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text)));
+                            CTT.Decode(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), Path.GetFileName(selectedTextBox2.Text)));
                         }
-                        else if (Path.GetExtension(file[0].Path.LocalPath) == ".pmo" || Path.GetExtension(file[0].Path.LocalPath) == ".l2d" || Path.GetExtension(file[0].Path.LocalPath) == ".fep" || Path.GetExtension(file[0].Path.LocalPath) == ".pmp")
+                        else if (IsArc(file[0].Path.LocalPath))
                         {
                             File.Copy(file[0].Path.LocalPath, Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), selectedTextBox2.Text), true);
                             File.Copy(file[0].Path.LocalPath, Path.Combine(Misc.Paths.toolkit, selectedTextBox2.Text), true);
@@ -1086,23 +1078,12 @@ namespace Nightmare_Editor
                 {
                     try
                     {
-                        if (Path.GetExtension(file[0].Path.LocalPath) == ".rbin")
-                        {
-                            File.Copy(file[0].Path.LocalPath, Path.Combine(Misc.Paths.current, selectedTextBox3.Text), true);
-                            File.Copy(file[0].Path.LocalPath, Path.Combine(Misc.Paths.toolkit, selectedTextBox3.Text), true);
-                            Toolkit.RbinExtract(Path.GetFileName(selectedTextBox3.Text));
-                        }
-                        else if (Path.GetExtension(file[0].Path.LocalPath) == ".ctt")
+                        if (Path.GetExtension(file[0].Path.LocalPath) == ".ctt")
                         {
                             File.Copy(file[0].Path.LocalPath, Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), Path.GetFileNameWithoutExtension(selectedTextBox2.Text), selectedTextBox3.Text), true);
                             File.Copy(file[0].Path.LocalPath, Path.Combine(Misc.Paths.toolkit, selectedTextBox3.Text), true);
-                            Toolkit.CTTUnpack(Path.GetFileName(selectedTextBox3.Text), Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), Path.GetFileNameWithoutExtension(selectedTextBox2.Text)));
-                        }
-                        else if (Path.GetExtension(file[0].Path.LocalPath) == ".pmo" || Path.GetExtension(file[0].Path.LocalPath) == ".l2d" || Path.GetExtension(file[0].Path.LocalPath) == ".fep" || Path.GetExtension(file[0].Path.LocalPath) == ".pmp")
-                        {
-                            File.Copy(file[0].Path.LocalPath, Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), Path.GetFileNameWithoutExtension(selectedTextBox2.Text), selectedTextBox3.Text), true);
-                            File.Copy(file[0].Path.LocalPath, Path.Combine(Misc.Paths.toolkit, selectedTextBox3.Text), true);
-                            Toolkit.ArcUnpack(Path.GetFileName(selectedTextBox3.Text), Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), Path.GetFileNameWithoutExtension(selectedTextBox2.Text)));
+                            CTT.Decode(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), Path.GetFileNameWithoutExtension(selectedTextBox2.Text), Path.GetFileName(selectedTextBox3.Text)));
+
                         }
                         else
                         {

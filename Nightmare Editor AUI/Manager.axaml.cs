@@ -748,7 +748,7 @@ namespace Nightmare_Editor
                     {
                         File.Copy(files[0].Path.LocalPath, Path.Combine(Misc.Paths.current, Path.GetFileName(files[0].Path.LocalPath)));
                         File.Copy(files[0].Path.LocalPath, Path.Combine(Misc.Paths.toolkit, Path.GetFileName(files[0].Path.LocalPath)), true);
-                        Toolkit.RbinExtract(Path.GetFileName(files[0].Path.LocalPath));
+                        RBIN.Load(files[0].Path.LocalPath);
                     }
                     catch
                     {
