@@ -63,20 +63,7 @@ namespace Nightmare_Editor
         public bool remove2IsVisible = true;
         public bool flag2IsVisible = true;
         public bool flag3IsVisible = true;
-
-        public bool IsArc(string file)
-        {
-            if (Path.GetExtension(file) == ".pmo" || Path.GetExtension(file) == ".l2d" || Path.GetExtension(file) == ".fep" || Path.GetExtension(file) == ".pmp")
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-
+        
 
         public Editor()
         {
@@ -183,7 +170,7 @@ namespace Nightmare_Editor
                     File.Copy(files[0].Path.LocalPath, Path.Combine(Misc.Paths.work, "User-Added", $"{files2.Length}-{Path.GetFileName(files[0].Path.LocalPath)}"), true);
                     CTT.Decode(Path.Combine(Misc.Paths.work, "User-Added", $"{files2.Length}-{Path.GetFileName(files[0].Path.LocalPath)}"));
                 }
-                else if (IsArc(files[0].Path.LocalPath))
+                else if (Misc.IsArc(files[0].Path.LocalPath))
                 {
                     string[] files2 = Directory.GetFiles(Path.Combine(Misc.Paths.work, "User-Added"), "*.*", SearchOption.AllDirectories);
                     File.Copy(files[0].Path.LocalPath, Path.Combine(Misc.Paths.work, "User-Added", $"{files2.Length}-{Path.GetFileName(files[0].Path.LocalPath)}"), true);
@@ -971,7 +958,7 @@ namespace Nightmare_Editor
                             File.Copy(file[0].Path.LocalPath, Path.Combine(Misc.Paths.toolkit, selectedTextBox2.Text), true);
                             CTT.Decode(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), Path.GetFileName(selectedTextBox2.Text)));
                         }
-                        else if (IsArc(file[0].Path.LocalPath))
+                        else if (Misc.IsArc(file[0].Path.LocalPath))
                         {
                             File.Copy(file[0].Path.LocalPath, Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), selectedTextBox2.Text), true);
                             File.Copy(file[0].Path.LocalPath, Path.Combine(Misc.Paths.toolkit, selectedTextBox2.Text), true);

@@ -41,23 +41,23 @@ public class RBIN
     /// <summary>
     /// Create an RBINFile class from an RBIN file.
     /// </summary>
-    public static RBINFile Load(string file, string output = null)
+    public static RBINFile Load(string input, string output = null, bool recursive = true)
     {
         List<Entry> json = new List<Entry>();
         string realoutput;
         if (string.IsNullOrWhiteSpace(output))
         {
-            realoutput = Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(file));
-            RBIN.Load(file, Misc.Paths.basePath);
+            realoutput = Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(input));
+            RBIN.Load(input, Misc.Paths.basePath, false);
         }
         else
         {
-            realoutput = Path.Combine(output, Path.GetFileNameWithoutExtension(file));
+            realoutput = Path.Combine(output, Path.GetFileNameWithoutExtension(input));
         }
-        byte[] data = File.ReadAllBytes(file);
+        byte[] data = File.ReadAllBytes(input);
         RBINFile rbin = new RBINFile();
         rbin.Entries = new List<Entry>();
-        rbin.Path = Path.GetFileName(file);
+        rbin.Path = Path.GetFileName(input);
         rbin.ReadEntryCount = (data[0x6] + (data[0x7] * 0x100));
         int j = 0x10;
         byte[] mountBytes = {data[j++], data[j++], data[j++], data[j++], data[j++], data[j++], data[j++], data[j++], data[j++], data[j++], data[j++], data[j++], data[j++], data[j++], data[j++], data[j++]};
@@ -91,7 +91,7 @@ public class RBIN
             }
             offset = (uint)(data[j++] + (data[j++] * 0x100) + (data[j++] * 0x10000) + (data[j++] * 0x1000000));
             entry.Data = new byte[entry.ReadSize];
-            using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read))
+            using (FileStream fs = new FileStream(input, FileMode.Open, FileAccess.Read))
             {
                 fs.Seek(offset, SeekOrigin.Begin);
                 fs.Read(entry.Data, 0, entry.ReadSize);
@@ -114,6 +114,17 @@ public class RBIN
         };
         string jsonString = JsonSerializer.Serialize<List<Entry>>(json, jsonoptions);
         File.WriteAllText(Path.Combine(realoutput, "info.json"), jsonString);
+        if (recursive)
+        {
+            string[] files = Directory.GetFiles(Path.GetDirectoryName(input), "*", SearchOption.AllDirectories);
+            foreach (string file in files)
+            {
+                if (Misc.IsArc(file))
+                {
+                    // salalala sheeeeesh
+                }
+            }
+        }
         return rbin;
     }
 }
