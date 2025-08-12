@@ -2,50 +2,6 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../AemulusModManager" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../BW2-Corb" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../BW2-Solt" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../DDD-HUD-Edits" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../DDD-KH2-tex" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../ForkInTheOutlet" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../Holden" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../ModManagerBase" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../Nightmare-Editor" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../Plat-Kasumi" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../Pulsar" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../SpriteSplicer" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../TinkeDSi" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../aseprite" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../aseprite/laf" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../aseprite/laf/clip" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../aseprite/laf/third_party/googletest" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../aseprite/src/flic" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../aseprite/src/observable" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../aseprite/src/psd" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../aseprite/src/tga" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../aseprite/src/undo" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../aseprite/third_party/IXWebSocket" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../aseprite/third_party/TinyEXIF" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../aseprite/third_party/benchmark" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../aseprite/third_party/cityhash" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../aseprite/third_party/cmark" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../aseprite/third_party/curl" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../aseprite/third_party/fmt" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../aseprite/third_party/freetype2" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../aseprite/third_party/freetype2/subprojects/dlg" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../aseprite/third_party/giflib" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../aseprite/third_party/harfbuzz" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../aseprite/third_party/json11" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../aseprite/third_party/libarchive" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../aseprite/third_party/libpng" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../aseprite/third_party/libwebp" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../aseprite/third_party/lua" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../aseprite/third_party/pixman" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../aseprite/third_party/qoi" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../aseprite/third_party/simpleini" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../aseprite/third_party/tinyexpr" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../aseprite/third_party/tinyxml2" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../aseprite/third_party/zlib" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../solt-frfr" vcs="Git" />
   </component>
 </project>

@@ -482,8 +482,15 @@ namespace Nightmare_Editor
                         foreach (string file in files)
                         {
                             string filetrim = file.Replace(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(textBox.Text)) + Path.DirectorySeparatorChar, "");
-                            if (!filetrim.Contains(Path.DirectorySeparatorChar) && !filetrim.Contains(".bmp") && !filetrim.Contains(".png") && !filetrim.Contains(".txt") && !filetrim.Contains(".pnt"))
+                            if (!filetrim.Contains(Path.DirectorySeparatorChar) && 
+                                !filetrim.Contains(".bmp") && 
+                                !filetrim.Contains(".png") && 
+                                !filetrim.Contains(".txt") && 
+                                !filetrim.Contains(".json") && 
+                                !filetrim.Contains(".pnt"))
+                            {
                                 AddFile2(filetrim);
+                            }
                         }
                     }
                     break;
@@ -555,7 +562,12 @@ namespace Nightmare_Editor
                         foreach (string file in files)
                         {
                             string filetrim = file.Replace(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), Path.GetFileNameWithoutExtension(textBox.Text) + Path.DirectorySeparatorChar), "");
-                            if (!filetrim.Contains(Path.DirectorySeparatorChar) && !filetrim.Contains(".bmp") && !filetrim.Contains(".png") && !filetrim.Contains(".txt") && !filetrim.Contains(".pnt"))
+                            if (!filetrim.Contains(Path.DirectorySeparatorChar) && 
+                                !filetrim.Contains(".bmp") && 
+                                !filetrim.Contains(".png") && 
+                                !filetrim.Contains(".txt") && 
+                                !filetrim.Contains(".json") && 
+                                !filetrim.Contains(".pnt"))
                             {
                                 AddFile3(filetrim);
                             }
