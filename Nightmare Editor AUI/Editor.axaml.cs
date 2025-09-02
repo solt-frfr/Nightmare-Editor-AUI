@@ -640,152 +640,88 @@ namespace Nightmare_Editor
                 }
             }
         }
-
+        
         private async void AssignImage(string file, int from)
         {
-            if (Path.GetFileName(file) == selectedTextBox2.Text || Path.GetFileName(file) == selectedTextBox3.Text)
+            string path = "";
+            if (Path.GetFileName(file) == selectedTextBox2.Text)
             {
-                InfoWindow.IsVisible = false;
-                string file2 = "";
-                string truefile2 = "";
-                try
-                {
-                    if (from == 2)
-                    {
-                        string[] files2 = Directory.GetFiles(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text)), $"{selectedTextBox2.Text}.*.png", SearchOption.AllDirectories);
-                        FileName.Text = selectedTextBox.Text + Path.DirectorySeparatorChar + selectedTextBox2.Text;
-                        file2 = files2[0];
-                    }
-                    else if (from == 3)
-                    {
-                        string[] files2 = Directory.GetFiles(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), Path.GetFileNameWithoutExtension(selectedTextBox2.Text)), $"{selectedTextBox3.Text}.*.png", SearchOption.AllDirectories);
-                        FileName.Text = selectedTextBox.Text + Path.DirectorySeparatorChar + selectedTextBox2.Text + Path.DirectorySeparatorChar + selectedTextBox3.Text;
-                        file2 = files2[0];
-                    }
-                    else
-                    {
-                        return;
-                    }
-                    byte[] buffer = new byte[0x80];
-                    using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read))
-                    {
-                        fs.Read(buffer, 0, buffer.Length);
-                    }
-                    byte formatByte = buffer[0x1C]; // read byte from file
-                    NewTools.CTT.Format formatenum = (NewTools.CTT.Format)formatByte;
-                    int startIndex = file.Length + 1;
-                    int endIndex = truefile2.IndexOf(".png");
-                    string format = formatenum.ToString();
-                    FileFormat.Text = format;
-                    truefile2 = file + $".{format}.png";
-                    if (file2 != truefile2)
-                    {
-                        if (format == "ETC1" || format == "ETC1A4")
-                        {
-                            try
-                            {
-                                File.Move(file2, truefile2, true);
-                                File.Delete(file2.Replace(".png", ".bmp"));
-                            }
-                            catch { }
-                        }
-                        else
-                        {
-                            try
-                            {
-                                File.Delete(file2);
-                                NewTools.CTT.Decode(file);
-                                File.Delete(file2.Replace(".png", ".bmp"));
-                            }
-                            catch { }
-                        }
-                    }
-                    Bitmap bitmap = new Bitmap(File.OpenRead(truefile2));
-                    Bitmap bitmap2 = new Bitmap(File.OpenRead(truefile2));
-                    bool found = false;
-                    if (textureSwap)
-                    {
-                        Texture.Source = bitmap;
-                    }
-                    else
-                    {
-                        TextureSmall.Source = bitmap;
-                    }
-                    FileSize.Text = bitmap.PixelSize.Width.ToString() + "x" + bitmap.PixelSize.Height.ToString();
-                    FileLink.Text = truefile2;
-                    if (!(textureLinks.Count <= 0))
-                    {
-                        foreach (var arr in textureLinks)
-                        {
-                            if (arr.Length >= 2 && arr[0] == FileName.Text)
-                            {
-                                if (!File.Exists(arr[1]))
-                                {
-                                    var box2 = MessageBoxManager.GetMessageBoxStandard(
-                                        $"Missing texture",
-                                        $"{arr[1]} could not be found. Removing from the texture list.",
-                                        MsBox.Avalonia.Enums.ButtonEnum.Ok,
-                                        MsBox.Avalonia.Enums.Icon.Info
-                                    );
-                                    await box2.ShowAsPopupAsync(this);
-                                    textureLinks.Remove(arr);
-                                    QuickJson(true);
-                                    if (from == 2)
-                                    {
-                                        string[] files2 = Directory.GetFiles($@"{System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)}\work\{Path.GetFileNameWithoutExtension(selectedTextBox.Text)}\", $"{selectedTextBox2.Text}.*.png", SearchOption.AllDirectories);
-                                        FileLink.Text = files2[0];
+                path = Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), file);
+            }
+            else if (Path.GetFileName(file) == selectedTextBox3.Text)
+            {
+                path = Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text),
+                    Path.GetFileNameWithoutExtension(selectedTextBox2.Text), file);
+            }
 
-                                    }
-                                    else if (from == 3)
-                                    {
-                                        string[] files2 = Directory.GetFiles($@"{System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)}\work\{Path.GetFileNameWithoutExtension(selectedTextBox.Text)}\{Path.GetFileNameWithoutExtension(selectedTextBox2.Text)}\", $"{selectedTextBox3.Text}.*.png", SearchOption.AllDirectories);
-                                        FileLink.Text = files2[0];
-                                    }
-                                    bitmap = new Bitmap(File.OpenRead(FileLink.Text));
-                                    Texture.Source = bitmap;
-                                    break;
-                                }
-                                bitmap2 = new Bitmap(File.OpenRead(arr[1]));
-                                if (textureSwap)
-                                {
-                                    TextureSmall.Source = bitmap2;
-                                }
-                                else
-                                {
-                                    Texture.Source = bitmap2;
-                                }
-                                FileLink.Text = arr[1];
-                                found = true;
-                                break;
-                            }
-                        }
-                    }
-                    if (!found)
+            FileFormat.Text = ((CTT.Format)File.ReadAllBytes(path)[0x1C]).ToString();;
+            MemoryStream ms = new MemoryStream();
+            NewTools.CTT.Decode(file, false).SaveAsPng(ms);
+            ms.Seek(0, SeekOrigin.Begin);
+            Bitmap bitmap = new Bitmap(ms);
+            if (textureSwap)
+            {
+                Texture.Source = bitmap;
+            }
+            else
+            {
+                TextureSmall.Source = bitmap;
+            }
+            FileName.Text = path.Replace(Misc.Paths.work, "");
+            FileLink.Text = path;
+            FileSize.Text = bitmap.PixelSize.Width.ToString() + "x" + bitmap.PixelSize.Height.ToString();
+            bool found = false;
+            if (!(textureLinks.Count <= 0))
+            {
+                foreach (var arr in textureLinks)
+                {
+                    if (arr.Length >= 2 && arr[0] == FileName.Text)
                     {
-                        if (textureSwap)
+                        if (!File.Exists(arr[1]))
                         {
-                            TextureSmall.Source = bitmap;
+                            var box2 = MessageBoxManager.GetMessageBoxStandard(
+                                $"Missing texture",
+                                $"{arr[1]} could not be found. Removing from the texture list.",
+                                MsBox.Avalonia.Enums.ButtonEnum.Ok,
+                                MsBox.Avalonia.Enums.Icon.Info
+                            );
+                            await box2.ShowAsPopupAsync(this);
+                            textureLinks.Remove(arr);
+                            QuickJson(true);
+                            FileLink.Text = path;
+                            break;
                         }
                         else
                         {
-                            Texture.Source = bitmap;
+                            Bitmap bitmap2 = new Bitmap(File.OpenRead(arr[1]));
+                            if (textureSwap)
+                            {
+                                TextureSmall.Source = bitmap2;
+                            }
+                            else
+                            {
+                                Texture.Source = bitmap2;
+                            }
+
+                            FileLink.Text = arr[1];
+                            found = true;
+                            break;
                         }
                     }
-                    InfoWindow.IsVisible = true;
-                }
-                catch (Exception ex)
-                {
-                    var box2 = MessageBoxManager.GetMessageBoxStandard(
-                        "Missing picture",
-                        "The .ctt file selected has no picture associated with it. Unpacking...",
-                        MsBox.Avalonia.Enums.ButtonEnum.Ok,
-                        MsBox.Avalonia.Enums.Icon.Info
-                    );
-                    await box2.ShowAsPopupAsync(this);
-                    NewTools.CTT.Decode(file);
-                    AssignImage(file, from);
                 }
             }
+            if (!found)
+            {
+                if (textureSwap)
+                {
+                    TextureSmall.Source = bitmap;
+                }
+                else
+                {
+                    Texture.Source = bitmap;
+                }
+            }
+            InfoWindow.IsVisible = true;
         }
 
         private async void RemoveFile(object sender, RoutedEventArgs e)
@@ -1522,14 +1458,29 @@ namespace Nightmare_Editor
 
         private void Edit_Click(object sender, RoutedEventArgs e)
         {
-            using Process fileopener = new Process();
-
-            fileopener.StartInfo.FileName = "explorer";
-            fileopener.StartInfo.Arguments = "\"" + FileLink.Text + "\"";
-            fileopener.Start();
+            if (FileLink.Text.EndsWith(".ctt"))
+            {
+                string file = Path.Combine(Misc.Paths.work, FileName.Text);
+                string save = Path.Combine(Misc.Paths.temp, FileName.Text);
+                var image = CTT.Decode(file, false);
+                image.SaveAsPng(save);
+                System.Diagnostics.Process.Start(new ProcessStartInfo
+                {
+                    FileName = save,
+                    UseShellExecute = true
+                });
+            }
+            else
+            {
+                System.Diagnostics.Process.Start(new ProcessStartInfo
+                {
+                    FileName = FileLink.Text,
+                    UseShellExecute = true
+                });
+            }
         }
 
-        private async void Unlink_Click(object sender, PointerPressedEventArgs e)
+        private async void Unlink_Click(object sender, PointerReleasedEventArgs e)
         {
             var box = MessageBoxManager.GetMessageBoxStandard(
                 "Texture Unlink",
@@ -1550,20 +1501,15 @@ namespace Nightmare_Editor
                         break;
                     }
                 }
-                int from = FileName.Text.Split(Path.DirectorySeparatorChar).Length;
-                if (from == 2)
+                if (textureSwap)
                 {
-                    string[] files2 = Directory.GetFiles(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text)), $"{selectedTextBox2.Text}.*.png", SearchOption.AllDirectories);
-                    FileLink.Text = files2[0];
-
+                    TextureSmall.Source = Texture.Source;
                 }
-                else if (from == 3)
+                else
                 {
-                    string[] files2 = Directory.GetFiles(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), Path.GetFileNameWithoutExtension(selectedTextBox2.Text)), $"{selectedTextBox3.Text}.*.png", SearchOption.AllDirectories);
-                    FileLink.Text = files2[0];
+                    Texture.Source = TextureSmall.Source;
                 }
-                Bitmap bitmap = new Bitmap(File.OpenRead(FileLink.Text));
-                Texture.Source = bitmap;
+                FileLink.Text = Path.Combine(Misc.Paths.work, FileName.Text);
             }
             QuickJson(true);
         }
@@ -1581,18 +1527,22 @@ namespace Nightmare_Editor
         private void MNN_Click(object sender, PointerReleasedEventArgs e)
         {
             RenderOptions.SetBitmapInterpolationMode(Texture, BitmapInterpolationMode.None);
+            Texture.InvalidateVisual();
         }
         private void MLS_Click(object sender, PointerReleasedEventArgs e)
         {
             RenderOptions.SetBitmapInterpolationMode(Texture, BitmapInterpolationMode.HighQuality);
+            Texture.InvalidateVisual();
         }
         private void SNN_Click(object sender, PointerReleasedEventArgs e)
         {
             RenderOptions.SetBitmapInterpolationMode(TextureSmall, BitmapInterpolationMode.None);
+            TextureSmall.InvalidateVisual();
         }
         private void SLS_Click(object sender, PointerReleasedEventArgs e)
         {
             RenderOptions.SetBitmapInterpolationMode(TextureSmall, BitmapInterpolationMode.HighQuality);
+            TextureSmall.InvalidateVisual();
         }
 
         private void TextureSwap(object sender, RoutedEventArgs e)
@@ -1606,7 +1556,7 @@ namespace Nightmare_Editor
             LocationSmall.Text = LocationTemp.Text;
         }
 
-        private void FileLink_Click(object sender, PointerPressedEventArgs e)
+        private void FileLink_Click(object sender, PointerReleasedEventArgs e)
         {
             ScrollFileLink();
             if (e.KeyModifiers.HasFlag(KeyModifiers.Shift))
@@ -1760,39 +1710,11 @@ namespace Nightmare_Editor
                     }
                 }
             });
-            if (!string.IsNullOrWhiteSpace(save.Path.LocalPath))
+            if (!string.IsNullOrWhiteSpace(save.Path.LocalPath) && save != null)
             {
-                int from = FileName.Text.Split(Path.DirectorySeparatorChar).Length;
-                string file = Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text));
-                if (from == 2)
-                {
-                    Path.Combine(file, selectedTextBox2.Text);
-                }
-                else if (from == 3)
-                {
-                    Path.Combine(file, Path.GetFileNameWithoutExtension(selectedTextBox2.Text), selectedTextBox3.Text);
-                }
-
-                byte[] buffer = new byte[0x80];
-                using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read))
-                {
-                    fs.Read(buffer, 0, buffer.Length);
-                }
-                byte formatByte = buffer[0x1C]; // read byte from file
-                NewTools.CTT.Format formatenum = (NewTools.CTT.Format)formatByte;
-                string format = formatenum.ToString();
-                if (format == "ETC1" || format == "ETC1A4")
-                {
-                    var image = CTT.Decode(file);
-                    string[] files2 = Directory.GetFiles($@"{Path.GetDirectoryName(file)}", $"{Path.GetFileName(file)}.*.png", SearchOption.AllDirectories);
-                    string file2 = files2[0];
-                    File.Copy(file2, save.Path.LocalPath);
-                }
-                else
-                {
-                    var image = CTT.Decode(file);
-                    image.SaveAsPng(save.Path.LocalPath);
-                }
+                string file = Path.Combine(Misc.Paths.work, FileName.Text);
+                var image = CTT.Decode(file, false);
+                image.SaveAsPng(save.Path.LocalPath);
             }
         }
     }

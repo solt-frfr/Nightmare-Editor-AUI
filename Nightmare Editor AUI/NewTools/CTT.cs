@@ -54,7 +54,7 @@ namespace Nightmare_Editor.NewTools
         /// Decode a CTT texture into a PNG file. Returns a raw image if needed.
         /// </summary>
         /// <param name="file">Filepath containing a CTT file.</param>
-        public static Image Decode(string file)
+        public static Image Decode(string file, bool output = true)
         {
             byte[] header;
             byte[] data;
@@ -73,14 +73,18 @@ namespace Nightmare_Editor.NewTools
             Format format1 = (Format)header[0x1C];
             string format = format1.ToString();
             var image = Deswizzle(data, width, height, (int)format1);
+            /*
             if (format == "ETC1" || format == "ETC1A4")
             {
-                
                 File.Copy(file, Path.Combine(Misc.Paths.toolkit, Path.GetFileName(file)), true);
                 Toolkit.CTTUnpack(Path.GetFileName(file), Path.GetDirectoryName(file));
                 return null;
             }
-            image.SaveAsPng(file + "." + format + ".png");
+            */
+            if (output)
+            {
+                image.SaveAsPng(file + "." + format + ".png");
+            }
             return image;
         }
 

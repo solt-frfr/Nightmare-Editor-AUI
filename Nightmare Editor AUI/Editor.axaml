@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Nightmare_Editor"
         mc:Ignorable="d"
-        Title="Nightmare Editor" Height="450" Width="800" Background="Black">
+        Title="Nightmare Editor" Height="550" Width="900" Background="Black">
     <Grid Margin="5">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="158"/>
@@ -50,8 +50,8 @@
         </ScrollViewer>
         <Grid Grid.Row="1" Grid.Column="1" Grid.RowSpan="2">
             <Grid.RowDefinitions>
-                <RowDefinition Height="20"/>
-                <RowDefinition Height="20"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <ComboBox Name="Sort" SelectionChanged="Files2_Filter">
@@ -95,12 +95,12 @@
         </Grid>
         <Grid Name="InfoWindow" Grid.RowSpan="3" Grid.Column="2">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="158"/>
+                <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="106"/>
+                <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
             <Grid Name="FileInfo" Grid.Column="1" Grid.Row="1" Margin="5" HorizontalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
@@ -119,18 +119,16 @@
                 <TextBox Text="Embedded Format:" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" Grid.Row="2" IsReadOnly="True" Focusable="False"/>
                 <TextBox Name="FileSize" Text="0x0" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" HorizontalContentAlignment="Right" Grid.Row="1" Grid.Column="1" IsReadOnly="True" Focusable="False"/>
                 <TextBox Name="FileFormat" Text="idk probably etc" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" HorizontalContentAlignment="Right" Grid.Row="2" Grid.Column="1" IsReadOnly="True" Focusable="False"/>
-                <TextBox Name="FileLink" TextChanged="ScrollFileLink" Text="idk probably base texture" Foreground="LightPink" FontWeight='Thin' BorderBrush="Gray" Background="Black" VerticalContentAlignment="Center" HorizontalContentAlignment="Right" Grid.Row="3" Grid.ColumnSpan="2" IsReadOnly="True" Focusable="False" PointerPressed="FileLink_Click" TextWrapping="NoWrap" Cursor="Hand"/>
+                <TextBox Name="FileLink" PointerReleased="FileLink_Click" TextChanged="ScrollFileLink" Text="idk probably base texture" Foreground="LightPink" FontWeight='Thin' BorderBrush="Gray" Background="Black" VerticalContentAlignment="Center" HorizontalContentAlignment="Right" Grid.Row="3" Grid.ColumnSpan="2" IsReadOnly="True" Focusable="False" TextWrapping="NoWrap" Cursor="Hand"/>
                 <Grid Grid.ColumnSpan="2" Grid.Row="4">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <Button Click="Link_Click" Foreground="Blue" FontWeight='Black' BorderBrush="Gray" FontStyle="Italic" Background="White" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Row="3" Cursor="Hand">
-                        <TextBlock Text="Link New Texture" TextDecorations="Underline" />
-                    </Button>
-                    <Button Click="Edit_Click" Foreground="Blue" FontWeight='Black' BorderBrush="Gray" FontStyle="Italic" Background="White" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Row="3" Grid.Column="1" Cursor="Hand">
-                        <TextBlock Text="Open In Editor" TextDecorations="Underline" />
-                    </Button>
+                    
+                    <TextBox Text="Link New Texture" PointerReleased="Link_Click" Foreground="Blue" FontWeight='Black' BorderBrush="Gray" FontStyle="Italic" Background="White" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Row="3" Grid.Column="0" IsReadOnly="True" Focusable="False" Cursor="Hand" Height="17"/>
+                    <TextBox Text="Open In Editor" PointerReleased="Edit_Click" Foreground="Blue" FontWeight='Black' BorderBrush="Gray" FontStyle="Italic" Background="White" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Row="3" Grid.Column="1" IsReadOnly="True" Focusable="False" Cursor="Hand" Height="17"/>
+                    
                 </Grid>
             </Grid>
             <Grid Grid.ColumnSpan="3" Background="Black">
@@ -196,9 +194,7 @@
                     <TextBox Text="Sub Image Sampling" Foreground="White" FontWeight='SemiBold' BorderBrush="White" Background="#323b4a" VerticalContentAlignment="Center" Grid.Row="3" IsReadOnly="True" Focusable="False" Height="20"/>
                     <TextBox Text="Nearest Neighbor" PointerReleased="SNN_Click" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" HorizontalContentAlignment="Right" Grid.Row="4" Grid.Column="1" IsReadOnly="True" Focusable="False" Cursor="Hand" Height="17"/>
                     <TextBox Text="Linear Scaling" PointerReleased="SLS_Click" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" HorizontalContentAlignment="Right" Grid.Row="5" Grid.Column="1" IsReadOnly="True" Focusable="False" Cursor="Hand" Height="17"/>
-                    <Button Click="TextureSwap" Foreground="Blue" FontWeight='Black' BorderBrush="Gray" FontStyle="Italic" Background="White" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Row="8" Height="19">
-                        <TextBlock Text="Swap Images" TextDecorations="Underline"/>
-                    </Button>
+                    <TextBox Text="Swap Images" PointerReleased="TextureSwap" Foreground="Blue" FontWeight='Black' BorderBrush="Gray" FontStyle="Italic" Background="White" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Row="8" IsReadOnly="True" Focusable="False" Cursor="Hand" Height="17"/>
                 </Grid>
             </Grid>
             <ScrollViewer Name="Files3_Scroll" VerticalScrollBarVisibility="Auto" Grid.Row="1" Grid.Column="0">
