@@ -23,6 +23,7 @@ using SharpCompress.Archives;
 using SharpCompress.Common;
 using MsBox.Avalonia.Enums;
 using MsBox.Avalonia;
+using Nightmare_Editor_AUI.ViewModels;
 
 
 namespace Nightmare_Editor
@@ -36,7 +37,7 @@ namespace Nightmare_Editor
         private List<string> enabledmods = new List<string>();
         private bool isInitialized = false;
         private List<string[]> music = new List<string[]>();
-        private ObservableCollection<Meta> mods = new ObservableCollection<Meta>();
+        private MainWindowViewModel viewModel = new MainWindowViewModel();
 
         public Manager()
         {
@@ -108,6 +109,7 @@ namespace Nightmare_Editor
             }
             Refresh();
             isInitialized = true;
+            DataContext = viewModel;
         }
 
         private string[] CountFolders(string folderPath)
@@ -159,7 +161,7 @@ namespace Nightmare_Editor
                 enabledmods = QuickJson(false, enabledmods, "enabledmods.json");
             }
             catch { }
-            mods.Clear();
+            viewModel.AllMods.Clear();
             string[] griditems = CountFolders(Misc.Paths.mods);
             Settings settings = new Settings();
             List<string> blacklist = new List<string>();
@@ -173,7 +175,11 @@ namespace Nightmare_Editor
                 settings = JsonSerializer.Deserialize<Settings>(jsonString, jsonoptions);
                 PathBox.Text = settings.DeployPath;
                 DefPrevBox.SelectedIndex = settings.DefaultImage;
-                Preview.Source = new Bitmap(AssetLoader.Open(new Uri($"avares://Nightmare Editor AUI/Images/Preview{DefPrevBox.SelectedIndex}.png", UriKind.RelativeOrAbsolute)));
+                if (settings.DefaultImage < 0)
+                {
+                    settings.DefaultImage = 0;
+                }
+                Preview.Source = new Bitmap(AssetLoader.Open(new Uri($"avares://Nightmare Editor AUI/Images/Preview{settings.DefaultImage}.png", UriKind.RelativeOrAbsolute)));
             }
             foreach (string modpath in griditems)
             {
@@ -198,17 +204,24 @@ namespace Nightmare_Editor
                     };
                     string jsonString = System.IO.File.ReadAllText(filepath);
                     mod = JsonSerializer.Deserialize<Meta>(jsonString, jsonoptions);
-                    if ((Path.Combine(Misc.Paths.mods, mod.ID) == modpath) && !mods.Contains(mod))
+                    if (!viewModel.AllMods.Contains(mod))
                     {
                         if (enabledmods.Contains(mod.ID))
                             mod.IsChecked = true;
                         else
                             mod.IsChecked = false;
                         mod.LinkImage = CreateLinkImage(mod.Link);
-                        mods.Add(mod);
+                        viewModel.AllMods.Add(mod);
                     }
                 }
             }
+            var sorted = viewModel.AllMods.OrderBy(i => i.Name).ToList();
+            viewModel.AllMods.Clear();  // Remove all current items
+            foreach (var item in sorted)
+            {
+                viewModel.AllMods.Add(item);  // Re-add in sorted order
+            }
+            this.DataContext = viewModel;
         }
         private void New_OnClick(object sender, RoutedEventArgs e)
         {
@@ -330,9 +343,32 @@ namespace Nightmare_Editor
             }
             try
             {
-                if (System.IO.File.Exists(Path.Combine(Misc.Paths.mods, row.ID, "preview.webp")))
+                string modpath = "";
+                foreach (string path in CountFolders(Misc.Paths.mods))
                 {
-                    string imagePath = Path.Combine(Misc.Paths.mods, row.ID, "preview.webp");
+                    Meta mod = new Meta();
+                    string filepath = Path.Combine(path, "meta.json");
+                    if (!System.IO.File.Exists(filepath))
+                    {
+                        continue;
+                    }
+                    if (System.IO.File.Exists(filepath))
+                    {
+                        var jsonoptions = new JsonSerializerOptions
+                        {
+                            WriteIndented = true
+                        };
+                        string jsonString = System.IO.File.ReadAllText(filepath);
+                        mod = JsonSerializer.Deserialize<Meta>(jsonString, jsonoptions);
+                        if (mod.ID == row.ID)
+                        {
+                            modpath = path;
+                        }
+                    }
+                }
+                if (System.IO.File.Exists(Path.Combine(modpath, "preview.webp")))
+                {
+                    string imagePath = Path.Combine(modpath, "preview.webp");
 
                     if (File.Exists(imagePath))
                     {

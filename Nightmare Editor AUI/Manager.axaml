@@ -56,12 +56,12 @@
         </Grid>
         <Grid RowDefinitions="4*" Grid.Row="1" Name="Mods" IsVisible="True">
             <DataGrid Name="ModDataGrid"  Grid.Column="0" Grid.Row="0" Margin="10"
-                      RowBackground="Black" AutoGenerateColumns="False" SelectionChanged="currentrow" Background="#ADD8E6" SelectionMode="Single" BorderBrush="#F04080" Foreground="White" ItemsSource="{Binding mods}">
+                      RowBackground="#F04080" AutoGenerateColumns="False" SelectionChanged="currentrow" Background="#ADD8E6" SelectionMode="Single" BorderBrush="#F04080" Foreground="White" ItemsSource="{Binding AllMods}">
                 <DataGrid.Columns>
-                    <DataGridTemplateColumn Header="On" Width="auto">
+                    <DataGridTemplateColumn Header="On" Width="32">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <CheckBox Name="RowCheckBox" IsChecked="{Binding IsChecked}" Cursor="Hand" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked" />
+                                <CheckBox Name="RowCheckBox" HorizontalAlignment="Center" IsChecked="{Binding IsChecked}" Cursor="Hand" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -71,7 +71,7 @@
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Button Name="LinkButton" CommandParameter="{Binding Link}" Click="OpenLink_Click" Cursor="Hand">
-                                    <Image Name="LinkImage" Source="{Binding LinkImage}" RenderTransform="56,56"/>
+                                    <Image Name="LinkImage" Source="{Binding LinkImage}" Height="16" Width="16"/>
                                 </Button>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>

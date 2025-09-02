@@ -1,7 +1,25 @@
-﻿namespace Nightmare_Editor_AUI.ViewModels
+﻿using System.Collections;
+using System.Collections.ObjectModel;
+using Nightmare_Editor;
+
+namespace Nightmare_Editor_AUI.ViewModels
 {
     public partial class MainWindowViewModel : ViewModelBase
     {
-        public string Greeting { get; } = "Welcome to Avalonia!";
+        private ObservableCollection<Meta> _allmods;
+        
+            public ObservableCollection<Meta> AllMods
+            {
+                get { return _allmods; }
+                set { SetProperty(ref _allmods, value); }
+            }
+        
+            public MainWindowViewModel()
+            {
+                AllMods = new ObservableCollection<Meta> 
+                {
+                    new Meta { Name = "Please Press Refresh." },
+                };
+            }
     }
 }
