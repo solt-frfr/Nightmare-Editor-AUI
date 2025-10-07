@@ -183,6 +183,12 @@ namespace Nightmare_Editor.NewTools
                 var image = Assemble(newData, width, height, true);
                 return image;
             }
+            else if (format == 13)
+            {
+                byte[] newData = ETC1A4unpack(rawData);
+                var image = Assemble(newData, width, height, true, true);
+                return image;
+            }
             else
             {
                 return null;
@@ -243,12 +249,16 @@ namespace Nightmare_Editor.NewTools
             }
             return newData;
         }
-        public static Image Assemble(byte[] rawData, int width, int height, bool alpha)
+        public static Image Assemble(byte[] rawData, int width, int height, bool alpha, bool isETC = false)
         {
             const int tileSize = 8;
             const int subtiles = 2;
-            const int minitiles = 2;
-            const int miniSize = tileSize / subtiles / minitiles;  // 2
+            int minitiles = 2;
+            if (isETC)
+            {
+                minitiles = 4;
+            }
+            int miniSize = tileSize / subtiles / minitiles;  // 2
             int bytesPerPixel = 3;
             if (alpha)
             {
@@ -340,7 +350,7 @@ namespace Nightmare_Editor.NewTools
                 return image24;
             }
         }
-
+        
         public static byte[] CTTHeader(int width, int height, int format)
         {
             int total = 0;
@@ -388,12 +398,16 @@ namespace Nightmare_Editor.NewTools
             return header;
         }
 
-        public static byte[] Dissasemble(byte[] rawData)
+        public static byte[] Dissasemble(byte[] rawData, bool isETC = false)
         {
             const int tileSize = 8;
             const int subtiles = 2;
-            const int minitiles = 2;
-            const int miniSize = tileSize / subtiles / minitiles;  // 2
+            int minitiles = 2;
+            if (isETC)
+            {
+                minitiles = 4;
+            }
+            int miniSize = tileSize / subtiles / minitiles;  // 2
 
             var image = Image.Load(rawData);
             var image32 = image.CloneAs<Rgba32>();
@@ -717,6 +731,68 @@ namespace Nightmare_Editor.NewTools
                 newData[j++] = a8_1;
                 j += 3;
                 newData[j++] = a8_2;
+                j += 3;
+            }
+            return newData;
+        }
+        
+        /// <summary>
+        /// Converts ETC1A4 bytes into RGBA8888 bytes.
+        /// </summary>
+        /// <param name="ogData">Raw ETC1A4 byte array.</param>
+        /// <returns>Returns a byte array containing raw RGBA8888 data.</returns>
+        public static byte[] ETC1A4unpack(byte[] ogData)
+        {
+            byte[] newData = new byte[ogData.Length * 4];
+            byte[] alphaBlock = new byte[16];
+            int j = 0;
+            int l = 0;
+            for (int i = 0; i < ogData.Length; i+=16)
+            {
+                for (int o = 0; o < alphaBlock.Length / 2; o++)
+                {
+                    int a4_1 = (ogData[i + o] >> 4) & 0xF;
+                    int a4_2 = ogData[i + o] & 0xF;
+
+                    byte a8_1 = (byte)(a4_1 << 4 | a4_1);
+                    byte a8_2 = (byte)(a4_2 << 4 | a4_2);
+
+                    alphaBlock[l++] = a8_2;
+                    alphaBlock[l++] = a8_1;
+                }
+
+                l = 0;
+                newData[j++] = alphaBlock[0];
+                j += 3;
+                newData[j++] = alphaBlock[4];
+                j += 3;
+                newData[j++] = alphaBlock[8];
+                j += 3;
+                newData[j++] = alphaBlock[12];
+                j += 3;
+                newData[j++] = alphaBlock[1];
+                j += 3;
+                newData[j++] = alphaBlock[5];
+                j += 3;
+                newData[j++] = alphaBlock[9];
+                j += 3;
+                newData[j++] = alphaBlock[13];
+                j += 3;
+                newData[j++] = alphaBlock[2];
+                j += 3;
+                newData[j++] = alphaBlock[6];
+                j += 3;
+                newData[j++] = alphaBlock[10];
+                j += 3;
+                newData[j++] = alphaBlock[14];
+                j += 3;
+                newData[j++] = alphaBlock[3];
+                j += 3;
+                newData[j++] = alphaBlock[7];
+                j += 3;
+                newData[j++] = alphaBlock[11];
+                j += 3;
+                newData[j++] = alphaBlock[15];
                 j += 3;
             }
             return newData;
