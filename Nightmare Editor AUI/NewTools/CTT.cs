@@ -50,6 +50,42 @@ namespace Nightmare_Editor.NewTools
             return header[0x1C];
         }
 
+        public static int[] ETC1OffTable(int index)
+        {
+            if (index == 0)
+            {
+                return new int[] {2, 8};
+            }
+            if (index == 1)
+            {
+                return new int[] {5, 17};
+            }
+            if (index == 2)
+            {
+                return new int[] {9, 29};
+            }
+            if (index == 3)
+            {
+                return new int[] {13, 42};
+            }
+            if (index == 0)
+            {
+                return new int[] {18, 60};
+            }
+            if (index == 1)
+            {
+                return new int[] {24, 80};
+            }
+            if (index == 2)
+            {
+                return new int[] {33, 106};
+            }
+            else
+            {
+                return new int[] {47, 183};
+            }
+        }
+
         /// <summary>
         /// Decode a CTT texture into a PNG file. Returns a raw image if needed.
         /// </summary>
@@ -249,6 +285,7 @@ namespace Nightmare_Editor.NewTools
             }
             return newData;
         }
+        
         public static Image Assemble(byte[] rawData, int width, int height, bool alpha, bool isETC = false)
         {
             const int tileSize = 8;
@@ -735,6 +772,80 @@ namespace Nightmare_Editor.NewTools
             }
             return newData;
         }
+
+        /// <summary>
+        /// Converts ETC1A4 bytes into RGBA8888 bytes.
+        /// </summary>
+        /// <param name="ogData">Raw ETC1A4 byte array.</param>
+        /// <returns>Returns a byte array containing raw RGBA8888 data.</returns>
+        public static byte[] ETC1unpack(byte[] ogData)
+        {
+            byte[] newData = new byte[ogData.Length * 4];
+            int j = 0;
+            int l = 0;
+            
+            for (int i = 0; i < ogData.Length; i+=8)
+            {
+                byte[] colorBlock = new byte[16 * 3];
+                bool flip = (ogData[i + 4] & 0x1) == 1;
+                bool diff = ((ogData[i + 4] >> 1) & 0x1) == 1;
+                int[] off1 = ETC1OffTable((ogData[i + 4] >> 2) & 0x7);
+                int[] off2 = ETC1OffTable((ogData[i + 4] >> 5) & 0x7);
+                bool[] big = new bool[16];
+                bool[] sub = new bool[16];
+                for (int o = 0; o < 16; o++)
+                {
+                    if (o < 8)
+                    {
+                        big[o] = ((ogData[i] >> o) & 0x1) == 1;
+                        sub[o] = ((ogData[i + 2] >> o) & 0x1) == 1;
+                    }
+                    else
+                    {
+                        big[o] = ((ogData[i + 1] >> o - 8) & 0x1) == 1;
+                        sub[o] = ((ogData[i + 3] >> o - 8) & 0x1) == 1;
+                    }
+                }
+                
+                
+
+                l = 0;
+                newData[j++] = alphaBlock[0];
+                j += 3;
+                newData[j++] = alphaBlock[4];
+                j += 3;
+                newData[j++] = alphaBlock[8];
+                j += 3;
+                newData[j++] = alphaBlock[12];
+                j += 3;
+                newData[j++] = alphaBlock[1];
+                j += 3;
+                newData[j++] = alphaBlock[5];
+                j += 3;
+                newData[j++] = alphaBlock[9];
+                j += 3;
+                newData[j++] = alphaBlock[13];
+                j += 3;
+                newData[j++] = alphaBlock[2];
+                j += 3;
+                newData[j++] = alphaBlock[6];
+                j += 3;
+                newData[j++] = alphaBlock[10];
+                j += 3;
+                newData[j++] = alphaBlock[14];
+                j += 3;
+                newData[j++] = alphaBlock[3];
+                j += 3;
+                newData[j++] = alphaBlock[7];
+                j += 3;
+                newData[j++] = alphaBlock[11];
+                j += 3;
+                newData[j++] = alphaBlock[15];
+                j += 3;
+            }
+            return newData;
+        }
+        
         
         /// <summary>
         /// Converts ETC1A4 bytes into RGBA8888 bytes.
@@ -744,11 +855,11 @@ namespace Nightmare_Editor.NewTools
         public static byte[] ETC1A4unpack(byte[] ogData)
         {
             byte[] newData = new byte[ogData.Length * 4];
-            byte[] alphaBlock = new byte[16];
             int j = 0;
             int l = 0;
             for (int i = 0; i < ogData.Length; i+=16)
             {
+                byte[] alphaBlock = new byte[16];
                 for (int o = 0; o < alphaBlock.Length / 2; o++)
                 {
                     int a4_1 = (ogData[i + o] >> 4) & 0xF;
@@ -760,6 +871,8 @@ namespace Nightmare_Editor.NewTools
                     alphaBlock[l++] = a8_2;
                     alphaBlock[l++] = a8_1;
                 }
+                
+                
 
                 l = 0;
                 newData[j++] = alphaBlock[0];

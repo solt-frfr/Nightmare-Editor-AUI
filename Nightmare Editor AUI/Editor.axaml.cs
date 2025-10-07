@@ -667,7 +667,7 @@ namespace Nightmare_Editor
             {
                 TextureSmall.Source = bitmap;
             }
-            FileName.Text = path.Replace(Misc.Paths.work, "");
+            FileName.Text = path.Replace(Misc.Paths.work + Path.DirectorySeparatorChar, "");
             FileLink.Text = path;
             FileSize.Text = bitmap.PixelSize.Width.ToString() + "x" + bitmap.PixelSize.Height.ToString();
             bool found = false;
