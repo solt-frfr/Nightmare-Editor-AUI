@@ -826,31 +826,24 @@ namespace Nightmare_Editor.NewTools
                     b2 = b1;
                     g2 = g1;
                     r2 = r1;
-                    if (((ogData[i + 5] >> 2) & 1) == 0)
+                    b2 += (ogData[i + 5]) & 0x7;
+                    g2 += (ogData[i + 6]) & 0x7;
+                    r2 += (ogData[i + 7]) & 0x7;
+                    if ((ogData[i + 5] & 0x4) != 0)
                     {
-                        b2 += (ogData[i + 5]) & 0x6;
+                        b2 -= 8;
                     }
-                    else
+                    if ((ogData[i + 6] & 0x4) != 0)
                     {
-                        b2 -= (ogData[i + 5]) & 0x6;
+                        g2 -= 8;
                     }
-
-                    if (((ogData[i + 6] >> 2) & 1) == 0)
+                    if ((ogData[i + 7] & 0x4) != 0)
                     {
-                        g2 += (ogData[i + 6]) & 0x6;
+                        r2 -= 8;
                     }
-                    else
-                    {
-                        g2 -= (ogData[i + 6]) & 0x6;
-                    }
-                    if (((ogData[i + 7] >> 2) & 1) == 0)
-                    {
-                        r2 += (ogData[i + 7]) & 0x6;
-                    }
-                    else
-                    {
-                        r2 -= (ogData[i + 7]) & 0x6;
-                    }
+                    b2 = Math.Clamp(b2, 0, 0x1F);
+                    g2 = Math.Clamp(g2, 0, 0x1F);
+                    r2 = Math.Clamp(r2, 0, 0x1F);
                 }
                 else
                 {
@@ -877,30 +870,54 @@ namespace Nightmare_Editor.NewTools
                     {
                         if (diff)
                         {
-                            colorBlock[j++] = (byte)(((b2) << 3) + ((b2) >> 2) + (off2[_big] * _sub));
-                            colorBlock[j++] = (byte)(((g2) << 3) + ((g2) >> 2) + (off2[_big] * _sub));
-                            colorBlock[j++] = (byte)(((r2) << 3) + ((r2) >> 2) + (off2[_big] * _sub));   
+                            int b = ((b2 << 3) + (b2 >> 2) + (off2[_big] * _sub));
+                            int g = ((g2 << 3) + (g2 >> 2) + (off2[_big] * _sub));
+                            int r = ((r2 << 3) + (r2 >> 2) + (off2[_big] * _sub));
+                            b = Math.Clamp(b, 0, 255);
+                            g = Math.Clamp(g, 0, 255);
+                            r = Math.Clamp(r, 0, 255);
+                            colorBlock[j++] = (byte)b;
+                            colorBlock[j++] = (byte)g;
+                            colorBlock[j++] = (byte)r;
                         }
                         else
                         {
-                            colorBlock[j++] = (byte)(((b2) << 4) + ((b2)) + (off2[_big] * _sub));
-                            colorBlock[j++] = (byte)(((g2) << 4) + ((g2)) + (off2[_big] * _sub));
-                            colorBlock[j++] = (byte)(((r2) << 4) + ((r2)) + (off2[_big] * _sub));   
+                            int b = (((b2) << 4) + ((b2)) + (off2[_big] * _sub));
+                            int g = (((g2) << 4) + ((g2)) + (off2[_big] * _sub));
+                            int r = (((r2) << 4) + ((r2)) + (off2[_big] * _sub)); 
+                            b = Math.Clamp(b, 0, 255);
+                            g = Math.Clamp(g, 0, 255);
+                            r = Math.Clamp(r, 0, 255);
+                            colorBlock[j++] = (byte)b;
+                            colorBlock[j++] = (byte)g;
+                            colorBlock[j++] = (byte)r; 
                         }
                     }
                     else
                     {
                         if (diff)
                         {
-                            colorBlock[j++] = (byte)(((b1) << 3) + ((b1) >> 2) + (off1[_big] * _sub));
-                            colorBlock[j++] = (byte)(((g1) << 3) + ((g1) >> 2) + (off1[_big] * _sub));
-                            colorBlock[j++] = (byte)(((r1) << 3) + ((r1) >> 2) + (off1[_big] * _sub));   
+                            int b = ((b1 << 3) + (b1 >> 2) + (off1[_big] * _sub));
+                            int g = ((g1 << 3) + (g1 >> 2) + (off1[_big] * _sub));
+                            int r = ((r1 << 3) + (r1 >> 2) + (off1[_big] * _sub));
+                            b = Math.Clamp(b, 0, 255);
+                            g = Math.Clamp(g, 0, 255);
+                            r = Math.Clamp(r, 0, 255);
+                            colorBlock[j++] = (byte)b;
+                            colorBlock[j++] = (byte)g;
+                            colorBlock[j++] = (byte)r;
                         }
                         else
                         {
-                            colorBlock[j++] = (byte)(((b1) << 4) + ((b1)) + (off1[_big] * _sub));
-                            colorBlock[j++] = (byte)(((g1) << 4) + ((g1)) + (off1[_big] * _sub));
-                            colorBlock[j++] = (byte)(((r1) << 4) + ((r1)) + (off1[_big] * _sub));   
+                            int b = (((b1) << 4) + ((b1)) + (off1[_big] * _sub));
+                            int g = (((g1) << 4) + ((g1)) + (off1[_big] * _sub));
+                            int r = (((r1) << 4) + ((r1)) + (off1[_big] * _sub)); 
+                            b = Math.Clamp(b, 0, 255);
+                            g = Math.Clamp(g, 0, 255);
+                            r = Math.Clamp(r, 0, 255);
+                            colorBlock[j++] = (byte)b;
+                            colorBlock[j++] = (byte)g;
+                            colorBlock[j++] = (byte)r;
                         }
                     }
                 }
@@ -973,7 +990,8 @@ namespace Nightmare_Editor.NewTools
         {
             byte[] newData = new byte[ogData.Length * 4];
             int j = 0;
-            int l = 0;
+            int l = 0; 
+            int m = 0;
             for (int i = 0; i < ogData.Length; i+=16)
             {
                 byte[] alphaBlock = new byte[16];
@@ -985,45 +1003,215 @@ namespace Nightmare_Editor.NewTools
                     byte a8_1 = (byte)(a4_1 << 4 | a4_1);
                     byte a8_2 = (byte)(a4_2 << 4 | a4_2);
 
-                    alphaBlock[l++] = a8_2;
-                    alphaBlock[l++] = a8_1;
+                    alphaBlock[m++] = a8_2;
+                    alphaBlock[m++] = a8_1;
                 }
                 
                 
+                
+                
+                
+                byte[] colorBlock = new byte[16 * 3];
+                bool flip = (ogData[i + 12] & 0x1) == 1;
+                bool diff = ((ogData[i + 12] >> 1) & 0x1) == 1;
+                int r1 = 0;
+                int r2 = 0;
+                int g1 = 0;
+                int g2 = 0;
+                int b1 = 0;
+                int b2 = 0;
+                int[] off1 = ETC1OffTable((ogData[i + 12] >> 5) & 0x7);
+                int[] off2 = ETC1OffTable((ogData[i + 12] >> 2) & 0x7);
+                bool[] big = new bool[16];
+                bool[] sub = new bool[16];
+                for (int o = 0; o < 16; o++)
+                {
+                    if (o < 8)
+                    {
+                        big[o] = ((ogData[i + 8] >> o) & 0x1) == 1;
+                        sub[o] = ((ogData[i + 10] >> o) & 0x1) == 1;
+                    }
+                    else
+                    {
+                        big[o] = ((ogData[i + 9] >> (o - 8)) & 0x1) == 1;
+                        sub[o] = ((ogData[i + 11] >> (o - 8)) & 0x1) == 1;
+                    }
+                }
 
+                if (diff)
+                {
+                    b1 = (ogData[i + 13] >> 3) & 0x1F;
+                    g1 = (ogData[i + 14] >> 3) & 0x1F;
+                    r1 = (ogData[i + 15] >> 3) & 0x1F;
+                    b2 = b1;
+                    g2 = g1;
+                    r2 = r1;
+                    b2 += (ogData[i + 13]) & 0x7;
+                    g2 += (ogData[i + 14]) & 0x7;
+                    r2 += (ogData[i + 15]) & 0x7;
+                    if ((ogData[i + 13] & 0x4) != 0)
+                    {
+                        b2 -= 8;
+                    }
+                    if ((ogData[i + 14] & 0x4) != 0)
+                    {
+                        g2 -= 8;
+                    }
+                    if ((ogData[i + 15] & 0x4) != 0)
+                    {
+                        r2 -= 8;
+                    }
+                    b2 = Math.Clamp(b2, 0, 0x1F);
+                    g2 = Math.Clamp(g2, 0, 0x1F);
+                    r2 = Math.Clamp(r2, 0, 0x1F);
+                }
+                else
+                {
+                    b1 = (ogData[i + 13] >> 4) & 0xF;
+                    g1 = (ogData[i + 14] >> 4) & 0xF;
+                    r1 = (ogData[i + 15] >> 4) & 0xF;
+                    b2 = (ogData[i + 13]) & 0xF;
+                    g2 = (ogData[i + 14]) & 0xF;
+                    r2 = (ogData[i + 15]) & 0xF;
+                }
+                for (int o = 0; o < 16; o++)
+                {
+                    int _big = 0;
+                    int _sub = 1;
+                    if (big[o])
+                    {
+                        _big = 1;
+                    }
+                    if (sub[o])
+                    {
+                        _sub = -1;
+                    }
+                    if ((flip && (o % 4 >= 2)) || (!flip && (o >= 8)))
+                    {
+                        if (diff)
+                        {
+                            int b = ((b2 << 3) + (b2 >> 2) + (off2[_big] * _sub));
+                            int g = ((g2 << 3) + (g2 >> 2) + (off2[_big] * _sub));
+                            int r = ((r2 << 3) + (r2 >> 2) + (off2[_big] * _sub));
+                            b = Math.Clamp(b, 0, 255);
+                            g = Math.Clamp(g, 0, 255);
+                            r = Math.Clamp(r, 0, 255);
+                            colorBlock[l++] = (byte)b;
+                            colorBlock[l++] = (byte)g;
+                            colorBlock[l++] = (byte)r;
+                        }
+                        else
+                        {
+                            int b = (((b2) << 4) + ((b2)) + (off2[_big] * _sub));
+                            int g = (((g2) << 4) + ((g2)) + (off2[_big] * _sub));
+                            int r = (((r2) << 4) + ((r2)) + (off2[_big] * _sub)); 
+                            b = Math.Clamp(b, 0, 255);
+                            g = Math.Clamp(g, 0, 255);
+                            r = Math.Clamp(r, 0, 255);
+                            colorBlock[l++] = (byte)b;
+                            colorBlock[l++] = (byte)g;
+                            colorBlock[l++] = (byte)r; 
+                        }
+                    }
+                    else
+                    {
+                        if (diff)
+                        {
+                            int b = ((b1 << 3) + (b1 >> 2) + (off1[_big] * _sub));
+                            int g = ((g1 << 3) + (g1 >> 2) + (off1[_big] * _sub));
+                            int r = ((r1 << 3) + (r1 >> 2) + (off1[_big] * _sub));
+                            b = Math.Clamp(b, 0, 255);
+                            g = Math.Clamp(g, 0, 255);
+                            r = Math.Clamp(r, 0, 255);
+                            colorBlock[l++] = (byte)b;
+                            colorBlock[l++] = (byte)g;
+                            colorBlock[l++] = (byte)r;
+                        }
+                        else
+                        {
+                            int b = (((b1) << 4) + ((b1)) + (off1[_big] * _sub));
+                            int g = (((g1) << 4) + ((g1)) + (off1[_big] * _sub));
+                            int r = (((r1) << 4) + ((r1)) + (off1[_big] * _sub)); 
+                            b = Math.Clamp(b, 0, 255);
+                            g = Math.Clamp(g, 0, 255);
+                            r = Math.Clamp(r, 0, 255);
+                            colorBlock[l++] = (byte)b;
+                            colorBlock[l++] = (byte)g;
+                            colorBlock[l++] = (byte)r;
+                        }
+                    }
+                }
+                
                 l = 0;
+                m = 0;
+
                 newData[j++] = alphaBlock[0];
-                j += 3;
+                newData[j++] = colorBlock[0 * 3 + 0];
+                newData[j++] = colorBlock[0 * 3 + 1];
+                newData[j++] = colorBlock[0 * 3 + 2];
                 newData[j++] = alphaBlock[4];
-                j += 3;
+                newData[j++] = colorBlock[4 * 3 + 0];
+                newData[j++] = colorBlock[4 * 3 + 1];
+                newData[j++] = colorBlock[4 * 3 + 2];
                 newData[j++] = alphaBlock[8];
-                j += 3;
+                newData[j++] = colorBlock[8 * 3 + 0];
+                newData[j++] = colorBlock[8 * 3 + 1];
+                newData[j++] = colorBlock[8 * 3 + 2];
                 newData[j++] = alphaBlock[12];
-                j += 3;
+                newData[j++] = colorBlock[12 * 3 + 0];
+                newData[j++] = colorBlock[12 * 3 + 1];
+                newData[j++] = colorBlock[12 * 3 + 2];
+                
                 newData[j++] = alphaBlock[1];
-                j += 3;
+                newData[j++] = colorBlock[1 * 3 + 0];
+                newData[j++] = colorBlock[1 * 3 + 1];
+                newData[j++] = colorBlock[1 * 3 + 2];
                 newData[j++] = alphaBlock[5];
-                j += 3;
+                newData[j++] = colorBlock[5 * 3 + 0];
+                newData[j++] = colorBlock[5 * 3 + 1];
+                newData[j++] = colorBlock[5 * 3 + 2];
                 newData[j++] = alphaBlock[9];
-                j += 3;
+                newData[j++] = colorBlock[9 * 3 + 0];
+                newData[j++] = colorBlock[9 * 3 + 1];
+                newData[j++] = colorBlock[9 * 3 + 2];
                 newData[j++] = alphaBlock[13];
-                j += 3;
+                newData[j++] = colorBlock[13 * 3 + 0];
+                newData[j++] = colorBlock[13 * 3 + 1];
+                newData[j++] = colorBlock[13 * 3 + 2];
+                    
                 newData[j++] = alphaBlock[2];
-                j += 3;
+                newData[j++] = colorBlock[2 * 3 + 0];
+                newData[j++] = colorBlock[2 * 3 + 1];
+                newData[j++] = colorBlock[2 * 3 + 2];
                 newData[j++] = alphaBlock[6];
-                j += 3;
+                newData[j++] = colorBlock[6 * 3 + 0];
+                newData[j++] = colorBlock[6 * 3 + 1];
+                newData[j++] = colorBlock[6 * 3 + 2];
                 newData[j++] = alphaBlock[10];
-                j += 3;
+                newData[j++] = colorBlock[10 * 3 + 0];
+                newData[j++] = colorBlock[10 * 3 + 1];
+                newData[j++] = colorBlock[10 * 3 + 2];
                 newData[j++] = alphaBlock[14];
-                j += 3;
+                newData[j++] = colorBlock[14 * 3 + 0];
+                newData[j++] = colorBlock[14 * 3 + 1];
+                newData[j++] = colorBlock[14 * 3 + 2];
+                
                 newData[j++] = alphaBlock[3];
-                j += 3;
+                newData[j++] = colorBlock[3 * 3 + 0];
+                newData[j++] = colorBlock[3 * 3 + 1];
+                newData[j++] = colorBlock[3 * 3 + 2];
                 newData[j++] = alphaBlock[7];
-                j += 3;
+                newData[j++] = colorBlock[7 * 3 + 0];
+                newData[j++] = colorBlock[7 * 3 + 1];
+                newData[j++] = colorBlock[7 * 3 + 2];
                 newData[j++] = alphaBlock[11];
-                j += 3;
+                newData[j++] = colorBlock[11 * 3 + 0];
+                newData[j++] = colorBlock[11 * 3 + 1];
+                newData[j++] = colorBlock[11 * 3 + 2];
                 newData[j++] = alphaBlock[15];
-                j += 3;
+                newData[j++] = colorBlock[15 * 3 + 0];
+                newData[j++] = colorBlock[15 * 3 + 1];
+                newData[j++] = colorBlock[15 * 3 + 2];
             }
             return newData;
         }
