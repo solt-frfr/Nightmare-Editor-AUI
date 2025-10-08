@@ -68,15 +68,15 @@ namespace Nightmare_Editor.NewTools
             {
                 return new int[] {13, 42};
             }
-            if (index == 0)
+            if (index == 4)
             {
                 return new int[] {18, 60};
             }
-            if (index == 1)
+            if (index == 5)
             {
                 return new int[] {24, 80};
             }
-            if (index == 2)
+            if (index == 6)
             {
                 return new int[] {33, 106};
             }
@@ -813,8 +813,8 @@ namespace Nightmare_Editor.NewTools
                     }
                     else
                     {
-                        big[o] = ((ogData[i + 1] >> o - 8) & 0x1) == 1;
-                        sub[o] = ((ogData[i + 3] >> o - 8) & 0x1) == 1;
+                        big[o] = ((ogData[i + 1] >> (o - 8)) & 0x1) == 1;
+                        sub[o] = ((ogData[i + 3] >> (o - 8)) & 0x1) == 1;
                     }
                 }
 
@@ -826,7 +826,7 @@ namespace Nightmare_Editor.NewTools
                     b2 = b1;
                     g2 = g1;
                     r2 = r1;
-                    if (((ogData[i + 5] >> 2) & 1) == 1)
+                    if (((ogData[i + 5] >> 2) & 1) == 0)
                     {
                         b2 += (ogData[i + 5]) & 0x6;
                     }
@@ -835,7 +835,7 @@ namespace Nightmare_Editor.NewTools
                         b2 -= (ogData[i + 5]) & 0x6;
                     }
 
-                    if (((ogData[i + 6] >> 2) & 1) == 1)
+                    if (((ogData[i + 6] >> 2) & 1) == 0)
                     {
                         g2 += (ogData[i + 6]) & 0x6;
                     }
@@ -843,7 +843,7 @@ namespace Nightmare_Editor.NewTools
                     {
                         g2 -= (ogData[i + 6]) & 0x6;
                     }
-                    if (((ogData[i + 7] >> 2) & 1) == 1)
+                    if (((ogData[i + 7] >> 2) & 1) == 0)
                     {
                         r2 += (ogData[i + 7]) & 0x6;
                     }
@@ -863,294 +863,44 @@ namespace Nightmare_Editor.NewTools
                 }
                 for (int o = 0; o < 16; o++)
                 {
-                    if (flip)
+                    int _big = 0;
+                    int _sub = 1;
+                    if (big[o])
                     {
-                        if (o % 4 >= 2)
+                        _big = 1;
+                    }
+                    if (sub[o])
+                    {
+                        _sub = -1;
+                    }
+                    if ((flip && (o % 4 >= 2)) || (!flip && (o >= 8)))
+                    {
+                        if (diff)
                         {
-                            if (big[o])
-                            {
-                                if (sub[o])
-                                {
-                                    if (diff)
-                                    {
-                                        colorBlock[j++] = (byte)(((b2 - off2[1]) << 3) + ((b2 - off2[1]) >> 2));
-                                        colorBlock[j++] = (byte)(((g2 - off2[1]) << 3) + ((g2 - off2[1]) >> 2));
-                                        colorBlock[j++] = (byte)(((r2 - off2[1]) << 3) + ((r2 - off2[1]) >> 2));   
-                                    }
-                                    else
-                                    {
-                                        colorBlock[j++] = (byte)(((b2 - off2[1]) << 4) + (b2 - off2[1]));
-                                        colorBlock[j++] = (byte)(((g2 - off2[1]) << 4) + (g2 - off2[1]));
-                                        colorBlock[j++] = (byte)(((r2 - off2[1]) << 4) + (r2 - off2[1]));   
-                                    }
-
-                                }
-                                else
-                                {
-                                    if (diff)
-                                    {
-                                        colorBlock[j++] = (byte)(((b2 + off2[1]) << 3) + ((b2 + off2[1]) >> 2));
-                                        colorBlock[j++] = (byte)(((g2 + off2[1]) << 3) + ((g2 + off2[1]) >> 2));
-                                        colorBlock[j++] = (byte)(((r2 + off2[1]) << 3) + ((r2 + off2[1]) >> 2));
-                                    }
-                                    else
-                                    {
-                                        colorBlock[j++] = (byte)(((b2 + off2[1]) << 4) + (b2 + off2[1]));
-                                        colorBlock[j++] = (byte)(((g2 + off2[1]) << 4) + (g2 + off2[1]));
-                                        colorBlock[j++] = (byte)(((r2 + off2[1]) << 4) + (r2 + off2[1]));   
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                if (sub[o])
-                                {
-                                    if (diff)
-                                    {
-                                        colorBlock[j++] = (byte)(((b2 - off2[0]) << 3) + ((b2 - off2[0]) >> 2));
-                                        colorBlock[j++] = (byte)(((g2 - off2[0]) << 3) + ((g2 - off2[0]) >> 2));
-                                        colorBlock[j++] = (byte)(((r2 - off2[0]) << 3) + ((r2 - off2[0]) >> 2));   
-                                    }
-                                    else
-                                    {
-                                        colorBlock[j++] = (byte)(((b2 - off2[0]) << 4) + (b2 - off2[0]));
-                                        colorBlock[j++] = (byte)(((g2 - off2[0]) << 4) + (g2 - off2[0]));
-                                        colorBlock[j++] = (byte)(((r2 - off2[0]) << 4) + (r2 - off2[0]));   
-                                    }
-
-                                }
-                                else
-                                {
-                                    if (diff)
-                                    {
-                                        colorBlock[j++] = (byte)(((b2 + off2[0]) << 3) + ((b2 + off2[0]) >> 2));
-                                        colorBlock[j++] = (byte)(((g2 + off2[0]) << 3) + ((g2 + off2[0]) >> 2));
-                                        colorBlock[j++] = (byte)(((r2 + off2[0]) << 3) + ((r2 + off2[0]) >> 2));
-                                    }
-                                    else
-                                    {
-                                        colorBlock[j++] = (byte)(((b2 + off2[0]) << 4) + (b2 + off2[0]));
-                                        colorBlock[j++] = (byte)(((g2 + off2[0]) << 4) + (g2 + off2[0]));
-                                        colorBlock[j++] = (byte)(((r2 + off2[0]) << 4) + (r2 + off2[0]));   
-                                    }
-                                }
-                            }
+                            colorBlock[j++] = (byte)(((b2) << 3) + ((b2) >> 2) + (off2[_big] * _sub));
+                            colorBlock[j++] = (byte)(((g2) << 3) + ((g2) >> 2) + (off2[_big] * _sub));
+                            colorBlock[j++] = (byte)(((r2) << 3) + ((r2) >> 2) + (off2[_big] * _sub));   
                         }
                         else
                         {
-                            if (big[o])
-                            {
-                                if (sub[o])
-                                {
-                                    if (diff)
-                                    {
-                                        colorBlock[j++] = (byte)(((b1 - off1[1]) << 3) + ((b1 - off1[1]) >> 2));
-                                        colorBlock[j++] = (byte)(((g1 - off1[1]) << 3) + ((g1 - off1[1]) >> 2));
-                                        colorBlock[j++] = (byte)(((r1 - off1[1]) << 3) + ((r1 - off1[1]) >> 2));   
-                                    }
-                                    else
-                                    {
-                                        colorBlock[j++] = (byte)(((b1 - off1[1]) << 4) + (b1 - off1[1]));
-                                        colorBlock[j++] = (byte)(((g1 - off1[1]) << 4) + (g1 - off1[1]));
-                                        colorBlock[j++] = (byte)(((r1 - off1[1]) << 4) + (r1 - off1[1]));   
-                                    }
-
-                                }
-                                else
-                                {
-                                    if (diff)
-                                    {
-                                        colorBlock[j++] = (byte)(((b1 + off1[1]) << 3) + ((b1 + off1[1]) >> 2));
-                                        colorBlock[j++] = (byte)(((g1 + off1[1]) << 3) + ((g1 + off1[1]) >> 2));
-                                        colorBlock[j++] = (byte)(((r1 + off1[1]) << 3) + ((r1 + off1[1]) >> 2));
-                                    }
-                                    else
-                                    {
-                                        colorBlock[j++] = (byte)(((b1 + off1[1]) << 4) + (b1 + off1[1]));
-                                        colorBlock[j++] = (byte)(((g1 + off1[1]) << 4) + (g1 + off1[1]));
-                                        colorBlock[j++] = (byte)(((r1 + off1[1]) << 4) + (r1 + off1[1]));   
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                if (sub[o])
-                                {
-                                    if (diff)
-                                    {
-                                        colorBlock[j++] = (byte)(((b1 - off1[0]) << 3) + ((b1 - off1[0]) >> 2));
-                                        colorBlock[j++] = (byte)(((g1 - off1[0]) << 3) + ((g1 - off1[0]) >> 2));
-                                        colorBlock[j++] = (byte)(((r1 - off1[0]) << 3) + ((r1 - off1[0]) >> 2));   
-                                    }
-                                    else
-                                    {
-                                        colorBlock[j++] = (byte)(((b1 - off1[0]) << 4) + (b1 - off1[0]));
-                                        colorBlock[j++] = (byte)(((g1 - off1[0]) << 4) + (g1 - off1[0]));
-                                        colorBlock[j++] = (byte)(((r1 - off1[0]) << 4) + (r1 - off1[0]));   
-                                    }
-
-                                }
-                                else
-                                {
-                                    if (diff)
-                                    {
-                                        colorBlock[j++] = (byte)(((b1 + off1[0]) << 3) + ((b1 + off1[0]) >> 2));
-                                        colorBlock[j++] = (byte)(((g1 + off1[0]) << 3) + ((g1 + off1[0]) >> 2));
-                                        colorBlock[j++] = (byte)(((r1 + off1[0]) << 3) + ((r1 + off1[0]) >> 2));
-                                    }
-                                    else
-                                    {
-                                        colorBlock[j++] = (byte)(((b1 + off1[0]) << 4) + (b1 + off1[0]));
-                                        colorBlock[j++] = (byte)(((g1 + off1[0]) << 4) + (g1 + off1[0]));
-                                        colorBlock[j++] = (byte)(((r1 + off1[0]) << 4) + (r1 + off1[0]));   
-                                    }
-                                }
-                            }
+                            colorBlock[j++] = (byte)(((b2) << 4) + ((b2)) + (off2[_big] * _sub));
+                            colorBlock[j++] = (byte)(((g2) << 4) + ((g2)) + (off2[_big] * _sub));
+                            colorBlock[j++] = (byte)(((r2) << 4) + ((r2)) + (off2[_big] * _sub));   
                         }
                     }
                     else
                     {
-                        if (o >= 8)
+                        if (diff)
                         {
-                            if (big[o])
-                            {
-                                if (sub[o])
-                                {
-                                    if (diff)
-                                    {
-                                        colorBlock[j++] = (byte)(((b2 - off2[1]) << 3) + ((b2 - off2[1]) >> 2));
-                                        colorBlock[j++] = (byte)(((g2 - off2[1]) << 3) + ((g2 - off2[1]) >> 2));
-                                        colorBlock[j++] = (byte)(((r2 - off2[1]) << 3) + ((r2 - off2[1]) >> 2));   
-                                    }
-                                    else
-                                    {
-                                        colorBlock[j++] = (byte)(((b2 - off2[1]) << 4) + (b2 - off2[1]));
-                                        colorBlock[j++] = (byte)(((g2 - off2[1]) << 4) + (g2 - off2[1]));
-                                        colorBlock[j++] = (byte)(((r2 - off2[1]) << 4) + (r2 - off2[1]));   
-                                    }
-
-                                }
-                                else
-                                {
-                                    if (diff)
-                                    {
-                                        colorBlock[j++] = (byte)(((b2 + off2[1]) << 3) + ((b2 + off2[1]) >> 2));
-                                        colorBlock[j++] = (byte)(((g2 + off2[1]) << 3) + ((g2 + off2[1]) >> 2));
-                                        colorBlock[j++] = (byte)(((r2 + off2[1]) << 3) + ((r2 + off2[1]) >> 2));
-                                    }
-                                    else
-                                    {
-                                        colorBlock[j++] = (byte)(((b2 + off2[1]) << 4) + (b2 + off2[1]));
-                                        colorBlock[j++] = (byte)(((g2 + off2[1]) << 4) + (g2 + off2[1]));
-                                        colorBlock[j++] = (byte)(((r2 + off2[1]) << 4) + (r2 + off2[1]));   
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                if (sub[o])
-                                {
-                                    if (diff)
-                                    {
-                                        colorBlock[j++] = (byte)(((b2 - off2[0]) << 3) + ((b2 - off2[0]) >> 2));
-                                        colorBlock[j++] = (byte)(((g2 - off2[0]) << 3) + ((g2 - off2[0]) >> 2));
-                                        colorBlock[j++] = (byte)(((r2 - off2[0]) << 3) + ((r2 - off2[0]) >> 2));   
-                                    }
-                                    else
-                                    {
-                                        colorBlock[j++] = (byte)(((b2 - off2[0]) << 4) + (b2 - off2[0]));
-                                        colorBlock[j++] = (byte)(((g2 - off2[0]) << 4) + (g2 - off2[0]));
-                                        colorBlock[j++] = (byte)(((r2 - off2[0]) << 4) + (r2 - off2[0]));   
-                                    }
-
-                                }
-                                else
-                                {
-                                    if (diff)
-                                    {
-                                        colorBlock[j++] = (byte)(((b2 + off2[0]) << 3) + ((b2 + off2[1]) >> 2));
-                                        colorBlock[j++] = (byte)(((g2 + off2[0]) << 3) + ((g2 + off2[1]) >> 2));
-                                        colorBlock[j++] = (byte)(((r2 + off2[0]) << 3) + ((r2 + off2[1]) >> 2));
-                                    }
-                                    else
-                                    {
-                                        colorBlock[j++] = (byte)(((b2 + off2[0]) << 4) + (b2 + off2[0]));
-                                        colorBlock[j++] = (byte)(((g2 + off2[0]) << 4) + (g2 + off2[0]));
-                                        colorBlock[j++] = (byte)(((r2 + off2[0]) << 4) + (r2 + off2[0]));   
-                                    }
-                                }
-                            }
+                            colorBlock[j++] = (byte)(((b1) << 3) + ((b1) >> 2) + (off1[_big] * _sub));
+                            colorBlock[j++] = (byte)(((g1) << 3) + ((g1) >> 2) + (off1[_big] * _sub));
+                            colorBlock[j++] = (byte)(((r1) << 3) + ((r1) >> 2) + (off1[_big] * _sub));   
                         }
                         else
                         {
-                            if (big[o])
-                            {
-                                if (sub[o])
-                                {
-                                    if (diff)
-                                    {
-                                        colorBlock[j++] = (byte)(((b1 - off1[1]) << 3) + ((b1 - off1[1]) >> 2));
-                                        colorBlock[j++] = (byte)(((g1 - off1[1]) << 3) + ((g1 - off1[1]) >> 2));
-                                        colorBlock[j++] = (byte)(((r1 - off1[1]) << 3) + ((r1 - off1[1]) >> 2));   
-                                    }
-                                    else
-                                    {
-                                        colorBlock[j++] = (byte)(((b1 - off1[1]) << 4) + (b1 - off1[1]));
-                                        colorBlock[j++] = (byte)(((g1 - off1[1]) << 4) + (g1 - off1[1]));
-                                        colorBlock[j++] = (byte)(((r1 - off1[1]) << 4) + (r1 - off1[1]));   
-                                    }
-
-                                }
-                                else
-                                {
-                                    if (diff)
-                                    {
-                                        colorBlock[j++] = (byte)(((b1 + off1[1]) << 3) + ((b1 + off1[1]) >> 2));
-                                        colorBlock[j++] = (byte)(((g1 + off1[1]) << 3) + ((g1 + off1[1]) >> 2));
-                                        colorBlock[j++] = (byte)(((r1 + off1[1]) << 3) + ((r1 + off1[1]) >> 2));
-                                    }
-                                    else
-                                    {
-                                        colorBlock[j++] = (byte)(((b1 + off1[1]) << 4) + (b1 + off1[1]));
-                                        colorBlock[j++] = (byte)(((g1 + off1[1]) << 4) + (g1 + off1[1]));
-                                        colorBlock[j++] = (byte)(((r1 + off1[1]) << 4) + (r1 + off1[1]));   
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                if (sub[o])
-                                {
-                                    if (diff)
-                                    {
-                                        colorBlock[j++] = (byte)(((b1 - off1[0]) << 3) + ((b1 - off1[0]) >> 2));
-                                        colorBlock[j++] = (byte)(((g1 - off1[0]) << 3) + ((g1 - off1[0]) >> 2));
-                                        colorBlock[j++] = (byte)(((r1 - off1[0]) << 3) + ((r1 - off1[0]) >> 2));   
-                                    }
-                                    else
-                                    {
-                                        colorBlock[j++] = (byte)(((b1 - off1[0]) << 4) + (b1 - off1[0]));
-                                        colorBlock[j++] = (byte)(((g1 - off1[0]) << 4) + (g1 - off1[0]));
-                                        colorBlock[j++] = (byte)(((r1 - off1[0]) << 4) + (r1 - off1[0]));   
-                                    }
-
-                                }
-                                else
-                                {
-                                    if (diff)
-                                    {
-                                        colorBlock[j++] = (byte)(((b1 + off1[0]) << 3) + ((b1 + off1[1]) >> 2));
-                                        colorBlock[j++] = (byte)(((g1 + off1[0]) << 3) + ((g1 + off1[1]) >> 2));
-                                        colorBlock[j++] = (byte)(((r1 + off1[0]) << 3) + ((r1 + off1[1]) >> 2));
-                                    }
-                                    else
-                                    {
-                                        colorBlock[j++] = (byte)(((b1 + off1[0]) << 4) + (b1 + off1[0]));
-                                        colorBlock[j++] = (byte)(((g1 + off1[0]) << 4) + (g1 + off1[0]));
-                                        colorBlock[j++] = (byte)(((r1 + off1[0]) << 4) + (r1 + off1[0]));   
-                                    }
-                                }
-                            }
+                            colorBlock[j++] = (byte)(((b1) << 4) + ((b1)) + (off1[_big] * _sub));
+                            colorBlock[j++] = (byte)(((g1) << 4) + ((g1)) + (off1[_big] * _sub));
+                            colorBlock[j++] = (byte)(((r1) << 4) + ((r1)) + (off1[_big] * _sub));   
                         }
                     }
                 }
