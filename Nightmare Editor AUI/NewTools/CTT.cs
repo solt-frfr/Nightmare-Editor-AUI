@@ -1592,15 +1592,96 @@ namespace Nightmare_Editor.NewTools
             }
 
             int j = 0x80;
+            int l = 0x80;
             for (int i = 0x80; i < ogData.Length; i += 4)
             {
-                int a4_1 = ogData[i] >> 4;
-                int a4_2 = ogData[i + 4] >> 4;
-                byte pixels = (byte)((a4_1 << 4) | a4_2);
-
-                newData[j++] = pixels;
+                byte[] colorBlock = new byte[16 * 3];
+                bool flip = (ogData[i + 4] & 0x1) == 1;
+                bool diff = ((ogData[i + 4] >> 1) & 0x1) == 1;
+                int r1 = 0;
+                int r2 = 0;
+                int g1 = 0;
+                int g2 = 0;
+                int b1 = 0;
+                int b2 = 0;
+                int[] off1 = ETC1OffTable((ogData[i + 4] >> 5) & 0x7);
+                int[] off2 = ETC1OffTable((ogData[i + 4] >> 2) & 0x7);
+                bool[] big = new bool[16];
+                bool[] sub = new bool[16];
+                
+                
+                colorBlock[0 * 3 + 0] = ogData[l++];
+                colorBlock[0 * 3 + 1] = ogData[l++];
+                colorBlock[0 * 3 + 2] = ogData[l++];
+                colorBlock[4 * 3 + 0] = ogData[l++];
+                colorBlock[4 * 3 + 1] = ogData[l++];
+                colorBlock[4 * 3 + 2] = ogData[l++];
+                colorBlock[8 * 3 + 0] = ogData[l++];
+                colorBlock[8 * 3 + 1] = ogData[l++];
+                colorBlock[8 * 3 + 2] = ogData[l++];
+                colorBlock[12 * 3 + 0] = ogData[l++];
+                colorBlock[12 * 3 + 1] = ogData[l++];
+                colorBlock[12 * 3 + 2] = ogData[l++];
+                
+                colorBlock[1 * 3 + 0] = ogData[l++];
+                colorBlock[1 * 3 + 1] = ogData[l++];
+                colorBlock[1 * 3 + 2] = ogData[l++];
+                colorBlock[5 * 3 + 0] = ogData[l++];
+                colorBlock[5 * 3 + 1] = ogData[l++];
+                colorBlock[5 * 3 + 2] = ogData[l++];
+                colorBlock[9 * 3 + 0] = ogData[l++];
+                colorBlock[9 * 3 + 1] = ogData[l++];
+                colorBlock[9 * 3 + 2] = ogData[l++];
+                colorBlock[13 * 3 + 0] = ogData[l++];
+                colorBlock[13 * 3 + 1] = ogData[l++];
+                colorBlock[13 * 3 + 2] = ogData[l++];
+                
+                colorBlock[2 * 3 + 0] = ogData[l++];
+                colorBlock[2 * 3 + 1] = ogData[l++];
+                colorBlock[2 * 3 + 2] = ogData[l++];
+                colorBlock[6 * 3 + 0] = ogData[l++];
+                colorBlock[6 * 3 + 1] = ogData[l++];
+                colorBlock[6 * 3 + 2] = ogData[l++];
+                colorBlock[10 * 3 + 0] = ogData[l++];
+                colorBlock[10 * 3 + 1] = ogData[l++];
+                colorBlock[10 * 3 + 2] = ogData[l++];
+                colorBlock[14 * 3 + 0] = ogData[l++];
+                colorBlock[14 * 3 + 1] = ogData[l++];
+                colorBlock[14 * 3 + 2] = ogData[l++];
+                
+                colorBlock[3 * 3 + 0] = ogData[l++];
+                colorBlock[3 * 3 + 1] = ogData[l++];
+                colorBlock[3 * 3 + 2] = ogData[l++];
+                colorBlock[7 * 3 + 0] = ogData[l++];
+                colorBlock[7 * 3 + 1] = ogData[l++];
+                colorBlock[7 * 3 + 2] = ogData[l++];
+                colorBlock[11 * 3 + 0] = ogData[l++];
+                colorBlock[11 * 3 + 1] = ogData[l++];
+                colorBlock[11 * 3 + 2] = ogData[l++];
+                colorBlock[15 * 3 + 0] = ogData[l++];
+                colorBlock[15 * 3 + 1] = ogData[l++];
+                colorBlock[15 * 3 + 2] = ogData[l++];
+                
+                
             }
             return newData;
+        }
+
+        public class ETC1Block
+        {
+            public int offsetset {get; set;}
+            public bool flip {get; set;}
+            public bool diff {get; set;}
+            public bool[] big {get; set;}
+            public bool[] sub {get; set;}
+        }
+
+        public static ETC1Block ETC1BruteForce(byte[] ogData)
+        {
+            for (int i = 0; i < ogData.Length; i++)
+            {
+                
+            }
         }
     }
 }
