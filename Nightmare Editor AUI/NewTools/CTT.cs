@@ -109,14 +109,6 @@ namespace Nightmare_Editor.NewTools
             Format format1 = (Format)header[0x1C];
             string format = format1.ToString();
             var image = Deswizzle(data, width, height, (int)format1);
-            /*
-            if (format == "ETC1" || format == "ETC1A4")
-            {
-                File.Copy(file, Path.Combine(Misc.Paths.toolkit, Path.GetFileName(file)), true);
-                Toolkit.CTTUnpack(Path.GetFileName(file), Path.GetDirectoryName(file));
-                return null;
-            }
-            */
             if (output)
             {
                 image.SaveAsPng(file + "." + format + ".png");
@@ -1535,6 +1527,64 @@ namespace Nightmare_Editor.NewTools
             ushort height = (ushort)(ogData[0x22] | (ogData[0x23] << 8));
             byte[] header = CTTHeader(width, height, (int)Format.A4);
             byte[] newData = new byte[((ogData.Length - 0x80) / 8) + 0x80];
+
+            for (int i = 0; i < 0x80; i++)
+            {
+                newData[i] = header[i];
+            }
+
+            int j = 0x80;
+            for (int i = 0x80; i < ogData.Length; i += 4)
+            {
+                int a4_1 = ogData[i] >> 4;
+                int a4_2 = ogData[i + 4] >> 4;
+                byte pixels = (byte)((a4_1 << 4) | a4_2);
+
+                newData[j++] = pixels;
+            }
+            return newData;
+        }
+        
+        /// <summary>
+        /// Converts RGBA8888 bytes into ETC1 bytes.
+        /// </summary>
+        /// <param name="ogData">Raw RGBA8888 byte array, with CTT Header.</param>
+        /// <returns>Returns a byte array containing raw ETC1 data, with a CTT Header.</returns>
+        public static byte[] ETC1pack(byte[] ogData)
+        {
+            ushort width = (ushort)(ogData[0x20] | (ogData[0x21] << 8));
+            ushort height = (ushort)(ogData[0x22] | (ogData[0x23] << 8));
+            byte[] header = CTTHeader(width, height, (int)Format.ETC1);
+            byte[] newData = new byte[((ogData.Length - 0x80) / 6) + 0x80];
+
+            for (int i = 0; i < 0x80; i++)
+            {
+                newData[i] = header[i];
+            }
+
+            int j = 0x80;
+            for (int i = 0x80; i < ogData.Length; i += 4)
+            {
+                int a4_1 = ogData[i] >> 4;
+                int a4_2 = ogData[i + 4] >> 4;
+                byte pixels = (byte)((a4_1 << 4) | a4_2);
+
+                newData[j++] = pixels;
+            }
+            return newData;
+        }
+        
+        /// <summary>
+        /// Converts RGBA8888 bytes into ETC1A4 bytes.
+        /// </summary>
+        /// <param name="ogData">Raw RGBA8888 byte array, with CTT Header.</param>
+        /// <returns>Returns a byte array containing raw ETC1A4 data, with a CTT Header.</returns>
+        public static byte[] ETC1A4pack(byte[] ogData)
+        {
+            ushort width = (ushort)(ogData[0x20] | (ogData[0x21] << 8));
+            ushort height = (ushort)(ogData[0x22] | (ogData[0x23] << 8));
+            byte[] header = CTTHeader(width, height, (int)Format.ETC1A4);
+            byte[] newData = new byte[((ogData.Length - 0x80) / 4) + 0x80];
 
             for (int i = 0; i < 0x80; i++)
             {
