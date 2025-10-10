@@ -9,6 +9,7 @@ using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.PixelFormats;
 using System.Reflection;
 using SixLabors.ImageSharp.ColorSpaces;
+using Color = ExCSS.Color;
 
 
 namespace Nightmare_Editor.NewTools
@@ -126,15 +127,6 @@ namespace Nightmare_Editor.NewTools
             byte[] data = File.ReadAllBytes(texture);
             int formatByte = GetFormat(file);
             Format formatenum = (Format)formatByte;
-            int startIndex = file.Length + 1;
-            string format = formatenum.ToString();
-            if ((int)formatenum >= 12)
-            {
-                File.Copy(texture, Path.Combine(Misc.Paths.toolkit, $"{Path.GetFileName(file)}.{format}.png"), true);
-                File.Copy(file, Path.Combine(Misc.Paths.toolkit, Path.GetFileName(file)), true);
-                Toolkit.CTTPack(Path.GetFileName(file), Path.GetDirectoryName(file), format);
-                return;
-            }
             var image = Swizzle(data, (int)formatenum);
             File.WriteAllBytes(file, image);
             Decode(file);
@@ -276,6 +268,14 @@ namespace Nightmare_Editor.NewTools
             else if (format == 11)
             {
                 newData = A4pack(image);
+            }
+            else if (format == 12)
+            {
+                newData = ETC1pack(image);
+            }
+            else if (format == 13)
+            {
+                newData = ETC1A4pack(image);
             }
             else
             {
@@ -1562,53 +1562,10 @@ namespace Nightmare_Editor.NewTools
                 newData[i] = header[i];
             }
 
-            int j = 0x80;
-            for (int i = 0x80; i < ogData.Length; i += 4)
-            {
-                int a4_1 = ogData[i] >> 4;
-                int a4_2 = ogData[i + 4] >> 4;
-                byte pixels = (byte)((a4_1 << 4) | a4_2);
-
-                newData[j++] = pixels;
-            }
-            return newData;
-        }
-        
-        /// <summary>
-        /// Converts RGBA8888 bytes into ETC1A4 bytes.
-        /// </summary>
-        /// <param name="ogData">Raw RGBA8888 byte array, with CTT Header.</param>
-        /// <returns>Returns a byte array containing raw ETC1A4 data, with a CTT Header.</returns>
-        public static byte[] ETC1A4pack(byte[] ogData)
-        {
-            ushort width = (ushort)(ogData[0x20] | (ogData[0x21] << 8));
-            ushort height = (ushort)(ogData[0x22] | (ogData[0x23] << 8));
-            byte[] header = CTTHeader(width, height, (int)Format.ETC1A4);
-            byte[] newData = new byte[((ogData.Length - 0x80) / 4) + 0x80];
-
-            for (int i = 0; i < 0x80; i++)
-            {
-                newData[i] = header[i];
-            }
-
-            int j = 0x80;
             int l = 0x80;
-            for (int i = 0x80; i < ogData.Length; i += 4)
+            for (int i = 0x80; i < ogData.Length; i += 8)
             {
                 byte[] colorBlock = new byte[16 * 3];
-                bool flip = (ogData[i + 4] & 0x1) == 1;
-                bool diff = ((ogData[i + 4] >> 1) & 0x1) == 1;
-                int r1 = 0;
-                int r2 = 0;
-                int g1 = 0;
-                int g2 = 0;
-                int b1 = 0;
-                int b2 = 0;
-                int[] off1 = ETC1OffTable((ogData[i + 4] >> 5) & 0x7);
-                int[] off2 = ETC1OffTable((ogData[i + 4] >> 2) & 0x7);
-                bool[] big = new bool[16];
-                bool[] sub = new bool[16];
-                
                 
                 colorBlock[0 * 3 + 0] = ogData[l++];
                 colorBlock[0 * 3 + 1] = ogData[l++];
@@ -1661,27 +1618,505 @@ namespace Nightmare_Editor.NewTools
                 colorBlock[15 * 3 + 0] = ogData[l++];
                 colorBlock[15 * 3 + 1] = ogData[l++];
                 colorBlock[15 * 3 + 2] = ogData[l++];
+
+                ETC1Block main = ETC1BruteForce(colorBlock);
                 
+                for (int o = 0; o < 16; o++)
+                {
+                    if (o < 8)
+                    {
+                        if (main.big[o])
+                        {
+                            newData[i] += (byte)(1 << o);
+                        }
+                        if (main.sub[0])
+                        {
+                            newData[i + 2] += (byte)(1 << o);
+                        }
+                    }
+                    else
+                    {
+                        if (main.big[o])
+                        {
+                            newData[i + 1] += (byte)(1 << (o - 8));
+                        }
+                        if (main.sub[o])
+                        {
+                            newData[i + 3] += (byte)(1 << (o - 8));
+                        }
+                    }
+                }
+                if (main.flip)
+                {
+                    newData[i + 4] += 1;
+                }
+                if (main.diff)
+                {
+                    newData[i + 4] += (1 << 1);
+                }
+                newData[i + 4] += (byte)(main.offsetset2 << 2);
+                newData[i + 4] += (byte)(main.offsetset1 << 5);
+                newData[i + 5] = main.blue;
+                newData[i + 6] = main.green;
+                newData[i + 7] = main.red;
+            }
+            return newData;
+        }
+        
+        /// <summary>
+        /// Converts RGBA8888 bytes into ETC1A4 bytes.
+        /// </summary>
+        /// <param name="ogData">Raw RGBA8888 byte array, with CTT Header.</param>
+        /// <returns>Returns a byte array containing raw ETC1A4 data, with a CTT Header.</returns>
+        public static byte[] ETC1A4pack(byte[] ogData)
+        {
+            ushort width = (ushort)(ogData[0x20] | (ogData[0x21] << 8));
+            ushort height = (ushort)(ogData[0x22] | (ogData[0x23] << 8));
+            byte[] header = CTTHeader(width, height, (int)Format.ETC1A4);
+            byte[] newData = new byte[((ogData.Length - 0x80) / 4) + 0x80];
+
+            for (int i = 0; i < 0x80; i++)
+            {
+                newData[i] = header[i];
+            }
+
+            int l = 0x80;
+            for (int i = 0x80; i < ogData.Length; i += 8)
+            {
+                byte[] colorBlock = new byte[16 * 3];
                 
+                colorBlock[0 * 3 + 0] = ogData[l++];
+                colorBlock[0 * 3 + 1] = ogData[l++];
+                colorBlock[0 * 3 + 2] = ogData[l++];
+                colorBlock[4 * 3 + 0] = ogData[l++];
+                colorBlock[4 * 3 + 1] = ogData[l++];
+                colorBlock[4 * 3 + 2] = ogData[l++];
+                colorBlock[8 * 3 + 0] = ogData[l++];
+                colorBlock[8 * 3 + 1] = ogData[l++];
+                colorBlock[8 * 3 + 2] = ogData[l++];
+                colorBlock[12 * 3 + 0] = ogData[l++];
+                colorBlock[12 * 3 + 1] = ogData[l++];
+                colorBlock[12 * 3 + 2] = ogData[l++];
+                
+                colorBlock[1 * 3 + 0] = ogData[l++];
+                colorBlock[1 * 3 + 1] = ogData[l++];
+                colorBlock[1 * 3 + 2] = ogData[l++];
+                colorBlock[5 * 3 + 0] = ogData[l++];
+                colorBlock[5 * 3 + 1] = ogData[l++];
+                colorBlock[5 * 3 + 2] = ogData[l++];
+                colorBlock[9 * 3 + 0] = ogData[l++];
+                colorBlock[9 * 3 + 1] = ogData[l++];
+                colorBlock[9 * 3 + 2] = ogData[l++];
+                colorBlock[13 * 3 + 0] = ogData[l++];
+                colorBlock[13 * 3 + 1] = ogData[l++];
+                colorBlock[13 * 3 + 2] = ogData[l++];
+                
+                colorBlock[2 * 3 + 0] = ogData[l++];
+                colorBlock[2 * 3 + 1] = ogData[l++];
+                colorBlock[2 * 3 + 2] = ogData[l++];
+                colorBlock[6 * 3 + 0] = ogData[l++];
+                colorBlock[6 * 3 + 1] = ogData[l++];
+                colorBlock[6 * 3 + 2] = ogData[l++];
+                colorBlock[10 * 3 + 0] = ogData[l++];
+                colorBlock[10 * 3 + 1] = ogData[l++];
+                colorBlock[10 * 3 + 2] = ogData[l++];
+                colorBlock[14 * 3 + 0] = ogData[l++];
+                colorBlock[14 * 3 + 1] = ogData[l++];
+                colorBlock[14 * 3 + 2] = ogData[l++];
+                
+                colorBlock[3 * 3 + 0] = ogData[l++];
+                colorBlock[3 * 3 + 1] = ogData[l++];
+                colorBlock[3 * 3 + 2] = ogData[l++];
+                colorBlock[7 * 3 + 0] = ogData[l++];
+                colorBlock[7 * 3 + 1] = ogData[l++];
+                colorBlock[7 * 3 + 2] = ogData[l++];
+                colorBlock[11 * 3 + 0] = ogData[l++];
+                colorBlock[11 * 3 + 1] = ogData[l++];
+                colorBlock[11 * 3 + 2] = ogData[l++];
+                colorBlock[15 * 3 + 0] = ogData[l++];
+                colorBlock[15 * 3 + 1] = ogData[l++];
+                colorBlock[15 * 3 + 2] = ogData[l++];
+
+                ETC1Block main = ETC1BruteForce(colorBlock);
+                
+                for (int o = 0; o < 16; o++)
+                {
+                    if (o < 8)
+                    {
+                        if (main.big[o])
+                        {
+                            newData[i] += (byte)(1 << o);
+                        }
+                        if (main.sub[0])
+                        {
+                            newData[i + 2] += (byte)(1 << o);
+                        }
+                    }
+                    else
+                    {
+                        if (main.big[o])
+                        {
+                            newData[i + 1] += (byte)(1 << (o - 8));
+                        }
+                        if (main.sub[o])
+                        {
+                            newData[i + 3] += (byte)(1 << (o - 8));
+                        }
+                    }
+                }
+                if (main.flip)
+                {
+                    newData[i + 4] += 1;
+                }
+                if (main.diff)
+                {
+                    newData[i + 4] += (1 << 1);
+                }
+                newData[i + 4] += (byte)(main.offsetset2 << 2);
+                newData[i + 4] += (byte)(main.offsetset1 << 5);
+                newData[i + 5] = main.blue;
+                newData[i + 6] = main.green;
+                newData[i + 7] = main.red;
             }
             return newData;
         }
 
         public class ETC1Block
         {
-            public int offsetset {get; set;}
-            public bool flip {get; set;}
-            public bool diff {get; set;}
-            public bool[] big {get; set;}
-            public bool[] sub {get; set;}
+            public int offsetset1 { get; set; }
+            public int offsetset2 { get; set; }
+            public byte blue { get; set; }
+            public byte green { get; set; }
+            public byte red { get; set; }
+            public bool flip { get; set; }
+            public bool diff { get; set; }
+            public bool[] big { get; set; }
+            public bool[] sub { get; set; }
         }
 
         public static ETC1Block ETC1BruteForce(byte[] ogData)
         {
-            for (int i = 0; i < ogData.Length; i++)
+            ETC1Block main = new ETC1Block();
+            List<int> left_b = new List<int>();
+            List<int> left_g = new List<int>();
+            List<int> left_r = new List<int>();
+            int[] left_avg = new int[3];
+            List<int> right_b = new List<int>();
+            List<int> right_g = new List<int>();
+            List<int> right_r = new List<int>();
+            int[] right_avg = new int[3];
+            List<int> top_b = new List<int>();
+            List<int> top_g = new List<int>();
+            List<int> top_r = new List<int>();
+            int[] top_avg = new int[3];
+            List<int> bottom_b = new List<int>();
+            List<int> bottom_g = new List<int>();
+            List<int> bottom_r = new List<int>();
+            int[] bottom_avg = new int[3];
+            for (int i = 0; i < 16; i++)
             {
-                
+                int b = ogData[i * 3];
+                int g = ogData[i * 3 + 1];
+                int r = ogData[i * 3 + 2];
+                if ((i >= 8))
+                {
+                    if (!(right_b.Contains(b) && right_g.Contains(g) && right_r.Contains(r)))
+                    {
+                        right_b.Add(b);
+                        right_g.Add(g);
+                        right_r.Add(r);
+                    }
+                }
+                else
+                {
+                    if (!(left_b.Contains(b) && left_g.Contains(g) && left_r.Contains(r)))
+                    {
+                        left_b.Add(b);
+                        left_g.Add(g);
+                        left_r.Add(r);
+                    }
+                }
+                if (i % 4 >= 2)
+                {
+                    if (!(bottom_b.Contains(b) && bottom_g.Contains(g) && bottom_r.Contains(r)))
+                    {
+                        bottom_b.Add(b);
+                        bottom_g.Add(g);
+                        bottom_r.Add(r);
+                    }
+                }
+                else
+                {
+                    if (!(top_b.Contains(b) && top_g.Contains(g) && top_r.Contains(r)))
+                    {
+                        top_b.Add(b);
+                        top_g.Add(g);
+                        top_r.Add(r);
+                    }
+                }
             }
+
+            for (int i = 0; i < left_b.Count; i++)
+            {
+                left_avg[0] += (left_b[i] / left_b.Count);
+                left_avg[1] += (left_g[i] / left_b.Count);
+                left_avg[2] += (left_r[i] / left_b.Count);
+            }
+            for (int i = 0; i < right_b.Count; i++)
+            {
+                right_avg[0] += (right_b[i] / right_b.Count);
+                right_avg[1] += (right_g[i] / right_b.Count);
+                right_avg[2] += (right_r[i] / right_b.Count);
+            }
+            for (int i = 0; i < top_b.Count; i++)
+            {
+                top_avg[0] += (top_b[i] / top_b.Count);
+                top_avg[1] += (top_g[i] / top_b.Count);
+                top_avg[2] += (top_r[i] / top_b.Count);
+            }
+            for (int i = 0; i < bottom_b.Count; i++)
+            {
+                bottom_avg[0] += (bottom_b[i] / bottom_b.Count);
+                bottom_avg[1] += (bottom_g[i] / bottom_b.Count);
+                bottom_avg[2] += (bottom_r[i] / bottom_b.Count);
+            }
+            
+            int[] left_score = ETC1OffGrabber(left_b, left_g, left_r, left_avg);
+            int[] right_score = ETC1OffGrabber(right_b, right_g, right_r, right_avg);
+            int[] top_score = ETC1OffGrabber(top_b, top_g, top_r, top_avg);
+            int[] bottom_score = ETC1OffGrabber(bottom_b, bottom_g, bottom_r, bottom_avg);
+            
+            byte new_b1 = 0;
+            byte new_g1 = 0;
+            byte new_r1 = 0;
+            byte new_b2 = 0;
+            byte new_g2 = 0;
+            byte new_r2 = 0;
+            
+            if (left_score[1] + right_score[1] < top_score[1] + bottom_score[1])
+            {
+                main.flip = false;
+                new_b1 = (byte)(left_avg[0] >> 3);
+                new_g1 = (byte)(left_avg[1] >> 3);
+                new_r1 = (byte)(left_avg[2] >> 3);
+                new_b2 = (byte)(right_avg[0] >> 3);
+                new_g2 = (byte)(right_avg[1] >> 3);
+                new_r2 = (byte)(right_avg[2] >> 3);
+                left_score[0] = main.offsetset1;
+                right_score[0] = main.offsetset2;
+            }
+            else
+            {
+                main.flip = true;
+                new_b1 = (byte)(top_avg[0] >> 3);
+                new_g1 = (byte)(top_avg[1] >> 3);
+                new_r1 = (byte)(top_avg[2] >> 3);
+                new_b2 = (byte)(bottom_avg[0] >> 3);
+                new_g2 = (byte)(bottom_avg[1] >> 3);
+                new_r2 = (byte)(bottom_avg[2] >> 3);
+                top_score[0] = main.offsetset1;
+                bottom_score[0] = main.offsetset2;
+            }
+            if ((new_b2 >= new_b1 - 8 && new_b2 < new_b1 + 8) && (new_g2 >= new_g1 - 8 && new_g2 < new_g1 + 8) && (new_r2 >= new_r1 - 8 && new_r2 < new_r1 + 8))
+            {
+                main.diff = true;
+                new_b2 = (byte)(new_b2 - new_b1);
+                new_g2 = (byte)(new_g2 - new_g1);
+                new_r2 = (byte)(new_r2 - new_r1);
+                if (new_b2 < 0)
+                {
+                    new_b2 += 8;
+                }
+                if (new_g2 < 0)
+                {
+                    new_g2 += 8;
+                }
+                if (new_r2 < 0)
+                {
+                    new_r2 += 8;
+                }
+                    
+                main.blue = (byte)(new_b2 << 5 + new_b1);
+                main.green = (byte)(new_g2 << 5 + new_g1);
+                main.red = (byte)(new_r2 << 5 + new_r1);
+            }
+            else
+            {
+                main.diff = false;
+                new_b1 = (byte)(new_b1 >> 1);
+                new_g1 = (byte)(new_g1 >> 1);
+                new_r1 = (byte)(new_r1 >> 1);
+                new_b2 = (byte)(new_b2 >> 1);
+                new_g2 = (byte)(new_g2 >> 1);
+                new_r2 = (byte)(new_r2 >> 1);
+                main.blue = (byte)(new_b2 << 4 + new_b1);
+                main.green = (byte)(new_g2 << 4 + new_g1);
+                main.red = (byte)(new_r2 << 4 + new_r1);
+            }
+
+            if (main.flip)
+            {
+                (main.sub, main.big) = ETC1OffAssigner(ogData, left_avg, right_avg, main);
+            }
+            else
+            {
+                (main.sub, main.big) = ETC1OffAssigner(ogData, top_avg, bottom_avg, main);
+            }
+            return main;
+        }
+        
+        /// <summary>
+        /// Finds the best fitting offset table value for a list of colors.
+        /// </summary>
+        /// <returns>Returns two intergers, [0] being the index of the offset table, [1] being the score of how well it fits.</returns>
+        public static int[] ETC1OffGrabber(List<int> b, List<int> g, List<int> r, int[] avg)
+        {
+            int temp = 0;
+            int split_index = 0;
+            int small = 0;
+            int big = 0;
+            int[] score = new int[8];
+            int best_score = Int32.MaxValue;
+            int[] return_value = new int[2];
+            for (int i = 0; i < b.Count - 1; i++)
+            {
+                int temp_diff = (int)(Math.Abs(b[i] - b[i + 1]) + Math.Abs(g[i] - g[i + 1]) + Math.Abs(r[i] - r[i + 1]));
+                if (temp_diff > temp)
+                {
+                    temp = temp_diff;
+                    split_index = i;
+                }
+            }
+            for (int i = 0; i < b.Count; i++)
+            {
+                if (i <= split_index)
+                {
+                    small += (Math.Abs(b[i] - avg[0]) + Math.Abs(g[i] - avg[1]) + Math.Abs(r[i] - avg[2])) / (split_index + 1);
+                }
+                else
+                {
+                    big += (Math.Abs(b[i] - avg[0]) + Math.Abs(g[i] - avg[1]) + Math.Abs(r[i] - avg[2])) / (b.Count - (split_index + 1));
+                }
+            }
+
+            score[0] = Math.Abs(small - 2) + Math.Abs(big - 8);
+            score[1] = Math.Abs(small - 5) + Math.Abs(big - 17);
+            score[2] = Math.Abs(small - 9) + Math.Abs(big - 29);
+            score[3] = Math.Abs(small - 13) + Math.Abs(big - 42);
+            score[4] = Math.Abs(small - 18) + Math.Abs(big - 60);
+            score[5] = Math.Abs(small - 24) + Math.Abs(big - 80);
+            score[6] = Math.Abs(small - 33) + Math.Abs(big - 106);
+            score[7] = Math.Abs(small - 47) + Math.Abs(big - 183);
+            for (int i = 0; i < score.Length; i++)
+            {
+                if (score[i] < best_score)
+                {
+                    i = return_value[0];
+                    score[i] = best_score;
+                }
+            }
+            
+            for (int i = 0; i < b.Count - 1; i++)
+            {
+                if (i <= split_index)
+                {
+                    int add = Math.Abs(b[i] - avg[0] + ETC1OffTable(return_value[0])[0] + g[i] - avg[1] + ETC1OffTable(return_value[0])[0] + r[i] - avg[2] + ETC1OffTable(return_value[0])[0]);
+                    int sub = Math.Abs(b[i] - avg[0] - ETC1OffTable(return_value[0])[0] + g[i] - avg[1] - ETC1OffTable(return_value[0])[0] + r[i] - avg[2] - ETC1OffTable(return_value[0])[0]);
+                    if (add > sub)
+                    {
+                        return_value[1] += sub;
+                    }
+                    else
+                    {
+                        return_value[1] += add;
+                    }
+                }
+                else
+                {
+                    int add = Math.Abs(b[i] - avg[0] + ETC1OffTable(return_value[0])[1] + g[i] - avg[1] + ETC1OffTable(return_value[0])[1] + r[i] - avg[2] + ETC1OffTable(return_value[0])[1]);
+                    int sub = Math.Abs(b[i] - avg[0] - ETC1OffTable(return_value[0])[1] + g[i] - avg[1] - ETC1OffTable(return_value[0])[1] + r[i] - avg[2] - ETC1OffTable(return_value[0])[1]);
+                    if (add > sub)
+                    {
+                        return_value[1] += sub;
+                    }
+                    else
+                    {
+                        return_value[1] += add;
+                    }
+                }
+            }
+            return return_value;
+        }
+        
+        public static (bool[] sub, bool[] big) ETC1OffAssigner(byte[] colors, int[] avg1, int[] avg2, ETC1Block block)
+        {
+            int[] off1 = ETC1OffTable(block.offsetset1);
+            int[] off2 = ETC1OffTable(block.offsetset2);
+            bool[] sub = new bool[16];
+            bool[] big = new bool[16];
+            for (int o = 0; o < 16; o++)
+            {
+                if ((block.flip && (o % 4 >= 2)) || (!block.flip && (o >= 8)))
+                {
+                    int score1 = (colors[o] - (avg2[0] + off2[0])) + (colors[o + 1] - (avg2[1] + off2[0])) + (colors[o + 2] - (avg2[2] + off2[0]));
+                    int score2 = (colors[o] - (avg2[0] - off2[0])) + (colors[o + 1] - (avg2[1] - off2[0])) + (colors[o + 2] - (avg2[2] - off2[0]));
+                    int score3 = (colors[o] - (avg2[0] + off2[1])) + (colors[o + 1] - (avg2[1] + off2[1])) + (colors[o + 2] - (avg2[2] + off2[1]));
+                    int score4 = (colors[o] - (avg2[0] - off2[1])) + (colors[o + 1] - (avg2[1] - off2[1])) + (colors[o + 2] - (avg2[2] - off2[1]));
+                    int best = Math.Min(Math.Min(score1, score2), Math.Min(score3, score4));
+
+                    if (best == score1)
+                    {
+                        sub[o] = false;
+                        big[o] = false;
+                    }
+                    else if (best == score2)
+                    {
+                        sub[o] = true;
+                        big[o] = false;
+                    }
+                    else if (best == score3)
+                    {
+                        sub[o] = false;
+                        big[o] = true;
+                    }
+                    else
+                    {
+                        sub[o] = true;
+                        big[o] = true; 
+                    }
+                }
+                else
+                {
+                    int score1 = (colors[o] - (avg1[0] + off1[0])) + (colors[o + 1] - (avg1[1] + off1[0])) + (colors[o + 2] - (avg1[2] + off1[0]));
+                    int score2 = (colors[o] - (avg1[0] - off1[0])) + (colors[o + 1] - (avg1[1] - off1[0])) + (colors[o + 2] - (avg1[2] - off1[0]));
+                    int score3 = (colors[o] - (avg1[0] + off1[1])) + (colors[o + 1] - (avg1[1] + off1[1])) + (colors[o + 2] - (avg1[2] + off1[1]));
+                    int score4 = (colors[o] - (avg1[0] - off1[1])) + (colors[o + 1] - (avg1[1] - off1[1])) + (colors[o + 2] - (avg1[2] - off1[1]));
+                    int best = Math.Min(Math.Min(score1, score2), Math.Min(score3, score4));
+
+                    if (best == score1)
+                    {
+                        sub[o] = false;
+                        big[o] = false;
+                    }
+                    else if (best == score2)
+                    {
+                        sub[o] = true;
+                        big[o] = false;
+                    }
+                    else if (best == score3)
+                    {
+                        sub[o] = false;
+                        big[o] = true;
+                    }
+                    else
+                    {
+                        sub[o] = true;
+                        big[o] = true; 
+                    }
+                }
+            }
+            
+            return (sub, big);
         }
     }
 }
