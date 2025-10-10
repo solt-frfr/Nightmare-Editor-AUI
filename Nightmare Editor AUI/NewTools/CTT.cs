@@ -1555,7 +1555,7 @@ namespace Nightmare_Editor.NewTools
             ushort width = (ushort)(ogData[0x20] | (ogData[0x21] << 8));
             ushort height = (ushort)(ogData[0x22] | (ogData[0x23] << 8));
             byte[] header = CTTHeader(width, height, (int)Format.ETC1);
-            byte[] newData = new byte[((ogData.Length - 0x80) / 6) + 0x80];
+            byte[] newData = new byte[((ogData.Length - 0x80) / 8) + 0x80];
 
             for (int i = 0; i < 0x80; i++)
             {
@@ -1563,58 +1563,74 @@ namespace Nightmare_Editor.NewTools
             }
 
             int l = 0x80;
-            for (int i = 0x80; i < ogData.Length; i += 8)
+            for (int i = 0x80; i < newData.Length; i += 8)
             {
                 byte[] colorBlock = new byte[16 * 3];
-                
+
+                l++;
                 colorBlock[0 * 3 + 0] = ogData[l++];
                 colorBlock[0 * 3 + 1] = ogData[l++];
                 colorBlock[0 * 3 + 2] = ogData[l++];
+                l++;
                 colorBlock[4 * 3 + 0] = ogData[l++];
                 colorBlock[4 * 3 + 1] = ogData[l++];
                 colorBlock[4 * 3 + 2] = ogData[l++];
+                l++;
                 colorBlock[8 * 3 + 0] = ogData[l++];
                 colorBlock[8 * 3 + 1] = ogData[l++];
                 colorBlock[8 * 3 + 2] = ogData[l++];
+                l++;
                 colorBlock[12 * 3 + 0] = ogData[l++];
                 colorBlock[12 * 3 + 1] = ogData[l++];
                 colorBlock[12 * 3 + 2] = ogData[l++];
                 
+                l++;
                 colorBlock[1 * 3 + 0] = ogData[l++];
                 colorBlock[1 * 3 + 1] = ogData[l++];
                 colorBlock[1 * 3 + 2] = ogData[l++];
+                l++;
                 colorBlock[5 * 3 + 0] = ogData[l++];
                 colorBlock[5 * 3 + 1] = ogData[l++];
                 colorBlock[5 * 3 + 2] = ogData[l++];
+                l++;
                 colorBlock[9 * 3 + 0] = ogData[l++];
                 colorBlock[9 * 3 + 1] = ogData[l++];
                 colorBlock[9 * 3 + 2] = ogData[l++];
+                l++;
                 colorBlock[13 * 3 + 0] = ogData[l++];
                 colorBlock[13 * 3 + 1] = ogData[l++];
                 colorBlock[13 * 3 + 2] = ogData[l++];
                 
+                l++;
                 colorBlock[2 * 3 + 0] = ogData[l++];
                 colorBlock[2 * 3 + 1] = ogData[l++];
                 colorBlock[2 * 3 + 2] = ogData[l++];
+                l++;
                 colorBlock[6 * 3 + 0] = ogData[l++];
                 colorBlock[6 * 3 + 1] = ogData[l++];
                 colorBlock[6 * 3 + 2] = ogData[l++];
+                l++;
                 colorBlock[10 * 3 + 0] = ogData[l++];
                 colorBlock[10 * 3 + 1] = ogData[l++];
                 colorBlock[10 * 3 + 2] = ogData[l++];
+                l++;
                 colorBlock[14 * 3 + 0] = ogData[l++];
                 colorBlock[14 * 3 + 1] = ogData[l++];
                 colorBlock[14 * 3 + 2] = ogData[l++];
                 
+                l++;
                 colorBlock[3 * 3 + 0] = ogData[l++];
                 colorBlock[3 * 3 + 1] = ogData[l++];
                 colorBlock[3 * 3 + 2] = ogData[l++];
+                l++;
                 colorBlock[7 * 3 + 0] = ogData[l++];
                 colorBlock[7 * 3 + 1] = ogData[l++];
                 colorBlock[7 * 3 + 2] = ogData[l++];
+                l++;
                 colorBlock[11 * 3 + 0] = ogData[l++];
                 colorBlock[11 * 3 + 1] = ogData[l++];
                 colorBlock[11 * 3 + 2] = ogData[l++];
+                l++;
                 colorBlock[15 * 3 + 0] = ogData[l++];
                 colorBlock[15 * 3 + 1] = ogData[l++];
                 colorBlock[15 * 3 + 2] = ogData[l++];
@@ -2011,7 +2027,7 @@ namespace Nightmare_Editor.NewTools
             {
                 if (score[i] < best_score)
                 {
-                    i = return_value[0];
+                    return_value[0] = i;
                     score[i] = best_score;
                 }
             }
