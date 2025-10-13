@@ -1699,22 +1699,29 @@ namespace Nightmare_Editor
 
         private async void SaveTex_Click(object sender, RoutedEventArgs e)
         {
-            var save = await this.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+            try
             {
-                Title = "Save extracted texture...",
-                FileTypeChoices = new List<FilePickerFileType>
+                var save = await this.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
                 {
-                    new FilePickerFileType("Texture File")
+                    Title = "Save extracted texture...",
+                    FileTypeChoices = new List<FilePickerFileType>
                     {
-                        Patterns = new List<string> { "*.png" }
+                        new FilePickerFileType("Texture File")
+                        {
+                            Patterns = new List<string> { "*.png" }
+                        }
                     }
+                });
+                if (!string.IsNullOrWhiteSpace(save.Path.LocalPath) && save != null)
+                {
+                    string file = Path.Combine(Misc.Paths.work, FileName.Text);
+                    var image = CTT.Decode(file, false);
+                    image.SaveAsPng(save.Path.LocalPath);
                 }
-            });
-            if (!string.IsNullOrWhiteSpace(save.Path.LocalPath) && save != null)
+            }
+            catch (Exception exception)
             {
-                string file = Path.Combine(Misc.Paths.work, FileName.Text);
-                var image = CTT.Decode(file, false);
-                image.SaveAsPng(save.Path.LocalPath);
+
             }
         }
     }

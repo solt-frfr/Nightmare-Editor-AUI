@@ -1738,7 +1738,9 @@ namespace Nightmare_Editor.NewTools
                 newData[i + 5] = block.blue;
                 newData[i + 6] = block.green;
                 newData[i + 7] = block.red;
+                Console.Write($"Block {(i - 0x80) / 8} / {(newData.Length - 0x80) / 8}\n");
             }
+            
             
             return newData;
         }
@@ -1963,7 +1965,8 @@ namespace Nightmare_Editor.NewTools
                         ctx.Fill(bg, new Rectangle(x, y, 1, 1));
                     });
                 }
-                var quantizer = new WuQuantizer(new QuantizerOptions { MaxColors = 4 });
+                // var quantizer = new WuQuantizer(new QuantizerOptions { MaxColors = 4 });
+                var quantizer = new OctreeQuantizer(new QuantizerOptions { MaxColors = 4 });
                 using (Image<Rgb24> reduced = block.Clone(ctx => ctx.Quantize(quantizer)))
                 {
                     for (int x = 0; x < width; x++)
