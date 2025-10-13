@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,10 @@ using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.PixelFormats;
 using System.Reflection;
 using SixLabors.ImageSharp.ColorSpaces;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Processing.Processors;
+using SixLabors.ImageSharp.Processing.Processors.Quantization;
+using SixLabors.ImageSharp.Drawing.Processing;
 using Color = ExCSS.Color;
 
 
@@ -25,7 +30,7 @@ namespace Nightmare_Editor.NewTools
         {
             RGBA8888 = 0,
             RGB888 = 1,
-            RGBA5551 = 2, 
+            RGBA5551 = 2,
             RGB565 = 3,
             RGBA4444 = 4,
             LA8 = 5,
@@ -48,6 +53,7 @@ namespace Nightmare_Editor.NewTools
                 header = new byte[0x80];
                 fs.Read(header, 0, 0x80);
             }
+
             return header[0x1C];
         }
 
@@ -55,35 +61,41 @@ namespace Nightmare_Editor.NewTools
         {
             if (index == 0)
             {
-                return new int[] {2, 8};
+                return new int[] { 2, 8 };
             }
+
             if (index == 1)
             {
-                return new int[] {5, 17};
+                return new int[] { 5, 17 };
             }
+
             if (index == 2)
             {
-                return new int[] {9, 29};
+                return new int[] { 9, 29 };
             }
+
             if (index == 3)
             {
-                return new int[] {13, 42};
+                return new int[] { 13, 42 };
             }
+
             if (index == 4)
             {
-                return new int[] {18, 60};
+                return new int[] { 18, 60 };
             }
+
             if (index == 5)
             {
-                return new int[] {24, 80};
+                return new int[] { 24, 80 };
             }
+
             if (index == 6)
             {
-                return new int[] {33, 106};
+                return new int[] { 33, 106 };
             }
             else
             {
-                return new int[] {47, 183};
+                return new int[] { 47, 183 };
             }
         }
 
@@ -105,6 +117,7 @@ namespace Nightmare_Editor.NewTools
                 data = new byte[fs.Length - 0x80];
                 fs.Read(data, 0, data.Length);
             }
+
             int height = header[0x22] + (header[0x23] * 0x100);
             int width = header[0x20] + (header[0x21] * 0x100);
             Format format1 = (Format)header[0x1C];
@@ -114,6 +127,7 @@ namespace Nightmare_Editor.NewTools
             {
                 image.SaveAsPng(file + "." + format + ".png");
             }
+
             return image;
         }
 
@@ -131,6 +145,7 @@ namespace Nightmare_Editor.NewTools
             File.WriteAllBytes(file, image);
             Decode(file);
         }
+
         public static Image Deswizzle(byte[] rawData, int width, int height, int format)
         {
             if (format == 0)
@@ -273,17 +288,20 @@ namespace Nightmare_Editor.NewTools
             {
                 newData = ETC1pack(image);
             }
+            /*
             else if (format == 13)
             {
                 newData = ETC1A4pack(image);
             }
+            */
             else
             {
                 newData = image;
             }
+
             return newData;
         }
-        
+
         public static Image Assemble(byte[] rawData, int width, int height, bool alpha, bool isETC = false)
         {
             const int tileSize = 8;
@@ -293,7 +311,8 @@ namespace Nightmare_Editor.NewTools
             {
                 minitiles = 4;
             }
-            int miniSize = tileSize / subtiles / minitiles;  // 2
+
+            int miniSize = tileSize / subtiles / minitiles; // 2
             int bytesPerPixel = 3;
             if (alpha)
             {
@@ -374,8 +393,10 @@ namespace Nightmare_Editor.NewTools
                         }
                     }
                 }
+
                 tileIndex++;
             }
+
             if (alpha)
             {
                 return image32;
@@ -385,7 +406,7 @@ namespace Nightmare_Editor.NewTools
                 return image24;
             }
         }
-        
+
         public static byte[] CTTHeader(int width, int height, int format)
         {
             int total = 0;
@@ -413,6 +434,7 @@ namespace Nightmare_Editor.NewTools
             {
                 total = (height / 4) * (width / 4) * 8;
             }
+
             byte[] header = new byte[0x80];
 
             header[0x00] = 0x43;
@@ -442,7 +464,8 @@ namespace Nightmare_Editor.NewTools
             {
                 minitiles = 4;
             }
-            int miniSize = tileSize / subtiles / minitiles;  // 2
+
+            int miniSize = tileSize / subtiles / minitiles; // 2
 
             var image = Image.Load(rawData);
             var image32 = image.CloneAs<Rgba32>();
@@ -509,8 +532,10 @@ namespace Nightmare_Editor.NewTools
                     count += 4;
 
                 }
+
                 tileIndex++;
             }
+
             return newData;
         }
 
@@ -547,6 +572,7 @@ namespace Nightmare_Editor.NewTools
                 newData[j++] = (byte)g8;
                 newData[j++] = (byte)r8;
             }
+
             return newData;
         }
 
@@ -576,6 +602,7 @@ namespace Nightmare_Editor.NewTools
                 newData[j++] = (byte)g8;
                 newData[j++] = (byte)r8;
             }
+
             return newData;
         }
 
@@ -608,6 +635,7 @@ namespace Nightmare_Editor.NewTools
                 newData[j++] = (byte)g8;
                 newData[j++] = (byte)r8;
             }
+
             return newData;
         }
 
@@ -628,6 +656,7 @@ namespace Nightmare_Editor.NewTools
                 newData[j++] = ogData[i];
                 newData[j++] = ogData[i];
             }
+
             return newData;
         }
 
@@ -649,6 +678,7 @@ namespace Nightmare_Editor.NewTools
                 j++;
                 newData[j++] = ogData[i];
             }
+
             return newData;
         }
 
@@ -668,6 +698,7 @@ namespace Nightmare_Editor.NewTools
                 newData[j++] = ogData[i];
                 newData[j++] = ogData[i];
             }
+
             return newData;
         }
 
@@ -688,6 +719,7 @@ namespace Nightmare_Editor.NewTools
                 newData[j++] = 0x00;
                 newData[j++] = 0x00;
             }
+
             return newData;
         }
 
@@ -714,6 +746,7 @@ namespace Nightmare_Editor.NewTools
                 newData[j++] = gray8;
                 newData[j++] = gray8;
             }
+
             return newData;
         }
 
@@ -742,6 +775,7 @@ namespace Nightmare_Editor.NewTools
                 newData[j++] = gray8_2;
                 newData[j++] = gray8_2;
             }
+
             return newData;
         }
 
@@ -768,6 +802,7 @@ namespace Nightmare_Editor.NewTools
                 newData[j++] = a8_2;
                 j += 3;
             }
+
             return newData;
         }
 
@@ -781,7 +816,7 @@ namespace Nightmare_Editor.NewTools
             byte[] newData = new byte[ogData.Length * 6];
             int j = 0;
             int l = 0;
-            for (int i = 0; i < ogData.Length; i+=8)
+            for (int i = 0; i < ogData.Length; i += 8)
             {
                 byte[] colorBlock = new byte[16 * 3];
                 bool flip = (ogData[i + 4] & 0x1) == 1;
@@ -825,14 +860,17 @@ namespace Nightmare_Editor.NewTools
                     {
                         b2 -= 8;
                     }
+
                     if ((ogData[i + 6] & 0x4) != 0)
                     {
                         g2 -= 8;
                     }
+
                     if ((ogData[i + 7] & 0x4) != 0)
                     {
                         r2 -= 8;
                     }
+
                     b2 = Math.Clamp(b2, 0, 0x1F);
                     g2 = Math.Clamp(g2, 0, 0x1F);
                     r2 = Math.Clamp(r2, 0, 0x1F);
@@ -846,6 +884,7 @@ namespace Nightmare_Editor.NewTools
                     g2 = (ogData[i + 6]) & 0xF;
                     r2 = (ogData[i + 7]) & 0xF;
                 }
+
                 for (int o = 0; o < 16; o++)
                 {
                     int _big = 0;
@@ -854,10 +893,12 @@ namespace Nightmare_Editor.NewTools
                     {
                         _big = 1;
                     }
+
                     if (sub[o])
                     {
                         _sub = -1;
                     }
+
                     if ((flip && (o % 4 >= 2)) || (!flip && (o >= 8)))
                     {
                         if (diff)
@@ -876,13 +917,13 @@ namespace Nightmare_Editor.NewTools
                         {
                             int b = (((b2) << 4) + ((b2)) + (off2[_big] * _sub));
                             int g = (((g2) << 4) + ((g2)) + (off2[_big] * _sub));
-                            int r = (((r2) << 4) + ((r2)) + (off2[_big] * _sub)); 
+                            int r = (((r2) << 4) + ((r2)) + (off2[_big] * _sub));
                             b = Math.Clamp(b, 0, 255);
                             g = Math.Clamp(g, 0, 255);
                             r = Math.Clamp(r, 0, 255);
                             colorBlock[j++] = (byte)b;
                             colorBlock[j++] = (byte)g;
-                            colorBlock[j++] = (byte)r; 
+                            colorBlock[j++] = (byte)r;
                         }
                     }
                     else
@@ -903,7 +944,7 @@ namespace Nightmare_Editor.NewTools
                         {
                             int b = (((b1) << 4) + ((b1)) + (off1[_big] * _sub));
                             int g = (((g1) << 4) + ((g1)) + (off1[_big] * _sub));
-                            int r = (((r1) << 4) + ((r1)) + (off1[_big] * _sub)); 
+                            int r = (((r1) << 4) + ((r1)) + (off1[_big] * _sub));
                             b = Math.Clamp(b, 0, 255);
                             g = Math.Clamp(g, 0, 255);
                             r = Math.Clamp(r, 0, 255);
@@ -913,9 +954,9 @@ namespace Nightmare_Editor.NewTools
                         }
                     }
                 }
-                
+
                 j = 0;
-                
+
                 newData[l++] = colorBlock[0 * 3 + 0];
                 newData[l++] = colorBlock[0 * 3 + 1];
                 newData[l++] = colorBlock[0 * 3 + 2];
@@ -928,7 +969,7 @@ namespace Nightmare_Editor.NewTools
                 newData[l++] = colorBlock[12 * 3 + 0];
                 newData[l++] = colorBlock[12 * 3 + 1];
                 newData[l++] = colorBlock[12 * 3 + 2];
-                
+
                 newData[l++] = colorBlock[1 * 3 + 0];
                 newData[l++] = colorBlock[1 * 3 + 1];
                 newData[l++] = colorBlock[1 * 3 + 2];
@@ -941,7 +982,7 @@ namespace Nightmare_Editor.NewTools
                 newData[l++] = colorBlock[13 * 3 + 0];
                 newData[l++] = colorBlock[13 * 3 + 1];
                 newData[l++] = colorBlock[13 * 3 + 2];
-                
+
                 newData[l++] = colorBlock[2 * 3 + 0];
                 newData[l++] = colorBlock[2 * 3 + 1];
                 newData[l++] = colorBlock[2 * 3 + 2];
@@ -954,7 +995,7 @@ namespace Nightmare_Editor.NewTools
                 newData[l++] = colorBlock[14 * 3 + 0];
                 newData[l++] = colorBlock[14 * 3 + 1];
                 newData[l++] = colorBlock[14 * 3 + 2];
-                
+
                 newData[l++] = colorBlock[3 * 3 + 0];
                 newData[l++] = colorBlock[3 * 3 + 1];
                 newData[l++] = colorBlock[3 * 3 + 2];
@@ -969,10 +1010,11 @@ namespace Nightmare_Editor.NewTools
                 newData[l++] = colorBlock[15 * 3 + 2];
 
             }
+
             return newData;
         }
-        
-        
+
+
         /// <summary>
         /// Converts ETC1A4 bytes into RGBA8888 bytes.
         /// </summary>
@@ -982,9 +1024,9 @@ namespace Nightmare_Editor.NewTools
         {
             byte[] newData = new byte[ogData.Length * 4];
             int j = 0;
-            int l = 0; 
+            int l = 0;
             int m = 0;
-            for (int i = 0; i < ogData.Length; i+=16)
+            for (int i = 0; i < ogData.Length; i += 16)
             {
                 byte[] alphaBlock = new byte[16];
                 for (int o = 0; o < alphaBlock.Length / 2; o++)
@@ -998,11 +1040,11 @@ namespace Nightmare_Editor.NewTools
                     alphaBlock[m++] = a8_2;
                     alphaBlock[m++] = a8_1;
                 }
-                
-                
-                
-                
-                
+
+
+
+
+
                 byte[] colorBlock = new byte[16 * 3];
                 bool flip = (ogData[i + 12] & 0x1) == 1;
                 bool diff = ((ogData[i + 12] >> 1) & 0x1) == 1;
@@ -1045,14 +1087,17 @@ namespace Nightmare_Editor.NewTools
                     {
                         b2 -= 8;
                     }
+
                     if ((ogData[i + 14] & 0x4) != 0)
                     {
                         g2 -= 8;
                     }
+
                     if ((ogData[i + 15] & 0x4) != 0)
                     {
                         r2 -= 8;
                     }
+
                     b2 = Math.Clamp(b2, 0, 0x1F);
                     g2 = Math.Clamp(g2, 0, 0x1F);
                     r2 = Math.Clamp(r2, 0, 0x1F);
@@ -1066,6 +1111,7 @@ namespace Nightmare_Editor.NewTools
                     g2 = (ogData[i + 14]) & 0xF;
                     r2 = (ogData[i + 15]) & 0xF;
                 }
+
                 for (int o = 0; o < 16; o++)
                 {
                     int _big = 0;
@@ -1074,10 +1120,12 @@ namespace Nightmare_Editor.NewTools
                     {
                         _big = 1;
                     }
+
                     if (sub[o])
                     {
                         _sub = -1;
                     }
+
                     if ((flip && (o % 4 >= 2)) || (!flip && (o >= 8)))
                     {
                         if (diff)
@@ -1096,13 +1144,13 @@ namespace Nightmare_Editor.NewTools
                         {
                             int b = (((b2) << 4) + ((b2)) + (off2[_big] * _sub));
                             int g = (((g2) << 4) + ((g2)) + (off2[_big] * _sub));
-                            int r = (((r2) << 4) + ((r2)) + (off2[_big] * _sub)); 
+                            int r = (((r2) << 4) + ((r2)) + (off2[_big] * _sub));
                             b = Math.Clamp(b, 0, 255);
                             g = Math.Clamp(g, 0, 255);
                             r = Math.Clamp(r, 0, 255);
                             colorBlock[l++] = (byte)b;
                             colorBlock[l++] = (byte)g;
-                            colorBlock[l++] = (byte)r; 
+                            colorBlock[l++] = (byte)r;
                         }
                     }
                     else
@@ -1123,7 +1171,7 @@ namespace Nightmare_Editor.NewTools
                         {
                             int b = (((b1) << 4) + ((b1)) + (off1[_big] * _sub));
                             int g = (((g1) << 4) + ((g1)) + (off1[_big] * _sub));
-                            int r = (((r1) << 4) + ((r1)) + (off1[_big] * _sub)); 
+                            int r = (((r1) << 4) + ((r1)) + (off1[_big] * _sub));
                             b = Math.Clamp(b, 0, 255);
                             g = Math.Clamp(g, 0, 255);
                             r = Math.Clamp(r, 0, 255);
@@ -1133,7 +1181,7 @@ namespace Nightmare_Editor.NewTools
                         }
                     }
                 }
-                
+
                 l = 0;
                 m = 0;
 
@@ -1153,7 +1201,7 @@ namespace Nightmare_Editor.NewTools
                 newData[j++] = colorBlock[12 * 3 + 0];
                 newData[j++] = colorBlock[12 * 3 + 1];
                 newData[j++] = colorBlock[12 * 3 + 2];
-                
+
                 newData[j++] = alphaBlock[1];
                 newData[j++] = colorBlock[1 * 3 + 0];
                 newData[j++] = colorBlock[1 * 3 + 1];
@@ -1170,7 +1218,7 @@ namespace Nightmare_Editor.NewTools
                 newData[j++] = colorBlock[13 * 3 + 0];
                 newData[j++] = colorBlock[13 * 3 + 1];
                 newData[j++] = colorBlock[13 * 3 + 2];
-                    
+
                 newData[j++] = alphaBlock[2];
                 newData[j++] = colorBlock[2 * 3 + 0];
                 newData[j++] = colorBlock[2 * 3 + 1];
@@ -1187,7 +1235,7 @@ namespace Nightmare_Editor.NewTools
                 newData[j++] = colorBlock[14 * 3 + 0];
                 newData[j++] = colorBlock[14 * 3 + 1];
                 newData[j++] = colorBlock[14 * 3 + 2];
-                
+
                 newData[j++] = alphaBlock[3];
                 newData[j++] = colorBlock[3 * 3 + 0];
                 newData[j++] = colorBlock[3 * 3 + 1];
@@ -1205,6 +1253,7 @@ namespace Nightmare_Editor.NewTools
                 newData[j++] = colorBlock[15 * 3 + 1];
                 newData[j++] = colorBlock[15 * 3 + 2];
             }
+
             return newData;
         }
 
@@ -1224,6 +1273,7 @@ namespace Nightmare_Editor.NewTools
             {
                 newData[i] = header[i];
             }
+
             int j = 0x80;
             for (int i = 0x81; i < ogData.Length; i++)
             {
@@ -1231,6 +1281,7 @@ namespace Nightmare_Editor.NewTools
                 newData[j++] = ogData[i++];
                 newData[j++] = ogData[i++];
             }
+
             return newData;
         }
 
@@ -1264,6 +1315,7 @@ namespace Nightmare_Editor.NewTools
                 newData[j++] = (byte)(bytes & 0xFF);
                 newData[j++] = (byte)((bytes >> 8) & 0xFF);
             }
+
             return newData;
         }
 
@@ -1296,6 +1348,7 @@ namespace Nightmare_Editor.NewTools
                 newData[j++] = (byte)(bytes & 0xFF);
                 newData[j++] = (byte)((bytes >> 8) & 0xFF);
             }
+
             return newData;
         }
 
@@ -1329,6 +1382,7 @@ namespace Nightmare_Editor.NewTools
                 newData[j++] = (byte)(bytes & 0xFF);
                 newData[j++] = (byte)((bytes >> 8) & 0xFF);
             }
+
             return newData;
         }
 
@@ -1362,6 +1416,7 @@ namespace Nightmare_Editor.NewTools
                 newData[j++] = (byte)(bytes & 0xFF);
                 newData[j++] = (byte)((bytes >> 8) & 0xFF);
             }
+
             return newData;
         }
 
@@ -1392,6 +1447,7 @@ namespace Nightmare_Editor.NewTools
                 newData[j++] = (byte)(bytes & 0xFF);
                 newData[j++] = (byte)((bytes >> 8) & 0xFF);
             }
+
             return newData;
         }
 
@@ -1421,6 +1477,7 @@ namespace Nightmare_Editor.NewTools
                 byte gray = (byte)(0.299 * r + 0.587 * g + 0.114 * b);
                 newData[j++] = gray;
             }
+
             return newData;
         }
 
@@ -1446,6 +1503,7 @@ namespace Nightmare_Editor.NewTools
             {
                 newData[j++] = ogData[i];
             }
+
             return newData;
         }
 
@@ -1478,6 +1536,7 @@ namespace Nightmare_Editor.NewTools
 
                 newData[j++] = pixel;
             }
+
             return newData;
         }
 
@@ -1513,6 +1572,7 @@ namespace Nightmare_Editor.NewTools
 
                 newData[j++] = pixels;
             }
+
             return newData;
         }
 
@@ -1542,14 +1602,796 @@ namespace Nightmare_Editor.NewTools
 
                 newData[j++] = pixels;
             }
+
             return newData;
         }
-        
+
+
         /// <summary>
         /// Converts RGBA8888 bytes into ETC1 bytes.
         /// </summary>
         /// <param name="ogData">Raw RGBA8888 byte array, with CTT Header.</param>
         /// <returns>Returns a byte array containing raw ETC1 data, with a CTT Header.</returns>
+        public static byte[] ETC1pack(byte[] ogData)
+        {
+            ushort width = (ushort)(ogData[0x20] | (ogData[0x21] << 8));
+            ushort height = (ushort)(ogData[0x22] | (ogData[0x23] << 8));
+            byte[] header = CTTHeader(width, height, (int)Format.ETC1);
+            byte[] newData = new byte[((ogData.Length - 0x80) / 8) + 0x80];
+
+            for (int i = 0; i < 0x80; i++)
+            {
+                newData[i] = header[i];
+            }
+
+            int l = 0x80;
+            for (int i = 0x80; i < newData.Length; i += 8)
+            {
+                byte[] colorBlock = new byte[16 * 3];
+
+                l++;
+                colorBlock[0 * 3 + 0] = ogData[l++];
+                colorBlock[0 * 3 + 1] = ogData[l++];
+                colorBlock[0 * 3 + 2] = ogData[l++];
+                l++;
+                colorBlock[4 * 3 + 0] = ogData[l++];
+                colorBlock[4 * 3 + 1] = ogData[l++];
+                colorBlock[4 * 3 + 2] = ogData[l++];
+                l++;
+                colorBlock[8 * 3 + 0] = ogData[l++];
+                colorBlock[8 * 3 + 1] = ogData[l++];
+                colorBlock[8 * 3 + 2] = ogData[l++];
+                l++;
+                colorBlock[12 * 3 + 0] = ogData[l++];
+                colorBlock[12 * 3 + 1] = ogData[l++];
+                colorBlock[12 * 3 + 2] = ogData[l++];
+
+                l++;
+                colorBlock[1 * 3 + 0] = ogData[l++];
+                colorBlock[1 * 3 + 1] = ogData[l++];
+                colorBlock[1 * 3 + 2] = ogData[l++];
+                l++;
+                colorBlock[5 * 3 + 0] = ogData[l++];
+                colorBlock[5 * 3 + 1] = ogData[l++];
+                colorBlock[5 * 3 + 2] = ogData[l++];
+                l++;
+                colorBlock[9 * 3 + 0] = ogData[l++];
+                colorBlock[9 * 3 + 1] = ogData[l++];
+                colorBlock[9 * 3 + 2] = ogData[l++];
+                l++;
+                colorBlock[13 * 3 + 0] = ogData[l++];
+                colorBlock[13 * 3 + 1] = ogData[l++];
+                colorBlock[13 * 3 + 2] = ogData[l++];
+
+                l++;
+                colorBlock[2 * 3 + 0] = ogData[l++];
+                colorBlock[2 * 3 + 1] = ogData[l++];
+                colorBlock[2 * 3 + 2] = ogData[l++];
+                l++;
+                colorBlock[6 * 3 + 0] = ogData[l++];
+                colorBlock[6 * 3 + 1] = ogData[l++];
+                colorBlock[6 * 3 + 2] = ogData[l++];
+                l++;
+                colorBlock[10 * 3 + 0] = ogData[l++];
+                colorBlock[10 * 3 + 1] = ogData[l++];
+                colorBlock[10 * 3 + 2] = ogData[l++];
+                l++;
+                colorBlock[14 * 3 + 0] = ogData[l++];
+                colorBlock[14 * 3 + 1] = ogData[l++];
+                colorBlock[14 * 3 + 2] = ogData[l++];
+
+                l++;
+                colorBlock[3 * 3 + 0] = ogData[l++];
+                colorBlock[3 * 3 + 1] = ogData[l++];
+                colorBlock[3 * 3 + 2] = ogData[l++];
+                l++;
+                colorBlock[7 * 3 + 0] = ogData[l++];
+                colorBlock[7 * 3 + 1] = ogData[l++];
+                colorBlock[7 * 3 + 2] = ogData[l++];
+                l++;
+                colorBlock[11 * 3 + 0] = ogData[l++];
+                colorBlock[11 * 3 + 1] = ogData[l++];
+                colorBlock[11 * 3 + 2] = ogData[l++];
+                l++;
+                colorBlock[15 * 3 + 0] = ogData[l++];
+                colorBlock[15 * 3 + 1] = ogData[l++];
+                colorBlock[15 * 3 + 2] = ogData[l++];
+
+                var block = BruteForce(colorBlock);
+                
+                
+                for (int o = 0; o < 16; o++)
+                {
+                    if (o < 8)
+                    {
+                        if (block.big[o])
+                        {
+                            newData[i] += (byte)(1 << o);
+                        }
+                        if (block.sub[0])
+                        {
+                            newData[i + 2] += (byte)(1 << o);
+                        }
+                    }
+                    else
+                    {
+                        if (block.big[o])
+                        {
+                            newData[i + 1] += (byte)(1 << (o - 8));
+                        }
+                        if (block.sub[o])
+                        {
+                            newData[i + 3] += (byte)(1 << (o - 8));
+                        }
+                    }
+                }
+                if (block.flip)
+                {
+                    newData[i + 4] += 1;
+                }
+                if (block.diff)
+                {
+                    newData[i + 4] += (1 << 1);
+                }
+                newData[i + 4] += (byte)(block.offsetset2 << 2);
+                newData[i + 4] += (byte)(block.offsetset1 << 5);
+                newData[i + 5] = block.blue;
+                newData[i + 6] = block.green;
+                newData[i + 7] = block.red;
+            }
+            
+            return newData;
+        }
+        
+        public class ETC1Block
+        {
+            public int offsetset1 { get; set; }
+            public int offsetset2 { get; set; }
+            public byte blue { get; set; }
+            public byte green { get; set; }
+            public byte red { get; set; }
+            public bool flip { get; set; }
+            public bool diff { get; set; }
+            public bool[] big { get; set; }
+            public bool[] sub { get; set; }
+        }
+        
+        public class ETC1HalfBlock
+        {
+            public List<ETC1Pixel> Pixels { get; set; }
+            public int Score { get; set; }
+            public int OffsetSet { get; set; }
+            public byte[] Color { get; set; }
+        }
+        
+        public class ETC1Pixel
+        {
+            public byte[] Color { get; set; }
+            public byte[] Reduced { get; set; }
+            public byte Gray { get; set; }
+            public bool Big { get; set; }
+            public bool Sub { get; set; }
+        }
+
+        public static ETC1Block BruteForce(byte[] colorBlock)
+        {
+            ETC1Block main = new ETC1Block();
+            byte[] u_block = new byte[24];
+            byte[] d_block = new byte[24];
+            byte[] l_block = new byte[24];
+            byte[] r_block = new byte[24];
+            int u_o = 0;
+            int d_o = 0;
+            int l_o = 0;
+            int r_o = 0;
+            for (int i = 0; i < 16; i++)
+            {
+                if (i % 4 < 2)
+                {
+                    u_block[u_o++] = colorBlock[i];
+                    u_block[u_o++] = colorBlock[i + 1];
+                    u_block[u_o++] = colorBlock[i + 2];
+                }
+                else
+                {
+                    d_block[d_o++] = colorBlock[i];
+                    d_block[d_o++] = colorBlock[i + 1];
+                    d_block[d_o++] = colorBlock[i + 2];
+                }
+                if (i < 8)
+                {
+                    l_block[l_o++] = colorBlock[i];
+                    l_block[l_o++] = colorBlock[i + 1];
+                    l_block[l_o++] = colorBlock[i + 2];
+                }
+                else
+                {
+                    r_block[r_o++] = colorBlock[i];
+                    r_block[r_o++] = colorBlock[i + 1];
+                    r_block[r_o++] = colorBlock[i + 2];
+                }
+            }
+            ETC1HalfBlock u_pixels = PixelMaker(u_block, true);
+            ETC1HalfBlock d_pixels = PixelMaker(d_block, true);
+            ETC1HalfBlock l_pixels = PixelMaker(l_block, false);
+            ETC1HalfBlock r_pixels = PixelMaker(r_block, false);
+
+
+            byte b1 = 0;
+            byte g1 = 0;
+            byte r1 = 0;
+            byte b2 = 0;
+            byte g2 = 0;
+            byte r2 = 0;
+            main.big = new bool[16];
+            main.sub = new bool[16];
+            if (u_pixels.Score + d_pixels.Score < l_pixels.Score + r_pixels.Score)
+            {
+                main.flip = true;
+                main.offsetset1 = u_pixels.OffsetSet;
+                main.offsetset2 = d_pixels.OffsetSet;
+                b1 = u_pixels.Color[0];
+                g1 = u_pixels.Color[1];
+                r1 = u_pixels.Color[2];
+                b2 = d_pixels.Color[0];
+                g2 = d_pixels.Color[1];
+                r2 = d_pixels.Color[2];
+                int j = 0;
+                int k = 0;
+                // It has come to my attention that I have largely forgotten about the letter k.
+                for (int i = 0; i < 16; i++)
+                {
+                    if (i % 4 < 2)
+                    {
+                        main.big[i] = u_pixels.Pixels[j].Big;
+                        main.sub[i] = u_pixels.Pixels[j++].Sub;
+                    }
+                    else
+                    {
+                        main.big[i] = d_pixels.Pixels[k].Big;
+                        main.sub[i] = d_pixels.Pixels[k++].Sub;
+                    }
+                }
+            }
+            else
+            {
+                main.flip = false;
+                main.offsetset1 = l_pixels.OffsetSet;
+                main.offsetset2 = r_pixels.OffsetSet;
+                b1 = l_pixels.Color[0];
+                g1 = l_pixels.Color[1];
+                r1 = l_pixels.Color[2];
+                b2 = r_pixels.Color[0];
+                g2 = r_pixels.Color[1];
+                r2 = r_pixels.Color[2];
+                int j = 0;
+                int k = 0;
+                for (int i = 0; i < 16; i++)
+                {
+                    if (i < 8)
+                    {
+                        main.big[i] = l_pixels.Pixels[j].Big;
+                        main.sub[i] = l_pixels.Pixels[j++].Sub;
+                    }
+                    else
+                    {
+                        main.big[i] = r_pixels.Pixels[k].Big;
+                        main.sub[i] = r_pixels.Pixels[k++].Sub;
+                    }
+                }
+            }
+
+            b1 = (byte)(b1 >> 3);
+            g1 = (byte)(g1 >> 3);
+            r1 = (byte)(r1 >> 3);
+            b2 = (byte)(b2 >> 3);
+            g2 = (byte)(g2 >> 3);
+            r2 = (byte)(r2 >> 3);
+
+            if ((b2 >= b1 - 4 && b2 < b1 + 4) && (g2 >= g1 - 4 && g2 < g1 + 4) && (r2 >= r1 - 4 && r2 < r1 + 4))
+            {
+                main.diff = true;
+                b2 = (byte)(b2 - b1);
+                g2 = (byte)(g2 - g1);
+                r2 = (byte)(r2 - r1);
+                if (b2 < 0)
+                {
+                    b2 += 8;
+                }
+                if (g2 < 0)
+                {
+                    g2 += 8;
+                }
+                if (r2 < 0)
+                {
+                    r2 += 8;
+                }
+
+                main.blue = (byte)((b1 << 3) + b2);
+                main.green = (byte)((g1 << 3) + g2);
+                main.red = (byte)((r1 << 3) + r2);
+            }
+            else
+            {
+                main.diff = false;
+                b1 = (byte)(b1 >> 1);
+                g1 = (byte)(g1 >> 1);
+                r1 = (byte)(r1 >> 1);
+                b2 = (byte)(b2 >> 1);
+                g2 = (byte)(g2 >> 1);
+                r2 = (byte)(r2 >> 1);
+                
+                main.blue = (byte)((b1 << 4) + b2);
+                main.green = (byte)((g1 << 4) + g2);
+                main.red = (byte)((r1 << 4) + r2);
+            }
+            return main;
+        }
+
+        public static ETC1HalfBlock PixelMaker(byte[] colorBlock, bool flip)
+        {
+            int width = 4;
+            int height = 4;
+            if (flip)
+            {
+                height = 2;
+            }
+            else
+            {
+                width = 2;
+            }
+
+            ETC1HalfBlock halfblock = new ETC1HalfBlock();
+            List<ETC1Pixel> pixels = new List<ETC1Pixel>();
+            for (int i = 0; i < colorBlock.Length; i+=3)
+            {
+                ETC1Pixel pixel = new ETC1Pixel();
+                pixel.Color = new byte[3];
+                pixel.Color[0] = colorBlock[i];
+                pixel.Color[1] = colorBlock[i + 1];
+                pixel.Color[2] = colorBlock[i + 2];
+                pixels.Add(pixel);
+            }
+            using (Image<Rgb24> block = new Image<Rgb24>(width, height))
+            {
+                for (int x = 0; x < width; x++)
+                for (int y = 0; y < height; y++)
+                {
+                    Rgb24 bg = new Rgb24(pixels[y + (x * height)].Color[2], pixels[y + (x * height)].Color[1], pixels[y + (x * height)].Color[0]);
+                    block.Mutate(ctx =>
+                    {
+                        ctx.Fill(bg, new Rectangle(x, y, 1, 1));
+                    });
+                }
+                var quantizer = new WuQuantizer(new QuantizerOptions { MaxColors = 4 });
+                using (Image<Rgb24> reduced = block.Clone(ctx => ctx.Quantize(quantizer)))
+                {
+                    for (int x = 0; x < width; x++)
+                    for (int y = 0; y < height; y++)
+                    {
+                        ETC1Pixel pixel = pixels[y + (x * height)];
+                        pixel.Reduced = new byte[3];
+                        pixel.Reduced[0] = reduced[x, y].B;
+                        pixel.Reduced[1] = reduced[x, y].G;
+                        pixel.Reduced[2] = reduced[x, y].R;
+                        pixel.Gray = (byte)(0.299 * reduced[x, y].R + 0.587 * reduced[x, y].G + 0.114 * reduced[x, y].B);
+                    }
+                };
+            };
+
+            List<byte[]> colors = new List<byte[]>();
+            for (int i = 0; i < pixels.Count; i++)
+            {
+                byte[] color = new byte[4];
+                color[0] = pixels[i].Color[0];
+                color[1] = pixels[i].Color[1];
+                color[2] = pixels[i].Color[2];
+                color[3] = pixels[i].Gray;
+                if (!colors.Any(c => c.SequenceEqual(color)))
+                {
+                    colors.Add(color);
+                }
+            }
+            if (colors.Count == 1)
+            {
+                for (int i = 0; i < pixels.Count; i++)
+                {
+                    if (colors[0][3] < 128)
+                    {
+                        pixels[i].Big = false;
+                        pixels[i].Sub = true;
+                    }
+                    else
+                    {
+                        pixels[i].Big = false;
+                        pixels[i].Sub = false;
+                    }
+                    halfblock.Score = 0;
+                }
+                halfblock.OffsetSet = 0;
+            }
+            else if (colors.Count == 2)
+            {
+                int diff = Math.Abs(colors[1][3] - colors[0][3]);
+                if (diff != 0)
+                {
+                    var numbers = new[] {
+                        6, 10, 4, 16,
+                        12, 22, 10, 34,
+                        20, 38, 18, 58,
+                        29, 55, 26, 84,
+                        42, 78, 36, 120,
+                        56, 104, 48, 160,
+                        73, 139, 66, 212,
+                        136, 230, 94, 366
+                    };
+                    int closest = numbers
+                        .OrderBy(n => Math.Abs(n - diff))
+                        .First();
+
+                    halfblock.OffsetSet = (int)Math.Floor((decimal)Array.IndexOf(numbers, closest) / 4);
+                    for (int i = 0; i < pixels.Count; i++)
+                    {
+                        int small = 1;
+                        if (colors[0][3] + diff == colors[1][3])
+                        {
+                            small = 0;
+                        }
+                        if (pixels[i].Gray == colors[small][4])
+                        {
+                            if (Array.IndexOf(numbers, closest) % 4 == 0)
+                            {
+                                pixels[i].Sub = false;
+                                pixels[i].Big = false;
+                            }
+                            else if (Array.IndexOf(numbers, closest) % 4 == 1)
+                            {
+                                pixels[i].Sub = true;
+                                pixels[i].Big = false;
+                            }
+                            else if (Array.IndexOf(numbers, closest) % 4 == 2)
+                            {
+                                pixels[i].Sub = true;
+                                pixels[i].Big = false;
+                            }
+                            else
+                            {
+                                pixels[i].Sub = true;
+                                pixels[i].Big = true;
+                            }
+                        }
+                        else
+                        {
+                            if (Array.IndexOf(numbers, closest) % 4 == 0)
+                            {
+                                pixels[i].Sub = false;
+                                pixels[i].Big = true;
+                            }
+                            else if (Array.IndexOf(numbers, closest) % 4 == 1)
+                            {
+                                pixels[i].Sub = false;
+                                pixels[i].Big = true;
+                            }
+                            else if (Array.IndexOf(numbers, closest) % 4 == 2)
+                            {
+                                pixels[i].Sub = false;
+                                pixels[i].Big = false;
+                            }
+                            else
+                            {
+                                pixels[i].Sub = false;
+                                pixels[i].Big = true;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    // reapeat of colors.Count == 1
+                    for (int i = 0; i < pixels.Count; i++)
+                    {
+                        if (colors[0][3] < 128)
+                        {
+                            pixels[i].Big = false;
+                            pixels[i].Sub = true;
+                        }
+                        else
+                        {
+                            pixels[i].Big = false;
+                            pixels[i].Sub = false;
+                        }
+                        halfblock.Score = 0;
+                    }
+                    halfblock.OffsetSet = 0;
+                }
+            }
+            else if (colors.Count == 3)
+            {
+                int best_score = int.MaxValue;
+                int blank = 0;
+                colors.Sort((a, b) => a[3].CompareTo(b[3]));
+                int[] diff = new int[]
+                    { colors[1][3] - colors[0][3], colors[2][3] - colors[1][3] };
+                for (int i = 0; i < 8; i++)
+                {
+                    int score = Math.Abs((ETC1OffTable(i)[1] - ETC1OffTable(i)[0]) - diff[0]) + Math.Abs((ETC1OffTable(i)[0] * 2) - diff[1]);
+                    if (score < best_score)
+                    {
+                        best_score = score;
+                        halfblock.OffsetSet = i;
+                        blank = 3;
+                    }
+                    score = Math.Abs((ETC1OffTable(i)[1] + ETC1OffTable(i)[0]) - diff[0]) + Math.Abs((ETC1OffTable(i)[1] - ETC1OffTable(i)[0]) - diff[1]);
+                    if (score < best_score)
+                    {
+                        best_score = score;
+                        halfblock.OffsetSet = i;
+                        blank = 2;
+                    }
+                    score = Math.Abs((ETC1OffTable(i)[1] - ETC1OffTable(i)[0]) - diff[0]) + Math.Abs((ETC1OffTable(i)[1] + ETC1OffTable(i)[0]) - diff[1]);
+                    if (score < best_score)
+                    {
+                        best_score = score;
+                        halfblock.OffsetSet = i;
+                        blank = 1;
+                    }
+                    score = Math.Abs((ETC1OffTable(i)[0] * 2) - diff[0]) + Math.Abs((ETC1OffTable(i)[1] - ETC1OffTable(i)[0]) - diff[1]);
+                    if (score < best_score)
+                    {
+                        best_score = score;
+                        halfblock.OffsetSet = i;
+                        blank = 0;
+                    }
+                }
+                for (int i = 0; i < pixels.Count; i++)
+                {
+                    if (blank == 0)
+                    {
+                        if (pixels[i].Gray == colors[0][3])
+                        {
+                            pixels[i].Sub = true;
+                            pixels[i].Big = false;
+                        }
+                        else if (pixels[i].Gray == colors[1][3])
+                        {
+                            pixels[i].Sub = false;
+                            pixels[i].Big = false;
+                        }
+                        else
+                        {
+                            pixels[i].Sub = false;
+                            pixels[i].Big = true;
+                        }
+                    }
+                    else if (blank == 1)
+                    {
+                        if (pixels[i].Gray == colors[0][3])
+                        {
+                            pixels[i].Sub = true;
+                            pixels[i].Big = true;
+                        }
+                        else if (pixels[i].Gray == colors[1][3])
+                        {
+                            pixels[i].Sub = false;
+                            pixels[i].Big = false;
+                        }
+                        else
+                        {
+                            pixels[i].Sub = false;
+                            pixels[i].Big = true;
+                        }
+                    }
+                    else if (blank == 2)
+                    {
+                        if (pixels[i].Gray == colors[0][3])
+                        {
+                            pixels[i].Sub = true;
+                            pixels[i].Big = true;
+                        }
+                        else if (pixels[i].Gray == colors[1][3])
+                        {
+                            pixels[i].Sub = true;
+                            pixels[i].Big = false;
+                        }
+                        else
+                        {
+                            pixels[i].Sub = false;
+                            pixels[i].Big = true;
+                        }
+                    }
+                    else
+                    {
+                        if (pixels[i].Gray == colors[0][3])
+                        {
+                            pixels[i].Sub = true;
+                            pixels[i].Big = true;
+                        }
+                        else if (pixels[i].Gray == colors[1][3])
+                        {
+                            pixels[i].Sub = true;
+                            pixels[i].Big = false;
+                        }
+                        else
+                        {
+                            pixels[i].Sub = false;
+                            pixels[i].Big = false;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                int best_score = int.MaxValue;
+                colors.Sort((a, b) => a[3].CompareTo(b[3]));
+                int[] diff = new int[]
+                    { colors[1][3] - colors[0][3], colors[2][3] - colors[1][3], colors[3][3] - colors[2][3] };
+                for (int i = 0; i < 8; i++)
+                {
+                    int score = Math.Abs((ETC1OffTable(i)[1] - ETC1OffTable(i)[0]) - diff[0]) + Math.Abs((ETC1OffTable(i)[0] * 2) - diff[1]) + Math.Abs((ETC1OffTable(i)[1] - ETC1OffTable(i)[0]) - diff[2]);
+                    if (score < best_score)
+                    {
+                        best_score = score;
+                        halfblock.OffsetSet = i;
+                    }
+                }
+                for (int i = 0; i < pixels.Count; i++)
+                {
+                    if (pixels[i].Gray == colors[0][3])
+                    {
+                        pixels[i].Sub = true;
+                        pixels[i].Big = true;
+                    }
+                    else if (pixels[i].Gray == colors[1][3])
+                    {
+                        pixels[i].Sub = true;
+                        pixels[i].Big = false;
+                    }
+                    else if (pixels[i].Gray == colors[2][3])
+                    {
+                        pixels[i].Sub = false;
+                        pixels[i].Big = false;
+                    }
+                    else
+                    {
+                        pixels[i].Sub = false;
+                        pixels[i].Big = true;
+                    }
+                }
+            }
+
+            List<ETC1Pixel> color_ref = new List<ETC1Pixel>();
+            for (int i = 0; i < pixels.Count; i++)
+            {
+                if (!color_ref.Any(p => p.Gray == pixels[i].Gray))
+                {
+                    color_ref.Add(pixels[i]);
+                }
+            }
+
+            int r = 0;
+            int g = 0;
+            int b = 0;
+            halfblock.Color = new byte[3];
+            for (int i = 0; i < color_ref.Count; i++)
+            {
+                int sub = 1;
+                int big = 0;
+                if (color_ref[i].Big)
+                {
+                    big = 1;
+                }
+                if (color_ref[i].Sub)
+                {
+                    sub = -1;
+                }
+
+                b += color_ref[i].Reduced[0] + (sub * ETC1OffTable(halfblock.OffsetSet)[big]);
+                g += color_ref[i].Reduced[1] + (sub * ETC1OffTable(halfblock.OffsetSet)[big]);
+                r += color_ref[i].Reduced[2] + (sub * ETC1OffTable(halfblock.OffsetSet)[big]);
+            }
+            halfblock.Color[0] = (byte)Math.Clamp((b / color_ref.Count), 0, 0xFF);
+            halfblock.Color[1] = (byte)Math.Clamp((g / color_ref.Count), 0, 0xFF);
+            halfblock.Color[2] = (byte)Math.Clamp((r / color_ref.Count), 0, 0xFF);
+            halfblock.Pixels = pixels;
+            
+            
+            for (int i = 0; i < pixels.Count; i++)
+            {
+                int sub = 1;
+                int big = 0;
+                int r_score = 0;
+                int g_score = 0;
+                int b_score = 0;
+                if (pixels[i].Big)
+                {
+                    big = 1;
+                }
+                if (pixels[i].Sub)
+                {
+                    sub = -1;
+                }
+                b_score = Math.Abs((pixels[i].Color[0] - (halfblock.Color[0] + (sub * ETC1OffTable(halfblock.OffsetSet)[big]))));
+                g_score = Math.Abs((pixels[i].Color[1] - (halfblock.Color[1] + (sub * ETC1OffTable(halfblock.OffsetSet)[big]))));
+                r_score = Math.Abs((pixels[i].Color[2] - (halfblock.Color[2] + (sub * ETC1OffTable(halfblock.OffsetSet)[big]))));
+                halfblock.Score += b_score + g_score + r_score;
+            }
+            
+            return halfblock;
+        }
+        
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/// <summary>
+        /// Converts RGBA8888 bytes into ETC1 bytes.
+        /// </summary>
+        /// <param name="ogData">Raw RGBA8888 byte array, with CTT Header.</param>
+        /// <returns>Returns a byte array containing raw ETC1 data, with a CTT Header.</returns>
+        /*
         public static byte[] ETC1pack(byte[] ogData)
         {
             ushort width = (ushort)(ogData[0x20] | (ogData[0x21] << 8));
@@ -1797,18 +2639,7 @@ namespace Nightmare_Editor.NewTools
             return newData;
         }
 
-        public class ETC1Block
-        {
-            public int offsetset1 { get; set; }
-            public int offsetset2 { get; set; }
-            public byte blue { get; set; }
-            public byte green { get; set; }
-            public byte red { get; set; }
-            public bool flip { get; set; }
-            public bool diff { get; set; }
-            public bool[] big { get; set; }
-            public bool[] sub { get; set; }
-        }
+        
 
         public static ETC1Block ETC1BruteForce(byte[] ogData)
         {
@@ -1912,26 +2743,26 @@ namespace Nightmare_Editor.NewTools
             if (left_score[1] + right_score[1] < top_score[1] + bottom_score[1])
             {
                 main.flip = false;
-                new_b1 = (byte)(left_avg[0] >> 3);
-                new_g1 = (byte)(left_avg[1] >> 3);
-                new_r1 = (byte)(left_avg[2] >> 3);
-                new_b2 = (byte)(right_avg[0] >> 3);
-                new_g2 = (byte)(right_avg[1] >> 3);
-                new_r2 = (byte)(right_avg[2] >> 3);
-                left_score[0] = main.offsetset1;
-                right_score[0] = main.offsetset2;
+                new_b2 = (byte)(left_avg[0] >> 3);
+                new_g2 = (byte)(left_avg[1] >> 3);
+                new_r2 = (byte)(left_avg[2] >> 3);
+                new_b1 = (byte)(right_avg[0] >> 3);
+                new_g1 = (byte)(right_avg[1] >> 3);
+                new_r1 = (byte)(right_avg[2] >> 3);
+                main.offsetset2 = left_score[0];
+                main.offsetset1 = right_score[0];
             }
             else
             {
                 main.flip = true;
-                new_b1 = (byte)(top_avg[0] >> 3);
-                new_g1 = (byte)(top_avg[1] >> 3);
-                new_r1 = (byte)(top_avg[2] >> 3);
-                new_b2 = (byte)(bottom_avg[0] >> 3);
-                new_g2 = (byte)(bottom_avg[1] >> 3);
-                new_r2 = (byte)(bottom_avg[2] >> 3);
-                top_score[0] = main.offsetset1;
-                bottom_score[0] = main.offsetset2;
+                new_b2 = (byte)(top_avg[0] >> 3);
+                new_g2 = (byte)(top_avg[1] >> 3);
+                new_r2 = (byte)(top_avg[2] >> 3);
+                new_b1 = (byte)(bottom_avg[0] >> 3);
+                new_g1 = (byte)(bottom_avg[1] >> 3);
+                new_r1 = (byte)(bottom_avg[2] >> 3);
+                main.offsetset2 = top_score[0];
+                main.offsetset1 = bottom_score[0];
             }
             if ((new_b2 >= new_b1 - 8 && new_b2 < new_b1 + 8) && (new_g2 >= new_g1 - 8 && new_g2 < new_g1 + 8) && (new_r2 >= new_r1 - 8 && new_r2 < new_r1 + 8))
             {
@@ -1952,9 +2783,12 @@ namespace Nightmare_Editor.NewTools
                     new_r2 += 8;
                 }
                     
-                main.blue = (byte)(new_b2 << 5 + new_b1);
-                main.green = (byte)(new_g2 << 5 + new_g1);
-                main.red = (byte)(new_r2 << 5 + new_r1);
+                //main.blue = (byte)((new_b2 << 5) + new_b1);
+                //main.green = (byte)((new_g2 << 5) + new_g1);
+                //main.red = (byte)((new_r2 << 5) + new_r1);
+                main.blue = (byte)((new_b1 << 3) + new_b2);
+                main.green = (byte)((new_g1 << 3) + new_g2);
+                main.red = (byte)((new_r1 << 3) + new_r2);
             }
             else
             {
@@ -1965,9 +2799,9 @@ namespace Nightmare_Editor.NewTools
                 new_b2 = (byte)(new_b2 >> 1);
                 new_g2 = (byte)(new_g2 >> 1);
                 new_r2 = (byte)(new_r2 >> 1);
-                main.blue = (byte)(new_b2 << 4 + new_b1);
-                main.green = (byte)(new_g2 << 4 + new_g1);
-                main.red = (byte)(new_r2 << 4 + new_r1);
+                main.blue = (byte)((new_b2 << 4) + new_b1);
+                main.green = (byte)((new_g2 << 4) + new_g1);
+                main.red = (byte)((new_r2 << 4) + new_r1);
             }
 
             if (main.flip)
@@ -1994,6 +2828,9 @@ namespace Nightmare_Editor.NewTools
             int[] score = new int[8];
             int best_score = Int32.MaxValue;
             int[] return_value = new int[2];
+            b.Sort();
+            g.Sort();
+            r.Sort();
             for (int i = 0; i < b.Count - 1; i++)
             {
                 int temp_diff = (int)(Math.Abs(b[i] - b[i + 1]) + Math.Abs(g[i] - g[i + 1]) + Math.Abs(r[i] - r[i + 1]));
@@ -2003,32 +2840,55 @@ namespace Nightmare_Editor.NewTools
                     split_index = i;
                 }
             }
+
+            int small_num = 0;
+            int big_num = 0;
             for (int i = 0; i < b.Count; i++)
             {
                 if (i <= split_index)
                 {
-                    small += (Math.Abs(b[i] - avg[0]) + Math.Abs(g[i] - avg[1]) + Math.Abs(r[i] - avg[2])) / (split_index + 1);
+                    small += (Math.Abs(b[i] - avg[0]) + Math.Abs(g[i] - avg[1]) + Math.Abs(r[i] - avg[2]));
+                    small_num += 1;
                 }
                 else
                 {
-                    big += (Math.Abs(b[i] - avg[0]) + Math.Abs(g[i] - avg[1]) + Math.Abs(r[i] - avg[2])) / (b.Count - (split_index + 1));
+                    big += (Math.Abs(b[i] - avg[0]) + Math.Abs(g[i] - avg[1]) + Math.Abs(r[i] - avg[2]));
+                    big_num += 1;
                 }
             }
+            
+            if (small_num > 0)
+            {
+                small = small / small_num;
+                score[0] += Math.Abs(small - 2);
+                score[1] += Math.Abs(small - 5);
+                score[2] += Math.Abs(small - 9);
+                score[3] += Math.Abs(small - 13);
+                score[4] += Math.Abs(small - 18);
+                score[5] += Math.Abs(small - 24);
+                score[6] += Math.Abs(small - 33);
+                score[7] += Math.Abs(small - 47);
+            }
 
-            score[0] = Math.Abs(small - 2) + Math.Abs(big - 8);
-            score[1] = Math.Abs(small - 5) + Math.Abs(big - 17);
-            score[2] = Math.Abs(small - 9) + Math.Abs(big - 29);
-            score[3] = Math.Abs(small - 13) + Math.Abs(big - 42);
-            score[4] = Math.Abs(small - 18) + Math.Abs(big - 60);
-            score[5] = Math.Abs(small - 24) + Math.Abs(big - 80);
-            score[6] = Math.Abs(small - 33) + Math.Abs(big - 106);
-            score[7] = Math.Abs(small - 47) + Math.Abs(big - 183);
+            if (big_num > 0)
+            {
+                big = big / big_num;
+                score[0] += Math.Abs(big - 8);
+                score[1] += Math.Abs(big - 17);
+                score[2] += Math.Abs(big - 29);
+                score[3] += Math.Abs(big - 42);
+                score[4] += Math.Abs(big - 60);
+                score[5] += Math.Abs(big - 80);
+                score[6] += Math.Abs(big - 106);
+                score[7] += Math.Abs(big - 183);
+            }
+            
             for (int i = 0; i < score.Length; i++)
             {
                 if (score[i] < best_score)
                 {
                     return_value[0] = i;
-                    score[i] = best_score;
+                    best_score = score[i];
                 }
             }
             
@@ -2074,10 +2934,10 @@ namespace Nightmare_Editor.NewTools
             {
                 if ((block.flip && (o % 4 >= 2)) || (!block.flip && (o >= 8)))
                 {
-                    int score1 = (colors[o] - (avg2[0] + off2[0])) + (colors[o + 1] - (avg2[1] + off2[0])) + (colors[o + 2] - (avg2[2] + off2[0]));
-                    int score2 = (colors[o] - (avg2[0] - off2[0])) + (colors[o + 1] - (avg2[1] - off2[0])) + (colors[o + 2] - (avg2[2] - off2[0]));
-                    int score3 = (colors[o] - (avg2[0] + off2[1])) + (colors[o + 1] - (avg2[1] + off2[1])) + (colors[o + 2] - (avg2[2] + off2[1]));
-                    int score4 = (colors[o] - (avg2[0] - off2[1])) + (colors[o + 1] - (avg2[1] - off2[1])) + (colors[o + 2] - (avg2[2] - off2[1]));
+                    int score1 = Math.Abs(colors[o] - (avg2[0] + off2[0])) + Math.Abs(colors[o + 1] - (avg2[1] + off2[0])) + Math.Abs(colors[o + 2] - (avg2[2] + off2[0]));
+                    int score2 = Math.Abs(colors[o] - (avg2[0] - off2[0])) + Math.Abs(colors[o + 1] - (avg2[1] - off2[0])) + Math.Abs(colors[o + 2] - (avg2[2] - off2[0]));
+                    int score3 = Math.Abs(colors[o] - (avg2[0] + off2[1])) + Math.Abs(colors[o + 1] - (avg2[1] + off2[1])) + Math.Abs(colors[o + 2] - (avg2[2] + off2[1]));
+                    int score4 = Math.Abs(colors[o] - (avg2[0] - off2[1])) + Math.Abs(colors[o + 1] - (avg2[1] - off2[1])) + Math.Abs(colors[o + 2] - (avg2[2] - off2[1]));
                     int best = Math.Min(Math.Min(score1, score2), Math.Min(score3, score4));
 
                     if (best == score1)
@@ -2134,5 +2994,4 @@ namespace Nightmare_Editor.NewTools
             
             return (sub, big);
         }
-    }
-}
+        */
