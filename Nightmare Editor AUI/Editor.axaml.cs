@@ -950,6 +950,7 @@ namespace Nightmare_Editor
                         }
                         if (!found)
                         {
+                            NewTools.CTT.Decode(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), Path.GetFileName(selectedTextBox2.Text)), true);
                             string[] files2 = Directory.GetFiles(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text)), $"{selectedTextBox2.Text}.*.png", SearchOption.AllDirectories);
                             file2 = files2[0];
                         }
@@ -1058,7 +1059,8 @@ namespace Nightmare_Editor
                         }
                         if (!found)
                         {
-                            string[] files2 = Directory.GetFiles(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text)), $"{selectedTextBox2.Text}.*.png", SearchOption.AllDirectories);
+                            NewTools.CTT.Decode(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), Path.GetFileNameWithoutExtension(selectedTextBox2.Text), Path.GetFileName(selectedTextBox3.Text)), true);
+                            string[] files2 = Directory.GetFiles(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), Path.GetFileNameWithoutExtension(selectedTextBox2.Text)), $"{selectedTextBox3.Text}.*.png", SearchOption.AllDirectories);
                             file2 = files2[0];
                         }
                         FileName.Text = selectedTextBox.Text + Path.DirectorySeparatorChar + selectedTextBox2.Text + Path.DirectorySeparatorChar + selectedTextBox3.Text;

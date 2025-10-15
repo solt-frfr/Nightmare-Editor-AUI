@@ -238,7 +238,15 @@ namespace Nightmare_Editor.NewTools
 
         public static byte[] Swizzle(byte[] rawData, int format)
         {
-            byte[] image = Dissasemble(rawData);
+            byte[] image;
+            if (format <= 12)
+            {
+                image = Dissasemble(rawData, true);
+            }
+            else
+            {
+                image = Dissasemble(rawData);
+            }
             byte[] newData;
             if (format == 1)
             {
@@ -1708,7 +1716,7 @@ namespace Nightmare_Editor.NewTools
                         {
                             newData[i] += (byte)(1 << o);
                         }
-                        if (block.sub[0])
+                        if (block.sub[o])
                         {
                             newData[i + 2] += (byte)(1 << o);
                         }
@@ -1738,8 +1746,39 @@ namespace Nightmare_Editor.NewTools
                 newData[i + 5] = block.blue;
                 newData[i + 6] = block.green;
                 newData[i + 7] = block.red;
-                Console.Write($"Block {(i - 0x80) / 8} / {(newData.Length - 0x80) / 8}\n");
+                string message = "[";
+                char indicator = ' ';
+                int percent = (int)Math.Ceiling(((((((double)i - 0x80) / 8) + 1) * 100 / (((double)newData.Length - 0x80) / 8))));
+                for (int b = 1; b < 51; b++)
+                {
+                    if (b <= percent / 2)
+                    {
+                        message += "#";
+                    }
+                    else
+                    {
+                        message += "-";
+                    }
+                }
+                if (percent % 4 == 0)
+                {
+                    indicator = '-';
+                }
+                else if (percent % 4 == 1)
+                {
+                    indicator = '\\';
+                }
+                else if (percent % 4 == 2)
+                {
+                    indicator = '|';
+                }
+                else
+                {
+                    indicator = '/';
+                }
+                Console.Write("\rCompressing Blocks..." + message + $"] [{indicator}] {percent}% - {((i - 0x80) / 8) + 1} / {((newData.Length - 0x80) / 8)}");
             }
+            Console.Write($"\nDone!");
             
             
             return newData;
@@ -1786,9 +1825,9 @@ namespace Nightmare_Editor.NewTools
             int d_o = 0;
             int l_o = 0;
             int r_o = 0;
-            for (int i = 0; i < 16; i++)
+            for (int i = 0; i < 16 * 3; i+=3)
             {
-                if (i % 4 < 2)
+                if (i % 12 < 6)
                 {
                     u_block[u_o++] = colorBlock[i];
                     u_block[u_o++] = colorBlock[i + 1];
@@ -1800,7 +1839,7 @@ namespace Nightmare_Editor.NewTools
                     d_block[d_o++] = colorBlock[i + 1];
                     d_block[d_o++] = colorBlock[i + 2];
                 }
-                if (i < 8)
+                if (i < 24)
                 {
                     l_block[l_o++] = colorBlock[i];
                     l_block[l_o++] = colorBlock[i + 1];
@@ -1893,21 +1932,25 @@ namespace Nightmare_Editor.NewTools
             if ((b2 >= b1 - 4 && b2 < b1 + 4) && (g2 >= g1 - 4 && g2 < g1 + 4) && (r2 >= r1 - 4 && r2 < r1 + 4))
             {
                 main.diff = true;
-                b2 = (byte)(b2 - b1);
-                g2 = (byte)(g2 - g1);
-                r2 = (byte)(r2 - r1);
-                if (b2 < 0)
+                int b2i = (b2 - b1);
+                int g2i = (g2 - g1);
+                int r2i = (r2 - r1);
+                if (b2i < 0)
                 {
-                    b2 += 8;
+                    b2i += 8;
                 }
-                if (g2 < 0)
+                if (g2i < 0)
                 {
-                    g2 += 8;
+                    g2i += 8;
                 }
-                if (r2 < 0)
+                if (r2i < 0)
                 {
-                    r2 += 8;
+                    r2i += 8;
                 }
+
+                b2 = (byte)b2i;
+                g2 = (byte)g2i;
+                r2 = (byte)r2i;
 
                 main.blue = (byte)((b1 << 3) + b2);
                 main.green = (byte)((g1 << 3) + g2);
@@ -1945,6 +1988,7 @@ namespace Nightmare_Editor.NewTools
 
             ETC1HalfBlock halfblock = new ETC1HalfBlock();
             List<ETC1Pixel> pixels = new List<ETC1Pixel>();
+            List<int> uniqueColors = new List<int>();
             for (int i = 0; i < colorBlock.Length; i+=3)
             {
                 ETC1Pixel pixel = new ETC1Pixel();
@@ -1953,34 +1997,70 @@ namespace Nightmare_Editor.NewTools
                 pixel.Color[1] = colorBlock[i + 1];
                 pixel.Color[2] = colorBlock[i + 2];
                 pixels.Add(pixel);
-            }
-            using (Image<Rgb24> block = new Image<Rgb24>(width, height))
-            {
-                for (int x = 0; x < width; x++)
-                for (int y = 0; y < height; y++)
+                int colorKey = (colorBlock[i] << 16) | (colorBlock[i + 1] << 8) | colorBlock[i + 2];
+                if (!uniqueColors.Contains(colorKey))
                 {
-                    Rgb24 bg = new Rgb24(pixels[y + (x * height)].Color[2], pixels[y + (x * height)].Color[1], pixels[y + (x * height)].Color[0]);
-                    block.Mutate(ctx =>
-                    {
-                        ctx.Fill(bg, new Rectangle(x, y, 1, 1));
-                    });
+                    uniqueColors.Add(colorKey);
                 }
-                // var quantizer = new WuQuantizer(new QuantizerOptions { MaxColors = 4 });
-                var quantizer = new OctreeQuantizer(new QuantizerOptions { MaxColors = 4 });
-                using (Image<Rgb24> reduced = block.Clone(ctx => ctx.Quantize(quantizer)))
+            }
+            if (uniqueColors.Count <= 4)
+            {
+                for (int i = 0; i < pixels.Count; i++)
+                {
+                    pixels[i].Reduced = new byte[3];
+                    pixels[i].Reduced[0] = pixels[i].Color[0];
+                    pixels[i].Reduced[1] = pixels[i].Color[1];
+                    pixels[i].Reduced[2] = pixels[i].Color[2];
+                    pixels[i].Gray = (byte)(0.299 * pixels[i].Color[2] + 0.587 * pixels[i].Color[1] + 0.114 * pixels[i].Color[0]);
+                }
+
+                using (Image<Rgb24> block = new Image<Rgb24>(width, height))
                 {
                     for (int x = 0; x < width; x++)
                     for (int y = 0; y < height; y++)
                     {
-                        ETC1Pixel pixel = pixels[y + (x * height)];
-                        pixel.Reduced = new byte[3];
-                        pixel.Reduced[0] = reduced[x, y].B;
-                        pixel.Reduced[1] = reduced[x, y].G;
-                        pixel.Reduced[2] = reduced[x, y].R;
-                        pixel.Gray = (byte)(0.299 * reduced[x, y].R + 0.587 * reduced[x, y].G + 0.114 * reduced[x, y].B);
+                        Rgb24 bg = new Rgb24(pixels[y + (x * height)].Color[2], pixels[y + (x * height)].Color[1],
+                            pixels[y + (x * height)].Color[0]);
+                        block.Mutate(ctx => { ctx.Fill(bg, new Rectangle(x, y, 1, 1)); });
                     }
+
+                    block.SaveAsPng("/home/solt/Downloads/block_full.png");
                 };
-            };
+            }
+            else
+            {
+                using (Image<Rgb24> block = new Image<Rgb24>(width, height))
+                {
+                    for (int x = 0; x < width; x++)
+                    for (int y = 0; y < height; y++)
+                    {
+                        Rgb24 bg = new Rgb24(pixels[y + (x * height)].Color[2], pixels[y + (x * height)].Color[1], pixels[y + (x * height)].Color[0]);
+                        block.Mutate(ctx =>
+                        {
+                            ctx.Fill(bg, new Rectangle(x, y, 1, 1));
+                        });
+                    }
+                    block.SaveAsPng("/home/solt/Downloads/block_full.png");
+                    // var quantizer = new WuQuantizer(new QuantizerOptions { MaxColors = 4 });
+                    var quantizer = new OctreeQuantizer(new QuantizerOptions { MaxColors = 4 });
+                    using (Image<Rgb24> reduced = block.Clone(ctx => ctx.Quantize(quantizer)))
+                    {
+                        for (int x = 0; x < width; x++)
+                        for (int y = 0; y < height; y++)
+                        {
+                            ETC1Pixel pixel = pixels[y + (x * height)];
+                            pixel.Reduced = new byte[3];
+                            pixel.Reduced[0] = reduced[x, y].B;
+                            pixel.Reduced[1] = reduced[x, y].G;
+                            pixel.Reduced[2] = reduced[x, y].R;
+                            pixel.Gray = (byte)(0.299 * reduced[x, y].R + 0.587 * reduced[x, y].G + 0.114 * reduced[x, y].B);
+                        }
+                        // The quantizer is reducing the colors too much. It's taking blocks that are already 4 colors big and reducing it 
+                        reduced.SaveAsPng("/home/solt/Downloads/block_reduced.png");
+                        string e = "e";
+                    };
+                };
+            }
 
             List<byte[]> colors = new List<byte[]>();
             for (int i = 0; i < pixels.Count; i++)
@@ -1997,25 +2077,64 @@ namespace Nightmare_Editor.NewTools
             }
             if (colors.Count == 1)
             {
-                for (int i = 0; i < pixels.Count; i++)
+                int g5 = colors[0][3] >> 4;
+                int g8 = (g5 << 4) + (g5 >> 0);
+                if (g8 == colors[0][3])
                 {
-                    if (colors[0][3] < 128)
+                    for (int i = 0; i < pixels.Count; i++)
                     {
-                        pixels[i].Big = false;
-                        pixels[i].Sub = true;
+                        if (colors[0][3] < 128)
+                        {
+                            pixels[i].Big = false;
+                            pixels[i].Sub = true;
+                        }
+                        else
+                        {
+                            pixels[i].Big = false;
+                            pixels[i].Sub = false;
+                        }
+                        halfblock.Score = 0;
                     }
-                    else
-                    {
-                        pixels[i].Big = false;
-                        pixels[i].Sub = false;
-                    }
-                    halfblock.Score = 0;
+                    halfblock.OffsetSet = 0;
                 }
-                halfblock.OffsetSet = 0;
+                else
+                {
+                    int diff = g8 - colors[0][3];
+                    var numbers = new[] {
+                        2, 8,
+                        5, 17,
+                        9, 29,
+                        13, 42,
+                        18, 60,
+                        24, 80,
+                        33, 106,
+                        47, 183,
+                    };
+                    int closest = numbers
+                        .OrderBy(n => Math.Abs(n - Math.Abs(diff)))
+                        .First();
+                    halfblock.OffsetSet = (int)Math.Floor((decimal)Array.IndexOf(numbers, closest) / 2);
+                    bool sub = false;
+                    bool big = false;
+                    if (diff < 0)
+                    {
+                        sub = true;
+                    }
+                    if (Array.IndexOf(numbers, closest) % 2 == 1)
+                    {
+                        big = true;
+                    }
+                    for (int i = 0; i < pixels.Count; i++)
+                    {
+                        pixels[i].Big = big;
+                        pixels[i].Sub = sub;
+                    }
+                }
             }
             else if (colors.Count == 2)
             {
                 int diff = Math.Abs(colors[1][3] - colors[0][3]);
+                colors.Sort((a, b) => a[3].CompareTo(b[3]));
                 if (diff != 0)
                 {
                     var numbers = new[] {
@@ -2040,7 +2159,7 @@ namespace Nightmare_Editor.NewTools
                         {
                             small = 0;
                         }
-                        if (pixels[i].Gray == colors[small][4])
+                        if (pixels[i].Gray == colors[small][3])
                         {
                             if (Array.IndexOf(numbers, closest) % 4 == 0)
                             {
@@ -2166,7 +2285,7 @@ namespace Nightmare_Editor.NewTools
                             pixels[i].Big = true;
                         }
                     }
-                    else if (blank == 1)
+                    else if (blank == 2)
                     {
                         if (pixels[i].Gray == colors[0][3])
                         {
@@ -2184,7 +2303,7 @@ namespace Nightmare_Editor.NewTools
                             pixels[i].Big = true;
                         }
                     }
-                    else if (blank == 2)
+                    else if (blank == 1)
                     {
                         if (pixels[i].Gray == colors[0][3])
                         {
@@ -2288,9 +2407,9 @@ namespace Nightmare_Editor.NewTools
                     sub = -1;
                 }
 
-                b += color_ref[i].Reduced[0] + (sub * ETC1OffTable(halfblock.OffsetSet)[big]);
-                g += color_ref[i].Reduced[1] + (sub * ETC1OffTable(halfblock.OffsetSet)[big]);
-                r += color_ref[i].Reduced[2] + (sub * ETC1OffTable(halfblock.OffsetSet)[big]);
+                b += color_ref[i].Reduced[0] - (sub * ETC1OffTable(halfblock.OffsetSet)[big]);
+                g += color_ref[i].Reduced[1] - (sub * ETC1OffTable(halfblock.OffsetSet)[big]);
+                r += color_ref[i].Reduced[2] - (sub * ETC1OffTable(halfblock.OffsetSet)[big]);
             }
             halfblock.Color[0] = (byte)Math.Clamp((b / color_ref.Count), 0, 0xFF);
             halfblock.Color[1] = (byte)Math.Clamp((g / color_ref.Count), 0, 0xFF);
