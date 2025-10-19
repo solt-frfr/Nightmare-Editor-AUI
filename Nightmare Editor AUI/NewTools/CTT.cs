@@ -1959,18 +1959,208 @@ namespace Nightmare_Editor.NewTools
             else
             {
                 main.diff = false;
-                b1 = (byte)(b1 >> 1);
-                g1 = (byte)(g1 >> 1);
-                r1 = (byte)(r1 >> 1);
-                b2 = (byte)(b2 >> 1);
-                g2 = (byte)(g2 >> 1);
-                r2 = (byte)(r2 >> 1);
                 
-                main.blue = (byte)((b1 << 4) + b2);
-                main.green = (byte)((g1 << 4) + g2);
-                main.red = (byte)((r1 << 4) + r2);
+                if (main.flip)
+                {
+                    u_pixels = QuickFix(u_pixels);
+                    d_pixels = QuickFix(d_pixels);
+                    main.offsetset1 = u_pixels.OffsetSet;
+                    main.offsetset2 = d_pixels.OffsetSet;
+                    int j = 0;
+                    int k = 0;
+                    for (int i = 0; i < 16; i++)
+                    {
+                        if (i % 4 < 2)
+                        {
+                            main.big[i] = u_pixels.Pixels[j].Big;
+                            main.sub[i] = u_pixels.Pixels[j++].Sub;
+                        }
+                        else
+                        {
+                            main.big[i] = d_pixels.Pixels[k].Big;
+                            main.sub[i] = d_pixels.Pixels[k++].Sub;
+                        }
+                    }
+                    b1 = (byte)(u_pixels.Color[0] >> 4);
+                    g1 = (byte)(u_pixels.Color[1] >> 4);
+                    r1 = (byte)(u_pixels.Color[2] >> 4);
+                    b2 = (byte)(d_pixels.Color[0] >> 4);
+                    g2 = (byte)(d_pixels.Color[1] >> 4);
+                    r2 = (byte)(d_pixels.Color[2] >> 4);
+                
+                    main.blue = (byte)((b1 << 4) + b2);
+                    main.green = (byte)((g1 << 4) + g2);
+                    main.red = (byte)((r1 << 4) + r2);
+                }
+                else
+                {
+                    l_pixels = QuickFix(l_pixels);
+                    r_pixels = QuickFix(r_pixels);
+                    main.offsetset1 = l_pixels.OffsetSet;
+                    main.offsetset2 = r_pixels.OffsetSet;
+                    int j = 0;
+                    int k = 0;
+                    for (int i = 0; i < 16; i++)
+                    {
+                        if (i < 8)
+                        {
+                            main.big[i] = l_pixels.Pixels[j].Big;
+                            main.sub[i] = l_pixels.Pixels[j++].Sub;
+                        }
+                        else
+                        {
+                            main.big[i] = r_pixels.Pixels[k].Big;
+                            main.sub[i] = r_pixels.Pixels[k++].Sub;
+                        }
+                    }
+                    b1 = (byte)(l_pixels.Color[0] >> 4);
+                    g1 = (byte)(l_pixels.Color[1] >> 4);
+                    r1 = (byte)(l_pixels.Color[2] >> 4);
+                    b2 = (byte)(r_pixels.Color[0] >> 4);
+                    g2 = (byte)(r_pixels.Color[1] >> 4);
+                    r2 = (byte)(r_pixels.Color[2] >> 4);
+                
+                    main.blue = (byte)((b1 << 4) + b2);
+                    main.green = (byte)((g1 << 4) + g2);
+                    main.red = (byte)((r1 << 4) + r2);
+                }
             }
             return main;
+        }
+
+        public static ETC1HalfBlock QuickFix(ETC1HalfBlock block)
+        {
+            List<byte[]> colors = new List<byte[]>();
+            var pixels = block.Pixels;
+            for (int i = 0; i < pixels.Count; i++)
+            {
+                byte[] color = new byte[4];
+                color[0] = pixels[i].Color[0];
+                color[1] = pixels[i].Color[1];
+                color[2] = pixels[i].Color[2];
+                color[3] = pixels[i].Gray;
+                if (!colors.Any(c => c.SequenceEqual(color)))
+                {
+                    colors.Add(color);
+                }
+            }
+            if (colors.Count == 1)
+            {
+                int best_score = Int32.MaxValue;
+                int set = 0;
+                bool sub = false;
+                bool big = false;
+                for (int j = 0; j < 4; j++)
+                {
+                    bool try_sub = false;
+                    bool try_big = false;
+                    if (j == 1 || j == 3)
+                    {
+                        try_sub = true;
+                    }
+                    if (j == 2 || j == 3)
+                    {
+                        try_big = true;
+                    }
+
+                    int try_big_ = 0;
+                    int try_sub_ = -1;
+
+                    if (try_big)
+                    {
+                        try_big_ = 1;
+                    }
+                    if (try_sub)
+                    {
+                        try_sub_ = 1;
+                    }
+                        
+                    for (int i = 0; i < 8; i++)
+                    {
+                        int b8 = colors[0][0] + (try_sub_ * ETC1OffTable(i)[try_big_]);
+                        int b4 = b8 >> 4;
+                        int b8_2 = (b4 << 4) + b4;
+                        int g8 = colors[0][1] + (try_sub_ * ETC1OffTable(i)[try_big_]);
+                        int g4 = g8 >> 4;
+                        int g8_2 = (g4 << 4) + g4;
+                        int r8 = colors[0][2] + (try_sub_ * ETC1OffTable(i)[try_big_]);
+                        int r4 = r8 >> 4;
+                        int r8_2 = (r4 << 4) + r4;
+                        int score = Math.Abs(b8 - b8_2) + Math.Abs(g8 - g8_2) + Math.Abs(r8 - r8_2);
+                        if (score < best_score)
+                        {
+                            best_score = score;
+                            set = i;
+                            sub = try_sub;
+                            big = try_big;
+                        }
+                    }
+                }
+                block.OffsetSet = set;
+                for (int i = 0; i < pixels.Count; i++)
+                {
+                    pixels[i].Big = big;
+                    pixels[i].Sub = sub;
+                }
+                List<ETC1Pixel> color_ref = new List<ETC1Pixel>();
+                for (int i = 0; i < pixels.Count; i++)
+                {
+                    if (!color_ref.Any(p => p.Gray == pixels[i].Gray))
+                    {
+                        color_ref.Add(pixels[i]);
+                    }
+                }
+
+                int r = 0;
+                int g = 0;
+                int b = 0;
+                block.Color = new byte[3];
+                for (int i = 0; i < color_ref.Count; i++)
+                {
+                    int _sub = 1;
+                    int _big = 0;
+                    if (color_ref[i].Big)
+                    {
+                        _big = 1;
+                    }
+                    if (color_ref[i].Sub)
+                    {
+                        _sub = -1;
+                    }
+
+                    b += color_ref[i].Reduced[0] - (_sub * ETC1OffTable(block.OffsetSet)[_big]);
+                    g += color_ref[i].Reduced[1] - (_sub * ETC1OffTable(block.OffsetSet)[_big]);
+                    r += color_ref[i].Reduced[2] - (_sub * ETC1OffTable(block.OffsetSet)[_big]);
+                }
+                block.Color[0] = (byte)Math.Clamp((b / color_ref.Count), 0, 0xFF);
+                block.Color[1] = (byte)Math.Clamp((g / color_ref.Count), 0, 0xFF);
+                block.Color[2] = (byte)Math.Clamp((r / color_ref.Count), 0, 0xFF);
+
+                block.Pixels = pixels;
+                
+                
+                for (int i = 0; i < pixels.Count; i++)
+                {
+                    int _sub = 1;
+                    int _big = 0;
+                    int r_score = 0;
+                    int g_score = 0;
+                    int b_score = 0;
+                    if (pixels[i].Big)
+                    {
+                        _big = 1;
+                    }
+                    if (pixels[i].Sub)
+                    {
+                        _sub = -1;
+                    }
+                    b_score = Math.Abs((pixels[i].Color[0] - (block.Color[0] + (_sub * ETC1OffTable(block.OffsetSet)[_big]))));
+                    g_score = Math.Abs((pixels[i].Color[1] - (block.Color[1] + (_sub * ETC1OffTable(block.OffsetSet)[_big]))));
+                    r_score = Math.Abs((pixels[i].Color[2] - (block.Color[2] + (_sub * ETC1OffTable(block.OffsetSet)[_big]))));
+                    block.Score += b_score + g_score + r_score;
+                }
+            }
+            return block;
         }
 
         public static ETC1HalfBlock PixelMaker(byte[] colorBlock, bool flip)
@@ -2077,58 +2267,61 @@ namespace Nightmare_Editor.NewTools
             }
             if (colors.Count == 1)
             {
-                int g5 = colors[0][3] >> 4;
-                int g8 = (g5 << 4) + (g5 >> 0);
-                if (g8 == colors[0][3])
+                int best_score = Int32.MaxValue;
+                int set = 0;
+                bool sub = false;
+                bool big = false;
+                for (int j = 0; j < 4; j++)
                 {
-                    for (int i = 0; i < pixels.Count; i++)
+                    bool try_sub = false;
+                    bool try_big = false;
+                    if (j == 1 || j == 3)
                     {
-                        if (colors[0][3] < 128)
-                        {
-                            pixels[i].Big = false;
-                            pixels[i].Sub = true;
-                        }
-                        else
-                        {
-                            pixels[i].Big = false;
-                            pixels[i].Sub = false;
-                        }
-                        halfblock.Score = 0;
+                        try_sub = true;
                     }
-                    halfblock.OffsetSet = 0;
+                    if (j == 2 || j == 3)
+                    {
+                        try_big = true;
+                    }
+
+                    int try_big_ = 0;
+                    int try_sub_ = -1;
+
+                    if (try_big)
+                    {
+                        try_big_ = 1;
+                    }
+                    if (try_sub)
+                    {
+                        try_sub_ = 1;
+                    }
+                        
+                    for (int i = 0; i < 8; i++)
+                    {
+                        int b8 = colors[0][0] + (try_sub_ * ETC1OffTable(i)[try_big_]);
+                        int b4 = b8 >> 3;
+                        int b8_2 = (b4 << 3) + (b4 >> 2);
+                        int g8 = colors[0][1] + (try_sub_ * ETC1OffTable(i)[try_big_]);
+                        int g4 = g8 >> 3;
+                        int g8_2 = (g4 << 3) + (g4 >> 2);
+                        int r8 = colors[0][2] + (try_sub_ * ETC1OffTable(i)[try_big_]);
+                        int r4 = r8 >> 3;
+                        int r8_2 = (r4 << 3) + (r4 >> 2);
+                        int score = Math.Abs(b8 - b8_2) + Math.Abs(g8 - g8_2) + Math.Abs(r8 - r8_2);
+                        if (score < best_score)
+                        {
+                            best_score = score;
+                            set = i;
+                            sub = try_sub;
+                            big = try_big;
+                        }
+                    }
                 }
-                else
+                halfblock.OffsetSet = set;
+                for (int i = 0; i < pixels.Count; i++)
                 {
-                    int diff = g8 - colors[0][3];
-                    var numbers = new[] {
-                        2, 8,
-                        5, 17,
-                        9, 29,
-                        13, 42,
-                        18, 60,
-                        24, 80,
-                        33, 106,
-                        47, 183,
-                    };
-                    int closest = numbers
-                        .OrderBy(n => Math.Abs(n - Math.Abs(diff)))
-                        .First();
-                    halfblock.OffsetSet = (int)Math.Floor((decimal)Array.IndexOf(numbers, closest) / 2);
-                    bool sub = false;
-                    bool big = false;
-                    if (diff < 0)
-                    {
-                        sub = true;
-                    }
-                    if (Array.IndexOf(numbers, closest) % 2 == 1)
-                    {
-                        big = true;
-                    }
-                    for (int i = 0; i < pixels.Count; i++)
-                    {
-                        pixels[i].Big = big;
-                        pixels[i].Sub = sub;
-                    }
+                    pixels[i].Big = big;
+                    pixels[i].Sub = sub;
                 }
             }
             else if (colors.Count == 2)

@@ -114,11 +114,11 @@
                     <RowDefinition/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                <TextBox Name="FileName" Text="File Name" Foreground="White" FontWeight='SemiBold' BorderBrush="White" Background="#323b4a" VerticalContentAlignment="Center" Grid.ColumnSpan="2" IsReadOnly="True" Focusable="False"/>
-                <TextBox Text="Embedded Size:" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" Grid.Row="1" IsReadOnly="True" Focusable="False"/>
-                <TextBox Text="Embedded Format:" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" Grid.Row="2" IsReadOnly="True" Focusable="False"/>
-                <TextBox Name="FileSize" Text="0x0" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" HorizontalContentAlignment="Right" Grid.Row="1" Grid.Column="1" IsReadOnly="True" Focusable="False"/>
-                <TextBox Name="FileFormat" Text="idk probably etc" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" HorizontalContentAlignment="Right" Grid.Row="2" Grid.Column="1" IsReadOnly="True" Focusable="False"/>
+                <TextBox Name="FileName" Text="File Name" Foreground="White" FontWeight='SemiBold' BorderBrush="White" Background="#323b4a" VerticalContentAlignment="Center" Grid.ColumnSpan="2" IsReadOnly="True" Focusable="False" Cursor="Hand"/>
+                <TextBox Text="Embedded Size:" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" Grid.Row="1" IsReadOnly="True" Focusable="False" Cursor="Hand"/>
+                <TextBox Text="Embedded Format:" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" Grid.Row="2" IsReadOnly="True" Focusable="False" Cursor="Hand"/>
+                <TextBox Name="FileSize" Text="0x0" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" HorizontalContentAlignment="Right" Grid.Row="1" Grid.Column="1" IsReadOnly="True" Focusable="False" Cursor="Hand"/>
+                <TextBox Name="FileFormat" Text="idk probably etc" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" HorizontalContentAlignment="Right" Grid.Row="2" Grid.Column="1" IsReadOnly="True" Focusable="False" Cursor="Hand"/>
                 <TextBox Name="FileLink" PointerReleased="FileLink_Click" TextChanged="ScrollFileLink" Text="idk probably base texture" Foreground="LightPink" FontWeight='Thin' BorderBrush="Gray" Background="Black" VerticalContentAlignment="Center" HorizontalContentAlignment="Right" Grid.Row="3" Grid.ColumnSpan="2" IsReadOnly="True" Focusable="False" TextWrapping="NoWrap" Cursor="Hand"/>
                 <Grid Grid.ColumnSpan="2" Grid.Row="4">
                     <Grid.ColumnDefinitions>

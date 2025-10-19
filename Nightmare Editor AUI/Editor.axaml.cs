@@ -25,6 +25,7 @@ using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
 using Avalonia.Platform;
 using System.Threading.Tasks;
+using Avalonia.Input.Platform;
 
 
 namespace Nightmare_Editor
@@ -1462,6 +1463,8 @@ namespace Nightmare_Editor
         {
             if (FileLink.Text.EndsWith(".ctt"))
             {
+                Directory.CreateDirectory(Misc.Paths.temp);
+                Directory.CreateDirectory(Path.GetDirectoryName(Path.Combine(Misc.Paths.temp, FileName.Text)));
                 string file = Path.Combine(Misc.Paths.work, FileName.Text);
                 string save = Path.Combine(Misc.Paths.temp, FileName.Text);
                 var image = CTT.Decode(file, false);
