@@ -93,6 +93,7 @@ namespace Nightmare_Editor
             };
             newTextBox.PointerReleased += TextBox_Click;
             newTextBox.PointerPressed += TextBox_PreviewMouseLeftButtonDown;
+            newTextBox.Classes.Add("NoHover");
             Files.Children.Add(newTextBox);
         }
 
@@ -120,6 +121,7 @@ namespace Nightmare_Editor
             };
             newTextBox.PointerReleased += TextBox2_Click;
             newTextBox.PointerPressed += TextBox2_PreviewMouseLeftButtonDown;
+            newTextBox.Classes.Add("NoHover");
             Files2.Children.Add(newTextBox);
         }
         private void AddFile3(string filename)
@@ -146,6 +148,7 @@ namespace Nightmare_Editor
             };
             newTextBox.PointerReleased += TextBox3_Click;
             newTextBox.PointerPressed += TextBox3_PreviewMouseLeftButtonDown;
+            newTextBox.Classes.Add("NoHover");
             Files3.Children.Add(newTextBox);
             if (Files3.Children.Count <= 1)
             {
@@ -178,6 +181,7 @@ namespace Nightmare_Editor
             };
             newTextBox.PointerReleased += TextBox4_Click;
             newTextBox.PointerPressed += TextBox4_PreviewMouseLeftButtonDown;
+            newTextBox.Classes.Add("NoHover");
             Textures.Children.Add(newTextBox);
         }
 
@@ -186,17 +190,18 @@ namespace Nightmare_Editor
             if (sender is TextBox tb)
             {
                 selectedTextBox = tb;
-                tb.Background = (SolidColorBrush)new BrushConverter().ConvertFromString("#F04080");
+                tb.Background = new SolidColorBrush(Avalonia.Media.Color.Parse("#F04080"));
             }
             foreach (TextBox textbox in Files.Children)
             {
                 if (textbox != selectedTextBox)
-                    textbox.Background = (SolidColorBrush)new BrushConverter().ConvertFromString("#202020");
+                    textbox.Background = new SolidColorBrush(Avalonia.Media.Color.Parse("#202020"));
             }
         }
 
         private void TextBox_Click(object sender, PointerReleasedEventArgs e)
         {
+            TextBox_PreviewMouseLeftButtonDown(sender, null);
             try
             {
                 Files2_Scroll.ScrollToHome();
@@ -238,17 +243,18 @@ namespace Nightmare_Editor
             if (sender is TextBox tb)
             {
                 selectedTextBox2 = tb;
-                tb.Background = (SolidColorBrush)new BrushConverter().ConvertFromString("#F04080");
+                tb.Background = new SolidColorBrush(Avalonia.Media.Color.Parse("#F04080"));
             }
             foreach (TextBox textbox in Files2.Children)
             {
                 if (textbox != selectedTextBox2)
-                    textbox.Background = (SolidColorBrush)new BrushConverter().ConvertFromString("#202020");
+                    textbox.Background = new SolidColorBrush(Avalonia.Media.Color.Parse("#202020"));
             }
         }
 
         private void TextBox2_Click(object sender, PointerReleasedEventArgs e)
         {
+            TextBox2_PreviewMouseLeftButtonDown(sender, null);
             try
             {
                 FileName.Items.Clear();
@@ -297,17 +303,18 @@ namespace Nightmare_Editor
             if (sender is TextBox tb)
             {
                 selectedTextBox3 = tb;
-                tb.Background = (SolidColorBrush)new BrushConverter().ConvertFromString("#F04080");
+                tb.Background = new SolidColorBrush(Avalonia.Media.Color.Parse("#F04080"));
             }
             foreach (TextBox textbox in Files3.Children)
             {
                 if (textbox != selectedTextBox3)
-                    textbox.Background = (SolidColorBrush)new BrushConverter().ConvertFromString("#202020");
+                    textbox.Background = new SolidColorBrush(Avalonia.Media.Color.Parse("#202020"));
             }
         }
 
         private void TextBox3_Click(object sender, PointerReleasedEventArgs e)
         {
+            TextBox3_PreviewMouseLeftButtonDown(sender, null);
             for (int i = 0; i < Files3.Children.Count; i++)
             {
                 InfoWindow.IsVisible = false;
@@ -324,20 +331,24 @@ namespace Nightmare_Editor
             if (sender is TextBox tb)
             {
                 selectedTextBox4 = tb;
-                tb.Background = (SolidColorBrush)new BrushConverter().ConvertFromString("#F04080");
+                tb.Background = new SolidColorBrush(Avalonia.Media.Color.Parse("#F04080"));
             }
             foreach (TextBox textbox in Textures.Children)
             {
                 if (textbox != selectedTextBox4)
-                    textbox.Background = (SolidColorBrush)new BrushConverter().ConvertFromString("#202020");
+                    textbox.Background = new SolidColorBrush(Avalonia.Media.Color.Parse("#202020"));
             }
         }
 
         private void TextBox4_Click(object sender, PointerReleasedEventArgs e)
         {
+            TextBox4_PreviewMouseLeftButtonDown(sender, null);
             for (int i = 0; i < Textures.Children.Count; i++)
             {
-                InfoWindow.IsVisible = false;
+                Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                {
+                    InfoWindow.IsVisible = true;
+                });
                 if (Textures.Children[i] is TextBox textBox && textBox == selectedTextBox4)
                 {
                     AssignImage(i, 2);
@@ -495,7 +506,6 @@ namespace Nightmare_Editor
 
         private void Help_Click(object sender, RoutedEventArgs e)
         {
-            BadApple(null, null);
             Help hw = new Help();
             hw.Show();
         }
@@ -754,71 +764,86 @@ namespace Nightmare_Editor
                 MsBox.Avalonia.Enums.Icon.Info
             );
             await box.ShowAsPopupAsync(this);
-
-            var open = await this.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+            try
             {
-                Title = "Select New Texture",
-                FileTypeFilter = new List<FilePickerFileType>
+                var open = await this.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
                 {
-                    new FilePickerFileType("Texture")
+                    Title = "Select New Texture",
+                    FileTypeFilter = new List<FilePickerFileType>
                     {
-                        Patterns = new List<string> { "*.*" }
-                    }
-                },
-                AllowMultiple = false
-            });
-            if (open != null)
-            {
-                if (System.IO.File.Exists(open[0].Path.LocalPath))
+                        new FilePickerFileType("Texture")
+                        {
+                            Patterns = new List<string> { "*.*" }
+                        }
+                    },
+                    AllowMultiple = false
+                });
+                if (open != null)
                 {
-                    byte[] image = System.IO.File.ReadAllBytes(open[0].Path.LocalPath);
-                    byte[] textwheader = CTT.Swizzle(image, main.DestTextures[j].Texture[0x1C]);
-                    byte[] text = new byte[dest.Length - 0x80];
-                    for (int k = 0; k < text.Length; k++)
+                    if (System.IO.File.Exists(open[0].Path.LocalPath))
                     {
-                        text[k] = textwheader[k + 0x80];
+                        byte[] image = System.IO.File.ReadAllBytes(open[0].Path.LocalPath);
+                        byte[] textwheader = CTT.Swizzle(image, main.DestTextures[j].Texture[0x1C]);
+                        byte[] text = new byte[dest.Length - 0x80];
+                        for (int k = 0; k < text.Length; k++)
+                        {
+                            text[k] = textwheader[k + 0x80];
+                        }
+                        main.Textures[i].Data = text;
+                        main.DecodedTextures[i] = SixLabors.ImageSharp.Image.Load(image);
                     }
-                    main.Textures[i].Data = text;
-                    main.DecodedTextures[i] = SixLabors.ImageSharp.Image.Load(image);
+                    AssignImage(i, 2);
                 }
-                AssignImage(i, 2);
+
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
             }
         }
 
         private async void SaveTex_Click(object sender, RoutedEventArgs e)
         {
-            var file = await this.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+            try
             {
-                Title = "Save extracted texture...",
-                FileTypeChoices = new List<FilePickerFileType>
+                var file = await this.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
                 {
-                    new FilePickerFileType("Texture File")
+                    Title = "Save extracted texture...",
+                    FileTypeChoices = new List<FilePickerFileType>
                     {
-                        Patterns = new List<string> { "*.png" }
+                        new FilePickerFileType("Texture File")
+                        {
+                            Patterns = new List<string> { "*.png" }
+                        }
                     }
-                }
-            });
+                });
 
-            if (!string.IsNullOrWhiteSpace(file.Path.LocalPath))
+                if (!string.IsNullOrWhiteSpace(file.Path.LocalPath))
+                {
+                    bool foundimage = false;
+                    int i = Textures.Children.IndexOf(selectedTextBox4);
+                    InfoWindow.IsVisible = true;
+                    FileInfo.IsVisible = false;
+                    TexInfo.IsVisible = true;
+                    main.DecodedTextures[i].SaveAsPng(file.Path.LocalPath);
+                    int j = 0;
+                }
+            }
+            catch (Exception exception)
             {
-                bool foundimage = false;
-                int i = Textures.Children.IndexOf(selectedTextBox4);
-                InfoWindow.IsVisible = true;
-                FileInfo.IsVisible = false;
-                TexInfo.IsVisible = true;
-                main.DecodedTextures[i].SaveAsPng(file.Path.LocalPath);
-                int j = 0;
             }
         }
 
         private void MNN_Click(object sender, PointerReleasedEventArgs e)
         {
             RenderOptions.SetBitmapInterpolationMode(Texture, BitmapInterpolationMode.None);
+            Texture.InvalidateVisual();
         }
 
         private void MLS_Click(object sender, PointerReleasedEventArgs e)
         {
             RenderOptions.SetBitmapInterpolationMode(Texture, BitmapInterpolationMode.HighQuality);
+            Texture.InvalidateVisual();
         }
 
         private void Import()

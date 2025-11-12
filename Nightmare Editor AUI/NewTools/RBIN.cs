@@ -48,6 +48,8 @@ public class RBIN
         if (string.IsNullOrWhiteSpace(output))
         {
             realoutput = Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(input));
+            Directory.Delete(realoutput, true);
+            Directory.CreateDirectory(realoutput);
             RBIN.Load(input, Misc.Paths.basePath, false);
         }
         else
@@ -116,9 +118,13 @@ public class RBIN
         File.WriteAllText(Path.Combine(realoutput, "info.json"), jsonString);
         if (recursive)
         {
-            string[] files = Directory.GetFiles(Path.GetDirectoryName(input), "*", SearchOption.AllDirectories);
+            string[] files = Directory.GetFiles(Path.GetDirectoryName(realoutput), "*", SearchOption.AllDirectories);
             foreach (string file in files)
             {
+                if (Path.GetExtension(file) == ".pmo")
+                {
+                    PMO.ExtractAllTextures(file);
+                }
                 if (Misc.IsArc(file))
                 {
                     // salalala sheeeeesh

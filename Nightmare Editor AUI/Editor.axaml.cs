@@ -415,7 +415,7 @@ namespace Nightmare_Editor
             newTextBox.PointerReleased += TextBox3_Click;
             newTextBox.PointerPressed += TextBox3_PreviewMouseLeftButtonDown;
             Files3.Children.Add(newTextBox);
-            if (Files3.Children.Count <= 1)
+            if (Files3.Children.Count == 1)
             {
                 TextBox3_PreviewMouseLeftButtonDown(newTextBox, null);
                 TextBox3_Click(newTextBox, null);
@@ -549,8 +549,8 @@ namespace Nightmare_Editor
                     }
                     else if (textBox.Text.EndsWith(".txa"))
                     {
-                        //AnimWindow anim = new AnimWindow(filepath);
-                        //anim.Show();
+                        AnimWindow anim = new AnimWindow(filepath);
+                        anim.Show();
                     }
                     else if (Directory.Exists(Path.Combine(Path.GetDirectoryName(filepath), Path.GetFileNameWithoutExtension(filepath))))
                     {
@@ -558,7 +558,7 @@ namespace Nightmare_Editor
                         List<string> Paths = new List<string>();
                         // Get all files in the folder
                         string[] files = Directory.GetFiles(Path.Combine(Path.GetDirectoryName(filepath), Path.GetFileNameWithoutExtension(filepath)), "*.*", SearchOption.AllDirectories);
-
+                        Array.Sort(files);
                         // Iterate and print each file path
                         foreach (string file in files)
                         {
@@ -654,7 +654,10 @@ namespace Nightmare_Editor
                 path = Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text),
                     Path.GetFileNameWithoutExtension(selectedTextBox2.Text), file);
             }
-
+            else
+            {
+                return;
+            }
             FileFormat.Text = ((CTT.Format)File.ReadAllBytes(path)[0x1C]).ToString();;
             MemoryStream ms = new MemoryStream();
             NewTools.CTT.Decode(file, false).SaveAsPng(ms);
@@ -740,10 +743,38 @@ namespace Nightmare_Editor
                     var result = await box.ShowAsPopupAsync(this);
                     if (result == ButtonResult.Yes)
                     {
-                        Directory.Delete(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(textBox.Text)), true);
-                        Directory.Delete(Path.Combine(Misc.Paths.basePath, Path.GetFileNameWithoutExtension(textBox.Text)), true);
-                        File.Delete(Path.Combine(Misc.Paths.current, textBox.Text));
-                        Files.Children.Remove(textBox);
+                        try
+                        {
+                            Directory.Delete(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(textBox.Text)), true);
+                        }
+                        catch (Exception exception)
+                        {
+                            Console.WriteLine(exception);
+                        }
+                        try
+                        {
+                            Directory.Delete(Path.Combine(Misc.Paths.basePath, Path.GetFileNameWithoutExtension(textBox.Text)), true);
+                        }
+                        catch (Exception exception)
+                        {
+                            Console.WriteLine(exception);
+                        }
+                        try
+                        {
+                            File.Delete(Path.Combine(Misc.Paths.current, textBox.Text));
+                        }
+                        catch (Exception exception)
+                        {
+                            Console.WriteLine(exception);
+                        }
+                        try
+                        {
+                            Files.Children.Remove(textBox);
+                        }
+                        catch (Exception exception)
+                        {
+                            Console.WriteLine(exception);
+                        }
                         break;
                     }
                 }
@@ -1572,49 +1603,48 @@ namespace Nightmare_Editor
 
         private void Files2_Filter(object sender, SelectionChangedEventArgs e)
         {
+            if (Search.Text == null)
+            {
+                Search.Text = "";
+            }
             try
             {
                 Files2.Children.Clear();
                 filtered.Clear();
                 string filter = "";
-                Search.Text = "";
                 if (Sort.SelectedIndex == 0)
                 {
-                    foreach (var textbox in unfiltered)
+                    filter = "";
+                }
+                if (Sort.SelectedIndex == 1)
+                {
+                    filter = ".ctt";
+                }
+                else if (Sort.SelectedIndex == 2)
+                {
+                    filter = ".l2d";
+                }
+                else if (Sort.SelectedIndex == 3)
+                {
+                    filter = ".fep";
+                }
+                else if (Sort.SelectedIndex == 4)
+                {
+                    filter = ".pmo";
+                }
+                else if (Sort.SelectedIndex == 5)
+                {
+                    filter = ".pmp";
+                }
+                else if (Sort.SelectedIndex == 6)
+                {
+                    filter = ".txa";
+                }
+                foreach (var textbox in unfiltered)
+                {
+                    if (textbox.Text.Contains(filter) && (textbox.Text.StartsWith(Search.Text) || string.IsNullOrWhiteSpace(Search.Text)))
                     {
                         Files2.Children.Add(textbox);
-                        filtered.Add(textbox);
-                    }
-                }
-                else
-                {
-                    if (Sort.SelectedIndex == 1)
-                    {
-                        filter = ".ctt";
-                    }
-                    else if (Sort.SelectedIndex == 2)
-                    {
-                        filter = ".l2d";
-                    }
-                    else if (Sort.SelectedIndex == 3)
-                    {
-                        filter = ".fep";
-                    }
-                    else if (Sort.SelectedIndex == 4)
-                    {
-                        filter = ".pmo";
-                    }
-                    else if (Sort.SelectedIndex == 5)
-                    {
-                        filter = ".pmp";
-                    }
-                    foreach (var textbox in unfiltered)
-                    {
-                        if (textbox.Text.Contains(filter))
-                        {
-                            Files2.Children.Add(textbox);
-                            filtered.Add(textbox);
-                        }
                     }
                 }
             }
@@ -1672,33 +1702,7 @@ namespace Nightmare_Editor
         {
             if (e.Key == Key.Enter)
             {
-                try
-                {
-                    Files2.Children.Clear();
-                    if (filtered.Count() == 0)
-                    {
-                        filtered = unfiltered;
-                    }
-                    string filter = Search.Text;
-                    if (string.IsNullOrWhiteSpace(filter))
-                    {
-                        foreach (var textbox in filtered)
-                        {
-                            Files2.Children.Add(textbox);
-                        }
-                    }
-                    else
-                    {
-                        foreach (var textbox in filtered)
-                        {
-                            if (textbox.Text.Contains(filter))
-                            {
-                                Files2.Children.Add(textbox);
-                            }
-                        }
-                    }
-                }
-                catch { }
+                Files2_Filter(null, null);
             }
         }
 

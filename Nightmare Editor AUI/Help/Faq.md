@@ -1,12 +1,7 @@
 # Frequently Asked Questions
-## A window that says "Kingdom Hearts 3D Romhacking Suite v0.8.5" showed up. What do I do?
- Check the "**Romhacking Suite**" section. It'll tell *exactly* you what to do.
-#### 
-## A blank console window appeared and everything froze. What do I do?
- Don't panic. That's likely ETC.exe running. Just wait for it to finish. It takes about a minute, though it depends on texture size.
 #### 
 ## The program just froze!
- Although it's unlikely for this to happen, since I patched one of the main reasons this would happen during the middle of development, my advice is just to wait if it does. If it crashes or doesn't unfreeze after a long period of time, contact me and/or leave a bug report on this program's GitHub page, at **https://github.com/solt-frfr/Nightmare-Editor/issues**.
+ Although it's unlikely for this to happen, since I patched one of the main reasons this would happen during the middle of development, my advice is just to wait if it does. If it crashes or doesn't unfreeze after a long period of time, contact me and/or leave a bug report on this program's GitHub page, at **https://github.com/solt-frfr/Nightmare-Editor-AUI/issues**.
 #### 
 ## How do I edit (insert file type here)?
  Because this is mostly focused on textures, files that are not textures or do not contain textures can't really be edited here. However, I know some other resources I can link to.
@@ -61,7 +56,7 @@ SOLT11 IF YOU WANT TO EDIT TEXTURES READ THIS
  Please use logic and try to figure this out best you can. The answers can't always be obvious. Consider rereading the entire help window, as it'll likely answer your question in one of the sections. If you *really* are still puzzled, go to the OpenKH discord server and ping me in **#ddd-modding**. I will not be linking the server on purpose, so that it is more tedious for you to ask others before figuring it out yourself. Besides, if you have this program, you're likely already in the server, and have talked to me before.
 #### 
 ## Are there any future plans you have?
- I'd like to learn how all these file formats work myself so that I can implement them myself manually, without reliance on tools, since it would then allow the larger community to understand how they work, since this is open source. I already had to reverse engineer most of .ctt textures because packing for RGB565 textures failed with the toolkit. Still don't really know why.
+ I'd like to learn how all these file formats work myself so that I can implement them myself manually, without reliance on tools, since it would then allow the larger community to understand how they work, since this is open source. With this project having moved away from the Kingdom Hearts 3D Romhacking Suite, I've had to make my own implementations of every format I understand. The more I figure out, the more I can give to modders to make cool stuff.
 #### 
 # Reimplemented Functions
  As I move away from using the Deep Drive Translation Team's tools, I will talk about functions I've reimplemented here.
@@ -69,8 +64,10 @@ SOLT11 IF YOU WANT TO EDIT TEXTURES READ THIS
 ## CTT Encoding and Decoding
  Packing CTT files in the toolkit just *didn't work*. It basically just returned a blank image. So I spent almost the entire next day implementing decoding/encoding ctt textures from scratch. Within that day, I was able to completely implement RGBA8888, RGB888, and RGB565. I also adjusted many minor things, like switching to the correct format identifiers, and implementing a half-baked texture linking that didn't store your progress, unlike the final version.
 #### 
+ Since then I've continually progressed adding more and more support. Currently, I'm still working on writing algorithms for compression ETC1 and ETC1A4 textures.
+#### 
 # About
- This project was solo developed by me, Solt11, out of hatred for the modding process and the wish to make it more convenient. It is a program that acts as a helper for a different set of tools made by the Deep Dive Translations team. My hope is that this program helps someone in their modding endevours.
+ This project was solo developed by me, Solt11, out of hatred for the modding process and the wish to make it more convenient. Originally acting as a helper for a different set of tools made by the Deep Dive Translations team, but now is my own work that I can give to anyone who wants it. My hope is that this program helps someone in their modding endevours.
 #### 
 ## Credit
 ### Deep Drive Translations Team

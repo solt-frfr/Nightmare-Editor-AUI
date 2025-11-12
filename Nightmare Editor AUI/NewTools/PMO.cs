@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using SixLabors.ImageSharp;
 
 namespace Nightmare_Editor.NewTools
 {
@@ -48,7 +50,8 @@ namespace Nightmare_Editor.NewTools
         
         public class PMOTexture
         {
-            public uint TM2Offset { get; set; }
+            public byte[] CTT { get; set; }
+            public uint Offset { get; set; }
             public string Name { get; set; }
             public float TilingX { get; set; }
             public float TilingY { get; set; }
@@ -107,8 +110,92 @@ namespace Nightmare_Editor.NewTools
                 }
             }
             // Done with header, load rest
-            
+            for (int i = 0; i < pmo.Header.TexCount; i++)
+            {
+                var tex = new PMOTexture();
+                tex.Offset = (uint)(data[o++] + (data[o++] * 0x100) + (data[o++] * 0x10000) + (data[o++] * 0x1000000));
+                byte[] nameBytes2 = { data[o++], data[o++], data[o++], data[o++], data[o++], data[o++], data[o++], data[o++], data[o++], data[o++], data[o++], data[o++]};
+                nameBytes2 = nameBytes2.Where(b => b != 0).ToArray();
+                tex.Name = System.Text.Encoding.ASCII.GetString(nameBytes2);
+                tex.TilingX = BitConverter.ToSingle(data, o);
+                o += 4;
+                tex.TilingY = BitConverter.ToSingle(data, o);
+                o += 12;
+                
+                int height = data[tex.Offset + 0x22] + (data[tex.Offset + 0x23] * 0x100);
+                int width = data[tex.Offset + 0x20] + (data[tex.Offset + 0x21] * 0x100);
+                int format = data[tex.Offset + 0x1C];
+                double bpp = 0;
+                if (format == 0)
+                {
+                    bpp = 4;
+                }
+                else if (format == 1)
+                {
+                    bpp = 3;
+                }
+                else if (format <= 6)
+                {
+                    bpp = 2;
+                }
+                else if (format <= 9 || format == 13)
+                {
+                    bpp = 1;
+                }
+                else
+                {
+                    bpp = 0.5;
+                }
+
+                int k = 0;
+                int size = (int)(0x80 + (width * height * bpp));
+                tex.CTT = new byte[size];
+                for (int j = 0; j < size; j++)
+                {
+                    tex.CTT[j] = data[(k++) + tex.Offset];
+                }
+                pmo.Textures.Add(tex);
+            }
             return pmo;
+        }
+
+        public static void ExtractAllTextures(string source)
+        {
+            PMOFile pmo = Load(source);
+            if (pmo.Header.TexCount > 0)
+            {
+                string path = Path.Combine(Path.GetDirectoryName(source), Path.GetFileNameWithoutExtension(source));
+                Directory.CreateDirectory(path);
+                foreach (PMOTexture tex in pmo.Textures)
+                {
+                    File.WriteAllBytes(Path.Combine(path, tex.Name + ".ctt"), tex.CTT);
+                
+                    int j = 0;
+                    int k = 0;
+                    byte[] header = new byte[0x80];
+                    byte[] data = new byte[tex.CTT.Length - 0x80];
+                
+                    for (int i = 0; i < tex.CTT.Length; i++)
+                    {
+
+                        if (i < 0x80)
+                        {
+                            header[j++] = tex.CTT[i];
+                        }
+                        else
+                        {
+                            data[k++] = tex.CTT[i];
+                        }
+                    
+                    }
+                    int height = header[0x22] + (header[0x23] * 0x100);
+                    int width = header[0x20] + (header[0x21] * 0x100);
+                    CTT.Format format1 = (CTT.Format)header[0x1C];
+                    string format = format1.ToString();
+                    var image = CTT.Deswizzle(data, width, height, (int)format1);
+                    image.SaveAsPng(Path.Combine(path, tex.Name + "." + format + ".png"));
+                }
+            }
         }
     }
 }
