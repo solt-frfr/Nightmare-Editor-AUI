@@ -181,5 +181,38 @@ namespace Nightmare_Editor.NewTools
                 return false;
             }
         }
+        
+        public static string ReplaceFirst(string str, string term, string replace)
+        {
+            int position = str.IndexOf(term);
+            if (position < 0)
+            {
+                return str;
+            }
+            str = str.Substring(0, position) + replace + str.Substring(position + term.Length);
+            return str;
+        }
+        
+        public static string ReplaceFirst(string str, char term, char replace)
+        {
+            int position = str.IndexOf(term);
+            if (position < 0)
+            {
+                return str;
+            }
+            str = str.Substring(0, position) + replace + str.Substring(position + 1);
+            return str;
+        }
+        
+        public static string RemoveAtFirst(string str, char term)
+        {
+            int position = str.IndexOf(term);
+            if (position < 0)
+            {
+                return str;
+            }
+            str = str.Substring(position + 1);
+            return str;
+        }
     }
 }

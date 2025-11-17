@@ -332,14 +332,14 @@ namespace Nightmare_Editor
             Meta row = (Meta)ModDataGrid.SelectedItem;
             try
             {
-                if (string.IsNullOrWhiteSpace(row.Description))
-                    DescBox.Text = "Quasar never worked for me, so I made my own. You're seeing this because this mod has no description, or no mod is selected.\n\nDon't see a mod? The ID and folder names must match.\n\nConfused about the buttons at the bottom? Hover over them for more info.";
+                if (string.IsNullOrWhiteSpace(row.Description) || row == null)
+                    DescBox.Text = "Make Sora and Riku's mark of mastery exam your own. You're seeing this because this mod has no description, or no mod is selected.\n\nConfused about the buttons at the bottom? Hover over them for more info.";
                 else
                     DescBox.Text = row.Description;
             }
             catch
             {
-                DescBox.Text = "Quasar never worked for me, so I made my own. You're seeing this because this mod has no description, or no mod is selected.\n\nDon't see a mod? The ID and folder names must match.\n\nConfused about the buttons at the bottom? Hover over them for more info.";
+                DescBox.Text = "Make Sora and Riku's mark of mastery exam your own. You're seeing this because this mod has no description, or no mod is selected.\n\nConfused about the buttons at the bottom? Hover over them for more info.";
             }
             try
             {
@@ -437,26 +437,36 @@ namespace Nightmare_Editor
             Directory.Delete(deploypath, true);
             Directory.CreateDirectory(deploypath);
             List<string> rbins = new List<string>();
-            foreach (string ID in enabledmods)
+            string[] folders = Directory.GetDirectories(Misc.Paths.mods);
+            List<string> modFolders = new List<string>();
+            foreach (string folder in folders)
             {
                 try
                 {
-                    string path = Path.Combine(Misc.Paths.mods, ID);
-                    string[] subdirectories = Directory.GetDirectories(path);
-                    foreach (string subdir in subdirectories)
+                    var jsonoptions = new JsonSerializerOptions
                     {
-                        DirectoryInfo dir = new DirectoryInfo(subdir);
-                        string rbin = dir.Name;
-                        if (!rbins.Contains(rbin))
+                        WriteIndented = true
+                    };
+                    string jsonString = System.IO.File.ReadAllText(Path.Combine(folder, "meta.json"));
+                    Meta meta = JsonSerializer.Deserialize<Meta>(jsonString, jsonoptions);
+                    if (enabledmods.Contains(meta.ID))
+                    {
+                        modFolders.Add(folder);
+                        string[] subdirectories = Directory.GetDirectories(folder);
+                        foreach (string subdir in subdirectories)
                         {
-                            rbins.Add(rbin);
+                            DirectoryInfo dir = new DirectoryInfo(subdir);
+                            string rbin = dir.Name;
+                            if (!rbins.Contains(rbin))
+                            {
+                                rbins.Add(rbin);
+                            }
                         }
                     }
                 }
                 catch
                 {
-                    enabledmods.Remove(ID);
-                    QuickJson(true, enabledmods, "enabledmods.json");
+                    
                 }
             }
             bool stop = false;
@@ -479,29 +489,19 @@ namespace Nightmare_Editor
             {
                 return;
             }
-            foreach (string ID in enabledmods)
+
+            Directory.CreateDirectory(Misc.Paths.pack);
+            Directory.Delete(Misc.Paths.pack, true);
+            Directory.CreateDirectory(Misc.Paths.pack);
+            foreach (string folder in modFolders)
             {
-                Editor.BetterDirCopy(Path.Combine(Misc.Paths.mods, ID), Misc.Paths.pack, false);
+                Editor.BetterDirCopy(folder, Misc.Paths.pack, false);
             }
             foreach (string rbin in rbins)
             {
                 string file = rbin + ".rbin";
-                File.Copy(Path.Combine(Misc.Paths.current, file), Path.Combine(Misc.Paths.toolkit, file), true);
-                try
-                {
-                    Directory.Delete(Path.Combine(Misc.Paths.toolkit, Path.GetFileNameWithoutExtension(file)), true);
-                }
-                catch { }
-                Editor.BetterDirCopy(Path.Combine(Misc.Paths.basePath, Path.GetFileNameWithoutExtension(file)), Path.Combine(Misc.Paths.toolkit, Path.GetFileNameWithoutExtension(file)), false);
-                Editor.BetterDirCopy(Path.Combine(Misc.Paths.pack, Path.GetFileNameWithoutExtension(file)), Path.Combine(Misc.Paths.toolkit, Path.GetFileNameWithoutExtension(file)), true);
-                var box2 = MessageBoxManager.GetMessageBoxStandard(
-                    $"On-The-Fly Help",
-                    "A window called \"Kingdom Hearts 3D Romhacking Suite\" will appear.\nType '2', and then press Enter.\nOnce \"Done!\" appears, press any key.",
-                    MsBox.Avalonia.Enums.ButtonEnum.Ok,
-                    MsBox.Avalonia.Enums.Icon.Info
-                );
-                await box2.ShowAsPopupAsync(this);
-                await Toolkit.RbinPack(file, true, this);
+                Editor.BetterDirCopy(Path.Combine(Misc.Paths.basePath, rbin), Path.Combine(Misc.Paths.pack, rbin), false, false);
+                RBIN.Pack(Path.Combine(Misc.Paths.pack, file), true, this);
             }
             Directory.CreateDirectory(Path.Combine(deploypath, "sound", "en", "output", "stream"));
             foreach (string[] track in music)
@@ -737,6 +737,11 @@ namespace Nightmare_Editor
         private void DefPrevBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!isInitialized) return;
+            var cb = (ComboBox)sender!;
+            if (cb.SelectedIndex < 0 && cb.ItemCount > 0)
+            {
+                cb.SelectedIndex = 0; // force first item
+            }
             PathBox_TextChanged(null, null);
             Refresh();
         }
@@ -783,8 +788,6 @@ namespace Nightmare_Editor
                     try
                     {
                         File.Copy(files[0].Path.LocalPath, Path.Combine(Misc.Paths.current, Path.GetFileName(files[0].Path.LocalPath)));
-                        File.Copy(files[0].Path.LocalPath, Path.Combine(Misc.Paths.toolkit, Path.GetFileName(files[0].Path.LocalPath)), true);
-                        RBIN.Load(files[0].Path.LocalPath);
                     }
                     catch
                     {
@@ -796,6 +799,7 @@ namespace Nightmare_Editor
                         );
                         await box.ShowAsPopupAsync(this);
                     }
+                    RBIN.Load(files[0].Path.LocalPath);
                 }
                 else
                 {

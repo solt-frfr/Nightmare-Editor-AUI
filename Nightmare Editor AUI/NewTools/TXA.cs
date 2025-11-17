@@ -93,7 +93,7 @@ namespace Nightmare_Editor.NewTools
                 textBytes = textBytes.Where(b => b != 0).ToArray();
                 group.DestTexture = System.Text.Encoding.ASCII.GetString(textBytes);
                 string search = Path.Combine(Misc.Paths.work, Path.GetFileName(Path.GetDirectoryName(file)));
-                string[] files2 = Directory.GetFiles(search, $"{group.DestTexture}.ctt", SearchOption.AllDirectories);
+                string[] files2 = Directory.GetFiles(search, $"*{group.DestTexture}.ctt", SearchOption.AllDirectories);
                 string file2 = files2[0];
                 byte[] data2 = File.ReadAllBytes(file2);
                 bool found = false;

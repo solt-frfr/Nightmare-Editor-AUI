@@ -114,14 +114,17 @@ namespace Nightmare_Editor.NewTools
             {
                 var tex = new PMOTexture();
                 tex.Offset = (uint)(data[o++] + (data[o++] * 0x100) + (data[o++] * 0x10000) + (data[o++] * 0x1000000));
-                byte[] nameBytes2 = { data[o++], data[o++], data[o++], data[o++], data[o++], data[o++], data[o++], data[o++], data[o++], data[o++], data[o++], data[o++]};
+                byte[] nameBytes2 =
+                {
+                    data[o++], data[o++], data[o++], data[o++], data[o++], data[o++], data[o++], data[o++],
+                    data[o++], data[o++], data[o++], data[o++]
+                };
                 nameBytes2 = nameBytes2.Where(b => b != 0).ToArray();
                 tex.Name = System.Text.Encoding.ASCII.GetString(nameBytes2);
                 tex.TilingX = BitConverter.ToSingle(data, o);
                 o += 4;
                 tex.TilingY = BitConverter.ToSingle(data, o);
                 o += 12;
-                
                 int height = data[tex.Offset + 0x22] + (data[tex.Offset + 0x23] * 0x100);
                 int width = data[tex.Offset + 0x20] + (data[tex.Offset + 0x21] * 0x100);
                 int format = data[tex.Offset + 0x1C];
@@ -149,10 +152,21 @@ namespace Nightmare_Editor.NewTools
 
                 int k = 0;
                 int size = (int)(0x80 + (width * height * bpp));
-                tex.CTT = new byte[size];
-                for (int j = 0; j < size; j++)
+                if (tex.Offset > 0 && tex.Offset < data.Length)
                 {
-                    tex.CTT[j] = data[(k++) + tex.Offset];
+                    tex.CTT = new byte[size];
+                    for (int j = 0; j < size; j++)
+                    {
+                        if (k + tex.Offset >= data.Length)
+                        {
+                            string e = "e";
+                        }
+                        tex.CTT[j] = data[(k++) + tex.Offset];
+                    }
+                }
+                else
+                {
+                    tex.CTT = null;
                 }
                 pmo.Textures.Add(tex);
             }
@@ -168,6 +182,7 @@ namespace Nightmare_Editor.NewTools
                 Directory.CreateDirectory(path);
                 foreach (PMOTexture tex in pmo.Textures)
                 {
+                    if (tex.CTT != null)
                     File.WriteAllBytes(Path.Combine(path, tex.Name + ".ctt"), tex.CTT);
                 
                     int j = 0;
@@ -192,8 +207,10 @@ namespace Nightmare_Editor.NewTools
                     int width = header[0x20] + (header[0x21] * 0x100);
                     CTT.Format format1 = (CTT.Format)header[0x1C];
                     string format = format1.ToString();
-                    var image = CTT.Deswizzle(data, width, height, (int)format1);
-                    image.SaveAsPng(Path.Combine(path, tex.Name + "." + format + ".png"));
+                    using (var image = CTT.Deswizzle(data, width, height, (int)format1))
+                    {
+                        image.SaveAsPng(Path.Combine(path, tex.Name + "." + format + ".png"));
+                    }
                 }
             }
         }

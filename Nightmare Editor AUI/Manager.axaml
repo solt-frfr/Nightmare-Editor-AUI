@@ -51,7 +51,7 @@
         <Grid ColumnDefinitions="*,*" RowDefinitions="4.5*,0.5*,4.5*,1.5*" Grid.RowSpan="2" Grid.Column="1" Name="ModContent" IsVisible="True" Margin="10,10,10,0">
             <Image Name="Preview" Source="/Images/Preview0.png" Stretch="Uniform" VerticalAlignment="Top" HorizontalAlignment="Center"  Grid.ColumnSpan="2" RenderOptions.BitmapInterpolationMode="HighQuality"/>
             <Grid Grid.ColumnSpan="2" Grid.RowSpan="2" Grid.Row="2">
-                <TextBox Name="DescBox" Classes="NoHover" FontSize="12" Background="#F04080" BorderBrush="White" Foreground="#ffffff" TextWrapping="WrapWithOverflow" IsReadOnly="True" Text="Make Sora and Riku's mark of mastery exam your own. You're seeing this because this mod has no description, or no mod is selected.&#xA;&#xA;Don't see a mod? The ID and folder names must match.&#xA;&#xA;Confused about the buttons at the bottom? Hover over them for more info."/>
+                <TextBox Name="DescBox" Classes="NoHover" FontSize="12" Background="#F04080" BorderBrush="White" Foreground="#ffffff" TextWrapping="WrapWithOverflow" IsReadOnly="True" Text="Make Sora and Riku's mark of mastery exam your own. You're seeing this because this mod has no description, or no mod is selected.&#xA;&#xA;Confused about the buttons at the bottom? Hover over them for more info."/>
             </Grid>
         </Grid>
         <Grid RowDefinitions="4*" Grid.Row="1" Name="Mods" IsVisible="True">
