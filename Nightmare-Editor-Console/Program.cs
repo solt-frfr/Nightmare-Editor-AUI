@@ -47,6 +47,39 @@ if (args.Length == 0)
 
 Make your choice : ");
     int option = int.Parse(Console.ReadLine());
+    if (option == 1)
+    {
+        try
+        {
+            RBIN.Load(args[0], Path.GetDirectoryName(args[0]), true);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+    }
+    if (option == 2)
+    {
+        try
+        {
+            RBIN.Pack(args[0], true, null, args[0]);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+    }
+    if (option == 9)
+    {
+        try
+        {
+            CTT.Decode(args[0], true);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+    }
     if (option == 10)
     {
         try

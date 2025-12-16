@@ -185,7 +185,7 @@ public class RBIN
         return rbin;
     }
     
-    public async static void Pack(string filename, bool tooutput, Window parent)
+    public async static void Pack(string filename, bool tooutput, Window parent, string output = null)
     {
         List<int> offsets_values = new List<int>();
         List<int> offsets = new List<int>();
@@ -321,12 +321,16 @@ public class RBIN
                 File.WriteAllBytes(save.Path.LocalPath, data.ToArray());
             }
         }
-        else
+        else if (!string.IsNullOrWhiteSpace(output))
         {
             string settingspath = Misc.Jsons.settings;
             jsonString = System.IO.File.ReadAllText(settingspath);
             Settings settings = JsonSerializer.Deserialize<Settings>(jsonString, jsonoptions);
             File.WriteAllBytes(Path.Combine(settings.DeployPath, Path.GetFileName(filename)), data.ToArray());
+        }
+        else
+        {
+            File.WriteAllBytes(output, data.ToArray());
         }
     }
 }
