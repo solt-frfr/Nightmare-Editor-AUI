@@ -238,7 +238,7 @@ namespace Nightmare_Editor.NewTools
         public static byte[] Swizzle(byte[] rawData, int format)
         {
             byte[] image;
-            if (format <= 12)
+            if (format >= 12)
             {
                 image = Dissasemble(rawData, true);
             }
@@ -438,9 +438,13 @@ namespace Nightmare_Editor.NewTools
             {
                 total = height * width / 2;
             }
-            else if (format >= 12 && format <= 13)
+            else if (format >= 12 && format < 13)
             {
                 total = (height / 4) * (width / 4) * 8;
+            }
+            else if (format <= 13)
+            {
+                total = (height / 4) * (width / 4) * 8 * 2;
             }
 
             byte[] header = new byte[0x80];

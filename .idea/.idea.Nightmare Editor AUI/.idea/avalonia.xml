@@ -4,6 +4,7 @@
     <option name="projectPerEditor">
       <map>
         <entry key="Nightmare Editor AUI/AnimWindow.axaml" value="Nightmare Editor AUI/Nightmare Editor AUI.csproj" />
+        <entry key="Nightmare Editor AUI/App.axaml" value="Nightmare Editor AUI/Nightmare Editor AUI.csproj" />
         <entry key="Nightmare Editor AUI/Editor.axaml" value="Nightmare Editor AUI/Nightmare Editor AUI.csproj" />
         <entry key="Nightmare Editor AUI/Help.axaml" value="Nightmare Editor AUI/Nightmare Editor AUI.csproj" />
         <entry key="Nightmare Editor AUI/MakePack.axaml" value="Nightmare Editor AUI/Nightmare Editor AUI.csproj" />

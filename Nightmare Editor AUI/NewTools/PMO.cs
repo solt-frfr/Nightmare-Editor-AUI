@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using System.IO;
 using System.Linq;
 using System.Numerics;
@@ -183,36 +184,56 @@ namespace Nightmare_Editor.NewTools
                 foreach (PMOTexture tex in pmo.Textures)
                 {
                     if (tex.CTT != null)
-                    File.WriteAllBytes(Path.Combine(path, tex.Name + ".ctt"), tex.CTT);
-                
-                    int j = 0;
-                    int k = 0;
-                    byte[] header = new byte[0x80];
-                    byte[] data = new byte[tex.CTT.Length - 0x80];
-                
-                    for (int i = 0; i < tex.CTT.Length; i++)
                     {
-
-                        if (i < 0x80)
+                        File.WriteAllBytes(Path.Combine(path, tex.Name + ".ctt"), tex.CTT);
+                        int j = 0;
+                        int k = 0;
+                        byte[] header = new byte[0x80];
+                        byte[] data = new byte[tex.CTT.Length - 0x80];
+                
+                        for (int i = 0; i < tex.CTT.Length; i++)
                         {
-                            header[j++] = tex.CTT[i];
+                            if (i < 0x80)
+                            {
+                                header[j++] = tex.CTT[i];
+                            }
+                            else
+                            {
+                                data[k++] = tex.CTT[i];
+                            }
                         }
-                        else
+                        int height = header[0x22] + (header[0x23] * 0x100);
+                        int width = header[0x20] + (header[0x21] * 0x100);
+                        CTT.Format format1 = (CTT.Format)header[0x1C];
+                        string format = format1.ToString();
+                        using (var image = CTT.Deswizzle(data, width, height, (int)format1))
                         {
-                            data[k++] = tex.CTT[i];
+                            image.SaveAsPng(Path.Combine(path, tex.Name + "." + format + ".png"));
                         }
-                    
-                    }
-                    int height = header[0x22] + (header[0x23] * 0x100);
-                    int width = header[0x20] + (header[0x21] * 0x100);
-                    CTT.Format format1 = (CTT.Format)header[0x1C];
-                    string format = format1.ToString();
-                    using (var image = CTT.Deswizzle(data, width, height, (int)format1))
-                    {
-                        image.SaveAsPng(Path.Combine(path, tex.Name + "." + format + ".png"));
                     }
                 }
             }
+        }
+        
+        public static void ReplaceAllTextures(string source)
+        {
+            PMOFile pmo = Load(source);
+            byte[] data = File.ReadAllBytes(source);
+            if (pmo.Header.TexCount > 0)
+            {
+                foreach (PMOTexture tex in pmo.Textures)
+                {
+                    string path = Path.Combine(Path.GetDirectoryName(source), Path.GetFileNameWithoutExtension(source));
+                    path = Path.Combine(path, tex.Name + ".ctt");
+                    byte[] ctt = File.ReadAllBytes(path);
+                    for (int i = 0; i < tex.CTT.Length; i++)
+                    {
+                        tex.CTT[i] = ctt[i];
+                        data[tex.Offset + i] = ctt[i];
+                    }
+                }
+            }
+            File.WriteAllBytes(source, data);
         }
     }
 }

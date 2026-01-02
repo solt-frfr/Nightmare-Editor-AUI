@@ -170,18 +170,6 @@ namespace Nightmare_Editor.NewTools
             };
         }
         
-        public static bool IsArc(string file)
-        {
-            if (Path.GetExtension(file) == ".pmo" || Path.GetExtension(file) == ".l2d" || Path.GetExtension(file) == ".fep" || Path.GetExtension(file) == ".pmp")
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        
         public static string ReplaceFirst(string str, string term, string replace)
         {
             int position = str.IndexOf(term);

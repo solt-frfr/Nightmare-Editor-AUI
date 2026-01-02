@@ -9,10 +9,12 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
+using Avalonia.Styling;
 using Nightmare_Editor;
 using Nightmare_Editor.NewTools;
 
 string[] AllPaths = File.ReadAllLines(Path.Combine(AppContext.BaseDirectory, "filelist.txt")).Distinct().ToArray();
+args = new string[1]{"/home/solt/Documents/GitHub/Nightmare-Editor-AUI/Nightmare Editor AUI/bin/Debug/net8.0/Work/menu/36-d_breed/0.ctt"};
 
 Console.ForegroundColor = ConsoleColor.Green;
 Console.WriteLine("________________________________________________________________________________");
@@ -25,21 +27,21 @@ Console.WriteLine("::::::::::::::: Based on the work of Deep Dive Translations T
 Console.ForegroundColor = ConsoleColor.Red;
 Console.WriteLine("________________________________________________________________________________");
 
-if (args.Length == 0)
+if (args.Length != 0)
 {
     Console.Write(@"Choose what you want to do :
-1) Unpack Files
-2) Repack Files
+1) Unpack Files                 // Input: .rbin
+2) Repack Files                 // Input: .rbin
 3) Parse CTD Files              // Not Implemented
 4) Repoint CTD Files            // Not Implemented
-5) Decompress BLZ
+5) Decompress BLZ               // Input: Any BLZ Compressed File
 6) Compress BLZ                 // Not Implemented
 7) Parse BCFNT Files            // Not Implemented
 8) Repack BCFNT Files           // Not Implemented
-9) Deswizzle CTT Files
-10) Swizzle CTT Files           // Broken ETC1 Encoder
-11) Extract Container* Files
-12) Repack Container* Files
+9) Deswizzle CTT Files          // Input: .ctt
+10) Swizzle CTT Files           // Input: .png (Broken ETC1 Encoder)
+11) Extract Container* Files    // Input: Container File
+12) Repack Container* Files     // Input: Container File
 13) Exit
 14) Test RBIN Hash Algorithm
 
@@ -93,8 +95,47 @@ Make your choice : ");
         catch (Exception e)
         {
             Console.WriteLine(e);
+            throw;
         }
     }
+
+    if (option == 11)
+    {
+        try
+        {
+            string filename = Path.GetFileName(args[0]);
+            if (Containers.IsArc(filename))
+            {
+                Containers.Generic.Unpack(args[0]);
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+    
+    if (option == 12)
+    {
+        try
+        {
+            string filename = Path.GetFileName(args[0]);
+            if (Containers.IsArc(filename))
+            {
+                Containers.Generic.Pack(args[0]);
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    Console.WriteLine("Done!");
+    Console.ReadLine();
+    Console.WriteLine("The program will now close.");
 }
 else
 {

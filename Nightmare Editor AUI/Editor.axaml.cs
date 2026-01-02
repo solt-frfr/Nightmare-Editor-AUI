@@ -183,7 +183,7 @@ namespace Nightmare_Editor
                         File.Copy(files[0].Path.LocalPath, Path.Combine(Misc.Paths.work, "User-Added", $"{files2.Length}-{Path.GetFileName(files[0].Path.LocalPath)}"), true);
                         CTT.Decode(Path.Combine(Misc.Paths.work, "User-Added", $"{files2.Length}-{Path.GetFileName(files[0].Path.LocalPath)}"));
                     }
-                    else if (Misc.IsArc(files[0].Path.LocalPath))
+                    else if (Containers.IsArc(files[0].Path.LocalPath))
                     {
                         string[] files2 = Directory.GetFiles(Path.Combine(Misc.Paths.work, "User-Added"), "*.*", SearchOption.AllDirectories);
                         File.Copy(files[0].Path.LocalPath, Path.Combine(Misc.Paths.work, "User-Added", $"{files2.Length}-{Path.GetFileName(files[0].Path.LocalPath)}"), true);
@@ -975,7 +975,7 @@ namespace Nightmare_Editor
                             File.Copy(file[0].Path.LocalPath, Path.Combine(Misc.Paths.toolkit, selectedTextBox2.Name), true);
                             CTT.Decode(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), Path.GetFileName(selectedTextBox2.Name)));
                         }
-                        else if (Misc.IsArc(file[0].Path.LocalPath))
+                        else if (Containers.IsArc(file[0].Path.LocalPath))
                         {
                             File.Copy(file[0].Path.LocalPath, Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), selectedTextBox2.Name), true);
                             File.Copy(file[0].Path.LocalPath, Path.Combine(Misc.Paths.toolkit, selectedTextBox2.Name), true);
@@ -1028,15 +1028,10 @@ namespace Nightmare_Editor
                         NewTools.CTT.Encode(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), textBox.Text), file2);
                         Log.Text = $"Packed {textBox.Text}!";
                     }
-                    else if ((textBox.Text.EndsWith(".l2d") || textBox.Text.EndsWith(".fep") || textBox.Text.EndsWith(".pmo") || textBox.Text.EndsWith(".pmp")) && Directory.Exists($@"{System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)}\work\{Path.GetFileNameWithoutExtension(selectedTextBox.Text)}\{Path.GetFileNameWithoutExtension(textBox.Text)}\"))
+                    else if (Containers.IsArc(textBox.Text) && Directory.Exists($@"{System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)}\work\{Path.GetFileNameWithoutExtension(selectedTextBox.Text)}\{Path.GetFileNameWithoutExtension(textBox.Text)}\"))
                     {
-                        List<string> embedded = new List<string>();
-                        foreach (TextBox textBox2 in Files3.Children)
-                        {
-                            string path = Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), Path.GetFileNameWithoutExtension(textBox.Text), textBox2.Text);
-                            embedded.Add(path);
-                        }
-                        NewTools.L2D.Pack(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), textBox.Text), embedded);
+                        ShowGenericWarning();
+                        Containers.Generic.Pack(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), textBox.Text));
                         Log.Text = $"Packed {textBox.Text}!";
                     }
                     else
@@ -1137,15 +1132,10 @@ namespace Nightmare_Editor
                         NewTools.CTT.Encode(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), Path.GetFileNameWithoutExtension(selectedTextBox2.Name), textBox.Text), file2);
                         Log.Text = $"Packed {textBox.Text}!";
                     }
-                    else if ((textBox.Text.EndsWith(".l2d") || textBox.Text.EndsWith(".fep") || textBox.Text.EndsWith(".pmo" ) || textBox.Text.EndsWith(".pmp")) && Directory.Exists(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), Path.GetFileNameWithoutExtension(selectedTextBox2.Name), Path.GetFileNameWithoutExtension(textBox.Text))))
+                    else if (Containers.IsArc(textBox.Text) && Directory.Exists(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), Path.GetFileNameWithoutExtension(selectedTextBox2.Name), Path.GetFileNameWithoutExtension(textBox.Text))))
                     {
-                        List<string> embedded = new List<string>();
-                        foreach (TextBox textBox2 in Files3.Children)
-                        {
-                            string path = Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), Path.GetFileNameWithoutExtension(selectedTextBox2.Name), Path.GetFileNameWithoutExtension(textBox.Text), textBox2.Text);
-                            embedded.Add(path);
-                        }
-                        NewTools.L2D.Pack(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), Path.GetFileNameWithoutExtension(selectedTextBox2.Name), textBox.Text), embedded);
+                        ShowGenericWarning();
+                        Containers.Generic.Pack(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), Path.GetFileNameWithoutExtension(selectedTextBox2.Name), textBox.Text));
                         Log.Text = $"Packed {textBox.Text}!";
                     }
                     break;
@@ -1262,27 +1252,10 @@ namespace Nightmare_Editor
                     NewTools.CTT.Encode(Path.Combine(Misc.Paths.work, file), file2);
                     Log.Text = $"Packed {file}!";
                 }
-                else if ((file.EndsWith(".l2d") || file.EndsWith(".fep") || file.EndsWith(".pmo") || file.EndsWith(".pmp")) && Directory.Exists(Path.Combine(Misc.Paths.work, Path.GetDirectoryName(file), Path.GetFileNameWithoutExtension(file))))
+                else if (Containers.IsArc(file) && Directory.Exists(Path.Combine(Misc.Paths.work, Path.GetDirectoryName(file), Path.GetFileNameWithoutExtension(file))))
                 {
-                    List<string> embedded = new List<string>();
-                    string[] files2 = Directory.GetFiles(Path.Combine(Misc.Paths.work, Path.GetDirectoryName(file), Path.GetFileNameWithoutExtension(file)), $"*.ctt", SearchOption.AllDirectories);
-                    foreach (string packed in files2)
-                    {
-                        string packed2 = packed.Replace(Misc.Paths.work + Path.DirectorySeparatorChar, "");
-                        if (Path.GetFileNameWithoutExtension(packed2.Split(Path.DirectorySeparatorChar)[1]) == Path.GetFileNameWithoutExtension(file.Split(Path.DirectorySeparatorChar)[1]))
-                        {
-                            string path = Path.Combine(Misc.Paths.work, Path.GetDirectoryName(file), Path.GetFileNameWithoutExtension(file), Path.GetFileName(packed));
-                            embedded.Add(path);
-                        }
-                    }
-                    var box = MessageBoxManager.GetMessageBoxStandard(
-                        $"On-The-Fly Help",
-                        "A window called \"Kingdom Hearts 3D Romhacking Suite\" will appear.\nType '14', and then press Enter.\nOnce \"Done!\" appears, press any key.",
-                        MsBox.Avalonia.Enums.ButtonEnum.Ok,
-                        MsBox.Avalonia.Enums.Icon.Info
-                    );
-                    await box.ShowAsPopupAsync(this);
-                    NewTools.L2D.Pack(Path.Combine(Misc.Paths.work, file), embedded);
+                    ShowGenericWarning();
+                    Containers.Generic.Pack(Path.Combine(Misc.Paths.work, file));
                     Log.Text = $"Packed {file}!";
                 }
                 else if (file.EndsWith(".rbin"))
@@ -1348,28 +1321,10 @@ namespace Nightmare_Editor
                     NewTools.CTT.Encode(Path.Combine(Misc.Paths.work, file), file2);
                     Log.Text = $"Packed {file}!";
                 }
-                else if ((file.EndsWith(".l2d") || file.EndsWith(".fep") || file.EndsWith(".pmo") || file.EndsWith(".pmp")) && Directory.Exists($@"{System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)}\work\{Path.GetDirectoryName(file)}\{Path.GetFileNameWithoutExtension(file)}\"))
+                else if (Containers.IsArc(file) && Directory.Exists(Path.Combine(Misc.Paths.work, Path.GetDirectoryName(file), Path.GetFileNameWithoutExtension(file))))
                 {
-                    List<string> embedded = new List<string>();
-                    string[] files2 = Directory.GetFiles(Path.Combine(Misc.Paths.work, Path.GetDirectoryName(file), Path.GetFileNameWithoutExtension(file)), $"*.ctt", SearchOption.AllDirectories);
-                    foreach (string packed in files2)
-                    {
-                        string packed2 = packed.Replace(Misc.Paths.work + Path.DirectorySeparatorChar, "");
-                        if (Path.GetFileNameWithoutExtension(packed2.Split(Path.DirectorySeparatorChar)[1]) == Path.GetFileNameWithoutExtension(file.Split(Path.DirectorySeparatorChar)[1]))
-                        {
-                            string path = Path.Combine(Misc.Paths.work, Path.GetDirectoryName(file), Path.GetFileNameWithoutExtension(file), Path.GetFileName(packed));
-                            embedded.Add(path);
-                        }
-                    }
-                    var box = MessageBoxManager.GetMessageBoxStandard(
-                        $"On-The-Fly Help",
-                        "A window called \"Kingdom Hearts 3D Romhacking Suite\" will appear.\nType '14', and then press Enter.\nOnce \"Done!\" appears, press any key.",
-                        MsBox.Avalonia.Enums.ButtonEnum.Ok,
-                        MsBox.Avalonia.Enums.Icon.Info
-                    );
-                    await box.ShowAsPopupAsync(this);
-                    
-                    NewTools.L2D.Pack(Path.Combine(Misc.Paths.work, file), embedded);
+                    ShowGenericWarning();
+                    Containers.Generic.Pack(Path.Combine(Misc.Paths.work, file));
                     Log.Text = $"Packed {file}!";
                 }
                 if (file.Length - file.Replace(Path.DirectorySeparatorChar.ToString(), "").Length == 1)
@@ -1755,6 +1710,17 @@ namespace Nightmare_Editor
             {
 
             }
+        }
+
+        public async void ShowGenericWarning()
+        {
+            var box2 = MessageBoxManager.GetMessageBoxStandard(
+                "Generic Warning",
+                "This file uses \"generic\" replacement, meaning you can't change the format or size of the texture. Sorry for the inconvenience!",
+                MsBox.Avalonia.Enums.ButtonEnum.Ok,
+                MsBox.Avalonia.Enums.Icon.Info
+            );
+            await box2.ShowAsPopupAsync(this);
         }
     }
 }

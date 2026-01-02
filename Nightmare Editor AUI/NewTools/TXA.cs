@@ -135,9 +135,13 @@ namespace Nightmare_Editor.NewTools
                 {
                     total = group.DestHeight * group.DestWidth / 2;
                 }
-                else if (format >= 12 && format <= 13)
+                else if (format >= 12 && format < 13)
                 {
                     total = (group.DestHeight / 4) * (group.DestWidth / 4) * 8;
+                }
+                else if (format <= 13)
+                {
+                    total = (group.DestHeight / 4) * (group.DestWidth / 4) * 8 * 2;
                 }
                 int animcount = data[j++] + (data[j++] * 0x100);
                 group.Default = data[j++] + (data[j++] * 0x100);

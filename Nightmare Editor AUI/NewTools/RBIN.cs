@@ -172,13 +172,9 @@ public class RBIN
             string[] files = Directory.GetFiles(Path.GetDirectoryName(realoutput), "*", SearchOption.AllDirectories);
             foreach (string file in files)
             {
-                if (Path.GetExtension(file) == ".pmo")
+                if (Containers.IsArc(file))
                 {
-                    PMO.ExtractAllTextures(file);
-                }
-                if (Misc.IsArc(file))
-                {
-                    // salalala sheeeeesh
+                    Containers.Generic.Unpack(file);
                 }
             }
         }
