@@ -317,12 +317,20 @@ public class RBIN
                 File.WriteAllBytes(save.Path.LocalPath, data.ToArray());
             }
         }
-        else if (!string.IsNullOrWhiteSpace(output))
+        else if (string.IsNullOrWhiteSpace(output))
         {
             string settingspath = Misc.Jsons.settings;
             jsonString = System.IO.File.ReadAllText(settingspath);
             Settings settings = JsonSerializer.Deserialize<Settings>(jsonString, jsonoptions);
-            File.WriteAllBytes(Path.Combine(settings.DeployPath, Path.GetFileName(filename)), data.ToArray());
+            if (settings.Emulator)
+            {
+                Directory.CreateDirectory(Path.Combine(settings.DeployPath, "mods", Manager.GetTitleIDFromRegion(settings.Region), "romfs"));
+                File.WriteAllBytes(Path.Combine(settings.DeployPath, "mods", Manager.GetTitleIDFromRegion(settings.Region), "romfs", Path.GetFileName(filename)), data.ToArray());
+            }
+            else
+            {
+                File.WriteAllBytes(Path.Combine(settings.DeployPath, Path.GetFileName(filename)), data.ToArray());
+            }
         }
         else
         {

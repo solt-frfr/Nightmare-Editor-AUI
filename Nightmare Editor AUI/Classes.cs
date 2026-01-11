@@ -35,5 +35,7 @@ namespace Nightmare_Editor
     {
         public string DeployPath { get; set; }
         public int DefaultImage { get; set; }
+        public bool Emulator { get; set; }
+        public int Region { get; set; }
     }
 }

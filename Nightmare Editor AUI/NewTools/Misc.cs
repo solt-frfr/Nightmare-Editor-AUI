@@ -202,5 +202,42 @@ namespace Nightmare_Editor.NewTools
             str = str.Substring(position + 1);
             return str;
         }
+        
+        public static List<string> accepted_rbins = new List<string>()
+        {
+            "_grpdef",
+            "cam",
+            "chara_boss",
+            "chara_d_obj",
+            "chara_e_obj",
+            "chara_enemy",
+            "chara_f_obj",
+            "chara_npc",
+            "chara_pc",
+            "chara_wep",
+            "effect",
+            "event",
+            "font",
+            "game",
+            "item",
+            "map",
+            "menu",
+            "message",
+            "minigame",
+            "mission",
+            "setdata"
+        };
+        
+        public static List<string> accepted_folders = new List<string>()
+        {
+            "movie",
+            "sound",
+            "system"
+        };
+        
+        public static List<string> accepted_files = new List<string>()
+        {
+            "romarcs.prefs",
+        };
     }
 }
