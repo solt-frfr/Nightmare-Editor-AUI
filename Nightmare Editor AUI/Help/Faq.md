@@ -1,7 +1,7 @@
 # Frequently Asked Questions
 #### 
 ## The program just froze!
- Although it's unlikely for this to happen, since I patched one of the main reasons this would happen during the middle of development, my advice is just to wait if it does. If it crashes or doesn't unfreeze after a long period of time, contact me and/or leave a bug report on this program's GitHub page, at **https://github.com/solt-frfr/Nightmare-Editor-AUI/issues**.
+ My advice is just to wait if it does. If it crashes or doesn't unfreeze after a long period of time, contact me and/or leave a bug report on this program's GitHub page, at **https://github.com/solt-frfr/Nightmare-Editor-AUI/issues**. Please provide steps to recreate the freeze.
 #### 
 ## How do I edit (insert file type here)?
  Because this is mostly focused on textures, files that are not textures or do not contain textures can't really be edited here. However, I know some other resources I can link to.
@@ -19,19 +19,20 @@
  **https://github.com/hadashisora/NintyFont**
 #### 
 ## Why is this necessary?
-It isn't. This program is made for convenience, but I *highly* recommend someone uses it instead of not. There's quite a few reasons, actually, and they're all quite stupid.
+It isn't. Well, that's what I used to say, but it is necessary if you're avoiding Windows. Since this is a cross-platform app, and the original toolkit isn't, this is necessary for Linux and MacOS, unless you want to mess with Wine. 
+This program is made for convenience, but I *highly* recommend someone uses it instead of using the Toolkit. There's quite a few reasons, actually, and they're all quite stupid.
 #### 
 ### 1. Repacking .rbin Files.
- After repacking an .rbin file, it compelete messes up the data of each file. Couldn't tell you why.
+ After repacking an .rbin file, it compelete messes up the data of each file. It seems that while packing, all of the normally compressed files are recompressed and become unable to edit.
 #### 
  By keeping things organized into different folders, it cleans the process significantly, since you can copy over everything to start again.
 #### 
  Typically when I did my projects before this tool, I had 3 separate folders for each .rbin. A work folder, a base folder, and the folder that will be packed. This tool keeps everything streamlined so that *you* aren't having to jumble around a ton of folders.
 #### 
 ### 2. Inconvenient Texture Packing.
- It was difficult to figure out *how* to replace textures in the first place. Even though I know how to now, that doesn't make it simple. You have to figure out the format of the texture, first. If it's etc, do this, if it's 565, do that, etc. Whatever you end up doing will spit out a .ctt texture.
+ It was difficult to figure out *how* to replace textures in the first place. Even though I know how to now, that doesn't make it simple. You have to figure out the format of the texture, first. If it's ETC1, do this, if it's 565, do that, etc. Whatever you end up doing will spit out a .ctt texture.
 #### 
- Here arises the next problem. From what I've noticed, miscellanous data can be packed in or around these textures, especially if they reside inside a .pmo or .l2d file. The only way to properly insert the new data is to go in a hex editor, find where the texture starts, and paste without inserting. As an aside, linking textures with the base toolkit *never* worked for me, so I've always had to do this process regardless. I tried testing to see if I can get rid of the extra data, but it caused some visual bugs, like Sora's HUD icon appearing in the center of the screen.
+ Here arises the next problem. From what I've noticed, textures aren't always put into files like .pmo and .l2d files sequentially, or rather, other data of the files is packed around the textures instead of them all being in a line. The only way I was able to properly insert the new data is to go in a hex editor, find where the texture starts, and paste without inserting. As an aside, linking textures with the base toolkit *never* worked for me, so I've always had to do this process regardless. I've since done my best to actually learn the formats and properly extract and reinsert them, though it's still imperfect.
 #### 
 ### 3. Previous Failures.
  When I got into hacking this game, although it took me a while, days in fact, I got the hang of the whole process and managed to import some textures. Months later, I came back for another project, and did not remember at all how to do it. It took me about a day to remember the whole process, which I then outlined in the OpenKH discord server so that I wouldn't forget.
@@ -64,14 +65,14 @@ SOLT11 IF YOU WANT TO EDIT TEXTURES READ THIS
 ## CTT Encoding and Decoding
  Packing CTT files in the toolkit just *didn't work*. It basically just returned a blank image. So I spent almost the entire next day implementing decoding/encoding ctt textures from scratch. Within that day, I was able to completely implement RGBA8888, RGB888, and RGB565. I also adjusted many minor things, like switching to the correct format identifiers, and implementing a half-baked texture linking that didn't store your progress, unlike the final version.
 #### 
- Since then I've continually progressed adding more and more support. Currently, I'm still working on writing algorithms for compression ETC1 and ETC1A4 textures.
+ Since then I've continually progressed adding more and more support. Currently, I'm still working on writing algorithms for compression of ETC1 and ETC1A4 textures.
 #### 
 # About
  This project was solo developed by me, Solt11, out of hatred for the modding process and the wish to make it more convenient. Originally acting as a helper for a different set of tools made by the Deep Dive Translations team, but now is my own work that I can give to anyone who wants it. My hope is that this program helps someone in their modding endevours.
 #### 
 ## Credit
 ### Deep Drive Translations Team
- I have no idea who these people are, but there tools are what make this whole thing possible. They are much appreciated for that, and I thank them dearly.
+ I have no idea who these people are, but their tools are what originally made this whole thing possible. They are much appreciated for that, and I thank them dearly.
 #### 
 ### OpenKH
- The #ddd-modding channel has bore the pains with me as I developed this. They also showed to me that modding this game actually *is* possible.
+ The #ddd-modding channel has bore the pains with me as I developed this. They also showed to me that modding this game actually *is* possible. They've also helped me with some of my programming on occasion.

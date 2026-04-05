@@ -157,7 +157,7 @@
                 <TextBlock Text="Settings" Foreground="White" FontSize="25" FontWeight="SemiBold" TextDecorations="Underline"/>
                 <TextBlock Text="Output Path" Foreground="White" FontSize="18" Grid.Row="1" ToolTip.Tip="After clicking Deploy, the mods will be placed in this path." VerticalAlignment="Center"/>
                 <TextBlock Text="Default Preview" Foreground="White" FontSize="18" Grid.Row="2" ToolTip.Tip="The preview that will show up if none is found." VerticalAlignment="Center"/>
-                <ScrollViewer Grid.Row="1" Grid.Column="1">
+                <ScrollViewer Grid.Row="1" Grid.Column="1" HorizontalScrollBarVisibility="Auto">
                     <StackPanel Orientation="Horizontal">
                         <Button Name="PathButton" ToolTip.Tip="After clicking Deploy, the mods will be placed in this path." Click="Path_Click" Content="Browse"/>
                         <TextBox Name="PathBox" Classes="NoHover" ToolTip.Tip="After clicking Deploy, the mods will be placed in this path." IsEnabled="False" Foreground="#b8dffd" Background="#003e94" TextChanged="PathBox_TextChanged"/>
