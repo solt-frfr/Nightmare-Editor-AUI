@@ -79,7 +79,7 @@
                     <TextBox Text="Open In Editor" PointerReleased="Edit_Click" Foreground="Blue" FontWeight='Black' BorderBrush="Gray" FontStyle="Italic" Background="White" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Row="3" Grid.Column="1" IsReadOnly="True" Focusable="False" Cursor="Hand" Height="17"/>
                 </Grid>
             </Grid>
-            <Grid RowDefinitions="*,158" ColumnDefinitions="158,*" Grid.ColumnSpan="3" Background="Black">
+            <Grid Name="TextureInfo" RowDefinitions="*,158" ColumnDefinitions="158,*" Grid.ColumnSpan="3" Background="Black">
                 <Image Name="TextureTemp" Source="Images/plus.png" RenderOptions.BitmapInterpolationMode="None" IsVisible="False"/>
                 <TextBox Name="LocationTemp" IsVisible="False"/>
                 <Grid Grid.Column="1" Grid.RowDefinitions="*,Auto" Grid.RowSpan="2" Margin="5" Background="DarkGray">
@@ -141,6 +141,16 @@
 				<StackPanel x:Name="Files3" VerticalAlignment="Top">
 				</StackPanel>
             </ScrollViewer>
+        </Grid>
+        <Grid RowDefinitions="14*,*" ColumnDefinitions="*" Name="HexWindow" Grid.RowSpan="3" Grid.Column="2" Background="Black">
+            <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible">
+                <Viewbox HorizontalAlignment="Left" VerticalAlignment="Top" Stretch="Uniform" StretchDirection="Both">
+                    <StackPanel Name="HexBytePanel" Orientation="Vertical">
+                        
+                    </StackPanel>
+                </Viewbox>
+            </ScrollViewer>
+            <TextBox Grid.Row="1" Name="HexFileName" Text="File Name" Foreground="White" FontWeight='SemiBold' BorderBrush="White" Background="#323b4a" VerticalContentAlignment="Center" IsReadOnly="True" Focusable="False" Cursor="Hand"/>
         </Grid>
     </Grid>
 </Window>

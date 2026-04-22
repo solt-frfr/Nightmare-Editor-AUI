@@ -25,6 +25,7 @@ using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
 using Avalonia.Platform;
 using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Input.Platform;
 
 
@@ -71,15 +72,12 @@ namespace Nightmare_Editor
             InitializeComponent();
             InfoWindow.IsVisible = false;
             List<string> Paths = new List<string>();
-            // Get all files in the folder
             Directory.CreateDirectory(Misc.Paths.current);
             Directory.CreateDirectory(Misc.Paths.work);
             Directory.CreateDirectory(Path.Combine(Misc.Paths.work, "User-Added"));
             Directory.CreateDirectory(Misc.Paths.basePath);
             Directory.CreateDirectory(Path.Combine(Misc.Paths.basePath, "User-Added"));
             string[] files = Directory.GetFiles(Misc.Paths.current, "*.*", SearchOption.AllDirectories);
-
-            // Iterate and print each file path
             foreach (string file in files)
             {
                 string filetrim = file.Replace(Misc.Paths.current + Path.DirectorySeparatorChar, "");
@@ -474,6 +472,7 @@ namespace Nightmare_Editor
 
         private void TextBox_Click(object sender, PointerReleasedEventArgs e)
         {
+            HexBytePanel.Children.Clear();
             TextBox_PreviewMouseLeftButtonDown(sender, null);
             try
             {
@@ -565,6 +564,7 @@ namespace Nightmare_Editor
 
         private void TextBox2_Click(object sender, PointerReleasedEventArgs e)
         {
+            HexBytePanel.Children.Clear();
             TextBox2_PreviewMouseLeftButtonDown(sender, null);
             try
             {
@@ -625,6 +625,44 @@ namespace Nightmare_Editor
                     else
                     {
                         Log.Text = $"The file \"{textBox.Name}\" cannot be displayed.";
+                        HexBytePanel.Children.Clear();
+                        byte[] fileData = File.ReadAllBytes(filepath);
+                        List<StackPanel> stackPanels = new List<StackPanel>();
+                        for (int i = 0; i < (int)Math.Ceiling((double)fileData.Length / 16); i++)
+                        {
+                            StackPanel stackPanel = new StackPanel();
+                            stackPanel.Orientation = Orientation.Horizontal;
+                            stackPanels.Add(stackPanel);
+                        }
+
+                        int j = 0;
+                        for (int i = 0; i < fileData.Length; i++)
+                        {
+                            if (i != 0 && i % 16 == 0)
+                            {
+                                j++;
+                            }
+
+                            string text = fileData[i].ToString("X");
+                            if (text.Length < 2)
+                            {
+                                text = "0" + text;
+                            }
+                            stackPanels[j].Children.Add(new TextBlock
+                            {
+                                Text = text,
+                                Foreground =  new SolidColorBrush(Avalonia.Media.Color.Parse($"#F04080")),
+                                FontFamily = new FontFamily("avares://Nightmare Editor AUI/Assets/fonts#JetBrains Mono"),
+                                Margin = new Thickness(5,0)
+                            });
+                        }
+
+                        foreach (StackPanel stackPanel in stackPanels)
+                        {
+                            HexBytePanel.Children.Add(stackPanel);
+                        }
+                        HexFileName.Text = filepath.Replace(Misc.Paths.work + Path.DirectorySeparatorChar, "");
+                        HexWindow.IsVisible = true;
                     }
                     break;
                 }
@@ -648,6 +686,7 @@ namespace Nightmare_Editor
 
         private void TextBox3_Click(object sender, PointerReleasedEventArgs e)
         {
+            HexBytePanel.Children.Clear();
             TextBox3_PreviewMouseLeftButtonDown(sender, null);
             foreach (var child in Files3.Children)
             {
@@ -681,7 +720,8 @@ namespace Nightmare_Editor
         
         private async void AssignImage(string file, int from)
         {
-            string path = "";
+            string path = ""; 
+            HexWindow.IsVisible = false;
             if (Path.GetFileName(file) == selectedTextBox2.Name)
             {
                 path = Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), file);

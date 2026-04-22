@@ -169,7 +169,7 @@ public class RBIN
         File.WriteAllText(Path.Combine(realoutput, "info.json"), jsonString);
         if (recursive)
         {
-            string[] files = Directory.GetFiles(Path.GetDirectoryName(realoutput), "*", SearchOption.AllDirectories);
+            string[] files = Directory.GetFiles(realoutput, "*", SearchOption.AllDirectories);
             foreach (string file in files)
             {
                 if (Containers.IsArc(file))
