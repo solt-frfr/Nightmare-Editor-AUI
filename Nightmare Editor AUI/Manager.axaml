@@ -28,13 +28,15 @@
             </Setter>
         </Style>
     </Window.Resources>-->
-    <Grid Margin="10" ColumnDefinitions="3*,2*" RowDefinitions="1*,3*,0.5*">
+    <Grid Margin="10" ColumnDefinitions="3*,auto" RowDefinitions="1*,3*,0.5*">
         <Grid RowDefinitions="2*,3*">
-            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
-                <TextBox Name="GitRepoBox" VerticalAlignment="Center" Width="150" HorizontalAlignment="Left" Watermark="user/repository"/>
-                <Button Click="Git_Click">Install from Git Repository</Button>
-                <Button Name="UpdateButton" Click="UpdateGit_Click">Update Mods</Button>
-            </StackPanel>
+            <Viewbox>
+                <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBox Name="GitRepoBox" VerticalAlignment="Center" Width="150" HorizontalAlignment="Left" Watermark="user/repository"/>
+                    <Button Click="Git_Click">Install from Git Repository</Button>
+                    <Button Name="UpdateButton" Click="UpdateGit_Click">Update Mods</Button>
+                </StackPanel>
+            </Viewbox>
             <Grid Grid.Row="2" VerticalAlignment="Bottom" ColumnDefinitions="*,*,*" Margin="5,5,5,0">
                 <Grid Grid.Column="0">
                     <Button Name="ModsButton" Margin="5,5,5,-1" Click="Mods_Click" Cursor="Hand" Padding="0" BorderThickness="0">
@@ -53,12 +55,15 @@
                 </Grid>
             </Grid>
         </Grid>
-        <Grid ColumnDefinitions="*,*" RowDefinitions="4.5*,0.5*,4.5*,1.5*" Grid.RowSpan="2" Grid.Column="1" Name="ModContent" IsVisible="True" Margin="10">
-            <Image Name="Preview" Source="/Images/Preview0.png" Stretch="Uniform" VerticalAlignment="Top" HorizontalAlignment="Center"  Grid.ColumnSpan="2" RenderOptions.BitmapInterpolationMode="HighQuality"/>
-            <Grid Grid.ColumnSpan="2" Grid.RowSpan="2" Grid.Row="2">
-                <TextBox Name="DescBox" Classes="NoHover" FontSize="12" Background="#F04080" BorderBrush="White" Foreground="#ffffff" TextWrapping="WrapWithOverflow" IsReadOnly="True" Text="Make Sora and Riku's mark of mastery exam your own. You're seeing this because this mod has no description, or no mod is selected.&#xA;&#xA;Confused about the buttons at the bottom? Hover over them for more info."/>
+        <Viewbox Grid.RowSpan="2" Grid.Column="1">
+            <Grid RowDefinitions="9*,1*,9*,3*"  Name="ModContent" IsVisible="True" Margin="10" Width="250">
+                <Image Name="Preview" Source="/Images/Preview0.png" Stretch="Uniform" VerticalAlignment="Top" HorizontalAlignment="Center" RenderOptions.BitmapInterpolationMode="HighQuality"/>
+                <Grid Grid.RowSpan="2" Grid.Row="2">
+                    <TextBox Name="DescBox" Height="200" Classes="NoHover" FontSize="12" Background="#F04080" BorderBrush="White" Foreground="#ffffff" TextWrapping="WrapWithOverflow" IsReadOnly="True" Text="Make Sora and Riku's mark of mastery exam your own. You're seeing this because this mod has no description, or no mod is selected.&#xA;&#xA;Confused about the buttons at the bottom? Hover over them for more info."/>
+                </Grid>
             </Grid>
-        </Grid>
+        </Viewbox>
+        
         <Grid RowDefinitions="4*" Grid.Row="1" Name="Mods" IsVisible="True">
             <DataGrid Name="ModDataGrid"  Grid.Column="0" Grid.Row="0" Margin="10,0,10,10"
                       RowBackground="#F04080" AutoGenerateColumns="False" SelectionChanged="currentrow" Background="#ADD8E6" SelectionMode="Single" BorderBrush="#F04080" Foreground="White" ItemsSource="{Binding AllMods}">
@@ -107,6 +112,9 @@
                 </DataGrid.ContextMenu>
             </DataGrid>
         </Grid>
+        <Viewbox>
+            
+        </Viewbox>
         <Grid ColumnDefinitions="*,*,*,*,5*,*,*,*,*" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,5,0,0">
             <Button Name="DeployButton" Click="Deploy_Click" Grid.Column="0" Cursor="Hand" ToolTip.Tip="Deploy mods to selected folder.">
                 <Button.Template>
@@ -150,7 +158,9 @@
                     </ControlTemplate>
                 </Button.Template>
             </Button>
-            <TextBlock Foreground="#e8feff" Grid.ColumnSpan="2" Grid.Column="5" HorizontalAlignment="Center" Text="Find More" VerticalAlignment="Center" FontSize="25" FontWeight="SemiBold"/>
+            <Viewbox Grid.ColumnSpan="2" Grid.Column="5" >
+                <TextBlock Foreground="#e8feff" HorizontalAlignment="Center" Text="Find More" VerticalAlignment="Center" FontSize="25" FontWeight="SemiBold"/>
+            </Viewbox>
         </Grid>
         <Grid Name="SettingsWindow" ColumnDefinitions="*,*" Grid.Row="1" Grid.ColumnSpan="2" IsVisible="False" Background="#005ada">
             <Grid ColumnDefinitions="*,*" RowDefinitions="*,*,*,*,*,*,*,*" Margin="5">

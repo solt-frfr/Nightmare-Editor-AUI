@@ -366,6 +366,10 @@ namespace Nightmare_Editor
         private void currentrow(object sender, SelectionChangedEventArgs e)
         {
             Meta row = (Meta)ModDataGrid.SelectedItem;
+            if (DefPrevBox.SelectedIndex < 0)
+            {
+                DefPrevBox.SelectedIndex = 0;
+            }
             try
             {
                 if (string.IsNullOrWhiteSpace(row.Description) || row == null)

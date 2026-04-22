@@ -145,9 +145,9 @@
         <Grid RowDefinitions="14*,*" ColumnDefinitions="*" Name="HexWindow" Grid.RowSpan="3" Grid.Column="2" Background="Black">
             <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible">
                 <Viewbox HorizontalAlignment="Left" VerticalAlignment="Top" Stretch="Uniform" StretchDirection="Both">
-                    <StackPanel Name="HexBytePanel" Orientation="Vertical">
+                    <TextBlock Name="HexBytePanel">
                         
-                    </StackPanel>
+                    </TextBlock>
                 </Viewbox>
             </ScrollViewer>
             <TextBox Grid.Row="1" Name="HexFileName" Text="File Name" Foreground="White" FontWeight='SemiBold' BorderBrush="White" Background="#323b4a" VerticalContentAlignment="Center" IsReadOnly="True" Focusable="False" Cursor="Hand"/>

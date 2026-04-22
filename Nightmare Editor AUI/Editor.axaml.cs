@@ -71,6 +71,7 @@ namespace Nightmare_Editor
         {
             InitializeComponent();
             InfoWindow.IsVisible = false;
+            HexWindow.IsVisible = false;
             List<string> Paths = new List<string>();
             Directory.CreateDirectory(Misc.Paths.current);
             Directory.CreateDirectory(Misc.Paths.work);
@@ -472,7 +473,6 @@ namespace Nightmare_Editor
 
         private void TextBox_Click(object sender, PointerReleasedEventArgs e)
         {
-            HexBytePanel.Children.Clear();
             TextBox_PreviewMouseLeftButtonDown(sender, null);
             try
             {
@@ -481,6 +481,7 @@ namespace Nightmare_Editor
             catch { }
             Sort.SelectedIndex = 0;
             InfoWindow.IsVisible = false;
+            HexWindow.IsVisible = false;
             foreach (var child in Files.Children)
             {
                 Files2.Children.Clear();
@@ -564,7 +565,6 @@ namespace Nightmare_Editor
 
         private void TextBox2_Click(object sender, PointerReleasedEventArgs e)
         {
-            HexBytePanel.Children.Clear();
             TextBox2_PreviewMouseLeftButtonDown(sender, null);
             try
             {
@@ -572,6 +572,7 @@ namespace Nightmare_Editor
             }
             catch { }
             InfoWindow.IsVisible = false;
+            HexWindow.IsVisible = false;
             foreach (var child in Files2.Children)
             {
                 Files3.Children.Clear();
@@ -625,22 +626,16 @@ namespace Nightmare_Editor
                     else
                     {
                         Log.Text = $"The file \"{textBox.Name}\" cannot be displayed.";
-                        HexBytePanel.Children.Clear();
                         byte[] fileData = File.ReadAllBytes(filepath);
-                        List<StackPanel> stackPanels = new List<StackPanel>();
-                        for (int i = 0; i < (int)Math.Ceiling((double)fileData.Length / 16); i++)
-                        {
-                            StackPanel stackPanel = new StackPanel();
-                            stackPanel.Orientation = Orientation.Horizontal;
-                            stackPanels.Add(stackPanel);
-                        }
 
-                        int j = 0;
+                        HexBytePanel.Foreground = new SolidColorBrush(Avalonia.Media.Color.Parse($"#F04080"));
+                        HexBytePanel.FontFamily = new FontFamily("avares://Nightmare Editor AUI/Assets/fonts#JetBrains Mono");
+                        HexBytePanel.Margin = new Thickness(5, 0);
                         for (int i = 0; i < fileData.Length; i++)
                         {
                             if (i != 0 && i % 16 == 0)
                             {
-                                j++;
+                                HexBytePanel.Text += "\n";
                             }
 
                             string text = fileData[i].ToString("X");
@@ -648,18 +643,11 @@ namespace Nightmare_Editor
                             {
                                 text = "0" + text;
                             }
-                            stackPanels[j].Children.Add(new TextBlock
+                            HexBytePanel.Text += text;
+                            if (i % 16 != 15)
                             {
-                                Text = text,
-                                Foreground =  new SolidColorBrush(Avalonia.Media.Color.Parse($"#F04080")),
-                                FontFamily = new FontFamily("avares://Nightmare Editor AUI/Assets/fonts#JetBrains Mono"),
-                                Margin = new Thickness(5,0)
-                            });
-                        }
-
-                        foreach (StackPanel stackPanel in stackPanels)
-                        {
-                            HexBytePanel.Children.Add(stackPanel);
+                                HexBytePanel.Text += " ";
+                            }
                         }
                         HexFileName.Text = filepath.Replace(Misc.Paths.work + Path.DirectorySeparatorChar, "");
                         HexWindow.IsVisible = true;
@@ -686,7 +674,6 @@ namespace Nightmare_Editor
 
         private void TextBox3_Click(object sender, PointerReleasedEventArgs e)
         {
-            HexBytePanel.Children.Clear();
             TextBox3_PreviewMouseLeftButtonDown(sender, null);
             foreach (var child in Files3.Children)
             {
