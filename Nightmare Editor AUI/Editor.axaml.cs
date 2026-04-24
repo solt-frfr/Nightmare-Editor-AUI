@@ -186,8 +186,7 @@ namespace Nightmare_Editor
                     {
                         string[] files2 = Directory.GetFiles(Path.Combine(Misc.Paths.work, "User-Added"), "*.*", SearchOption.AllDirectories);
                         File.Copy(files[0].Path.LocalPath, Path.Combine(Misc.Paths.work, "User-Added", $"{files2.Length}-{Path.GetFileName(files[0].Path.LocalPath)}"), true);
-                        File.Copy(files[0].Path.LocalPath, Path.Combine(Misc.Paths.toolkit, $"{files2.Length}-{Path.GetFileName(files[0].Path.LocalPath)}"), true);
-                        Toolkit.ArcUnpack($"{files2.Length}-{Path.GetFileName(files[0].Path.LocalPath)}", Path.Combine(Misc.Paths.work, "User-Added"));
+                        Containers.Generic.Unpack(Path.Combine(Misc.Paths.work, "User-Added", $"{files2.Length}-{Path.GetFileName(files[0].Path.LocalPath)}"));
                     }
                     else
                     {
@@ -1006,7 +1005,8 @@ namespace Nightmare_Editor
                         {
                             File.Copy(file[0].Path.LocalPath, Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), selectedTextBox2.Name), true);
                             File.Copy(file[0].Path.LocalPath, Path.Combine(Misc.Paths.toolkit, selectedTextBox2.Name), true);
-                            Toolkit.ArcUnpack(Path.GetFileName(selectedTextBox2.Name), Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text)));
+                            Containers.Generic.Unpack(Path.Combine(Misc.Paths.toolkit, selectedTextBox2.Name));
+                            
                         }
                         else
                         {
@@ -1052,18 +1052,19 @@ namespace Nightmare_Editor
                         }
                         FileName.Text = selectedTextBox.Text + Path.DirectorySeparatorChar + selectedTextBox2.Name;
                         Log.Text = "Packing...";
-                        NewTools.CTT.Encode(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), textBox.Text), file2);
+                        NewTools.CTT.Encode(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), textBox.Name), file2);
                         Log.Text = $"Packed {textBox.Text}!";
                     }
-                    else if (Containers.IsArc(textBox.Text) && Directory.Exists($@"{System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)}\work\{Path.GetFileNameWithoutExtension(selectedTextBox.Text)}\{Path.GetFileNameWithoutExtension(textBox.Text)}\"))
+                    
+                    else if (Containers.IsArc(textBox.Text) && Directory.Exists(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), Path.GetFileNameWithoutExtension(textBox.Name))))
                     {
                         ShowGenericWarning();
-                        Containers.Generic.Pack(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), textBox.Text));
+                        Containers.Generic.Pack(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), textBox.Name));
                         Log.Text = $"Packed {textBox.Text}!";
                     }
                     else
                     {
-                        Log.Text = $"{textBox} is not an archive nor texture file, and cannot be packed.";
+                        Log.Text = $"{textBox.Text} is not an archive nor texture file, and cannot be packed.";
                     }    
                     break;
                 }

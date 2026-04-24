@@ -14,7 +14,7 @@ using Nightmare_Editor;
 using Nightmare_Editor.NewTools;
 
 string[] AllPaths = File.ReadAllLines(Path.Combine(AppContext.BaseDirectory, "filelist.txt")).Distinct().ToArray();
-args = new string[1]{"/home/solt/Downloads/Wayward.pmo"};
+args = new string[1]{"/home/solt/Documents/GitHub/Nightmare-Editor-AUI/Nightmare Editor AUI/bin/Debug/net8.0/Work/menu/288-bc01_00.l2d"};
 
 Console.ForegroundColor = ConsoleColor.Green;
 Console.WriteLine("________________________________________________________________________________");

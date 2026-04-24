@@ -64,6 +64,7 @@ namespace Nightmare_Editor
                 settings.DefaultImage = 0;
                 settings.Region = 0;
                 settings.Emulator = false;
+                settings.ETC1Encoder = 2;
                 string jsonString = JsonSerializer.Serialize<Settings>(settings, jsonoptions);
                 System.IO.File.WriteAllText(Misc.Jsons.settings, jsonString);
             }
@@ -210,6 +211,7 @@ namespace Nightmare_Editor
                 DefPrevBox.SelectedIndex = settings.DefaultImage;
                 UsingEmulator.IsChecked = settings.Emulator;
                 RegionBox.SelectedIndex = settings.Region;
+                ETCBox.SelectedIndex = settings.ETC1Encoder;
                 if (settings.DefaultImage < 0)
                 {
                     settings.DefaultImage = 0;
@@ -701,6 +703,7 @@ namespace Nightmare_Editor
             settings.DeployPath = PathBox.Text;
             settings.DefaultImage = DefPrevBox.SelectedIndex;
             settings.Region = RegionBox.SelectedIndex;
+            settings.ETC1Encoder = ETCBox.SelectedIndex;
             if (UsingEmulator.IsChecked == true)
             {
                 settings.Emulator = true;

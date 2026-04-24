@@ -118,21 +118,45 @@ namespace Nightmare_Editor
 
         public static void CTTPack(string filename, string path, string format)
         {
+            string jsonString = System.IO.File.ReadAllText(Misc.Jsons.settings);
+            var jsonoptions = new JsonSerializerOptions
+            {
+                WriteIndented = true
+            };
+            Settings settings = JsonSerializer.Deserialize<Settings>(jsonString, jsonoptions);
+            
             string toolkitPath = Path.Combine(Misc.Paths.toolkit, "ETC.exe");
             if (format != "ETC1" && format != "ETC1A4")
             {
                 toolkitPath = Path.Combine(Misc.Paths.toolkit, "DDD Toolkit.exe");
             }
             string inputFile = Path.Combine(Misc.Paths.toolkit, $"{filename}.{format}.png");
-            string newFile = Path.Combine(Misc.Paths.toolkit, filename);
+            string newFile = Path.Combine(Misc.Paths.toolkit, filename + ".ctt");
             File.Copy(newFile, Path.Combine(Misc.Paths.toolkit, "og.ctt"));
-            ProcessStartInfo startInfo = new ProcessStartInfo
+
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+
+            if (settings.ETC1Encoder == 0)
             {
-                FileName = "cmd.exe",
-                Arguments = $"/C \"\"{toolkitPath}\" \"{inputFile}\"\"",
-                UseShellExecute = true,
-                WorkingDirectory = Misc.Paths.toolkit
-            };
+                startInfo = new ProcessStartInfo
+                {
+                    FileName = "cmd.exe",
+                    Arguments = $"/C \"\"{toolkitPath}\" \"{inputFile}\"\"",
+                    UseShellExecute = true,
+                    WorkingDirectory = Misc.Paths.toolkit
+                };
+            }
+            else if (settings.ETC1Encoder == 1)
+            {
+                startInfo = new ProcessStartInfo
+                {
+                    FileName = "wine",
+                    Arguments = $"\"{toolkitPath}\" \"{inputFile}\"",
+                    UseShellExecute = true,
+                    WorkingDirectory = Misc.Paths.toolkit
+                };
+            }
+            
 
             Debug.WriteLine(startInfo.FileName);
             Debug.WriteLine(startInfo.Arguments);
@@ -147,10 +171,10 @@ namespace Nightmare_Editor
             File.Delete(Path.Combine(Misc.Paths.toolkit, "og.ctt"));
             File.Delete(inputFile);
 
-            Toolkit.CTTUnpack(filename, path);
+            // Toolkit.CTTUnpack(filename, path);
             try
             {
-                File.SetLastWriteTime(Path.Combine(path, filename), DateTime.Now);
+                File.SetLastWriteTime(Path.Combine(path, filename + ".ctt"), DateTime.Now);
                 File.SetLastWriteTime(Path.Combine(path, filename) + "." + format + ".bmp", DateTime.Now);
                 File.SetLastWriteTime(Path.Combine(path, filename) + "." + format + ".png", DateTime.Now);
             }

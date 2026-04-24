@@ -8,6 +8,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.PixelFormats;
 using System.Reflection;
+using System.Text.Json;
 using SixLabors.ImageSharp.ColorSpaces;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Processing.Processors;
@@ -137,11 +138,29 @@ namespace Nightmare_Editor.NewTools
         /// <param name="texture">Filepath containing a PNG texture to Encode into the CTT file.</param>
         public static void Encode(string file, string texture)
         {
+            string jsonString = System.IO.File.ReadAllText(Misc.Jsons.settings);
+            var jsonoptions = new JsonSerializerOptions
+            {
+                WriteIndented = true
+            };
+            Settings settings = JsonSerializer.Deserialize<Settings>(jsonString, jsonoptions);
+            
             byte[] data = File.ReadAllBytes(texture);
             int formatByte = GetFormat(file);
             Format formatenum = (Format)formatByte;
-            var image = Swizzle(data, (int)formatenum);
-            File.WriteAllBytes(file, image);
+            if (formatByte >= 12 && (settings.ETC1Encoder == 0 || settings.ETC1Encoder == 1))
+            {
+                File.Copy(texture, Path.Combine(Misc.Paths.toolkit, Path.GetFileNameWithoutExtension(file) + "." + formatenum.ToString() + ".png"), true);
+                File.Copy(file, Path.Combine(Misc.Paths.toolkit, Path.GetFileName(file)), true);
+                Toolkit.CTTPack(Path.GetFileNameWithoutExtension(file), Misc.Paths.toolkit, formatenum.ToString());
+                File.Copy(Path.Combine(Misc.Paths.toolkit, Path.GetFileName(file)), file, true);
+                
+            }
+            else
+            {
+                var image = Swizzle(data, (int)formatenum);
+                File.WriteAllBytes(file, image);   
+            }
             Decode(file);
         }
 
@@ -296,12 +315,10 @@ namespace Nightmare_Editor.NewTools
             {
                 newData = ETC1pack(image);
             }
-            /*
             else if (format == 13)
             {
                 newData = ETC1A4pack(image);
             }
-            */
             else
             {
                 newData = image;
@@ -821,7 +838,7 @@ namespace Nightmare_Editor.NewTools
         /// <summary>
         /// Converts ETC1A4 bytes into RGBA8888 bytes.
         /// </summary>
-        /// <param name="ogData">Raw ETC1A4 byte array.</param>
+        /// <param name="ogData">Raw ETC1 byte array.</param>
         /// <returns>Returns a byte array containing raw RGBA8888 data.</returns>
         public static byte[] ETC1unpack(byte[] ogData)
         {
@@ -1755,6 +1772,193 @@ namespace Nightmare_Editor.NewTools
                 newData[i + 5] = block.blue;
                 newData[i + 6] = block.green;
                 newData[i + 7] = block.red;
+                string message = "[";
+                char indicator = ' ';
+                int percent =
+                    (int)Math.Ceiling(((((((double)i - 0x80) / 8) + 1) * 100 / (((double)newData.Length - 0x80) / 8))));
+                for (int b = 1; b < 51; b++)
+                {
+                    if (b <= percent / 2)
+                    {
+                        message += "#";
+                    }
+                    else
+                    {
+                        message += "-";
+                    }
+                }
+
+                if (percent % 4 == 0)
+                {
+                    indicator = '-';
+                }
+                else if (percent % 4 == 1)
+                {
+                    indicator = '\\';
+                }
+                else if (percent % 4 == 2)
+                {
+                    indicator = '|';
+                }
+                else
+                {
+                    indicator = '/';
+                }
+
+                Console.Write("\rCompressing Blocks..." + message +
+                              $"] [{indicator}] {percent}% - {((i - 0x80) / 8) + 1} / {((newData.Length - 0x80) / 8)}");
+            }
+
+            Console.Write($"\nDone!");
+
+
+            return newData;
+        }
+        
+        /// <summary>
+        /// Converts RGBA8888 bytes into ETC1A4 bytes.
+        /// </summary>
+        /// <param name="ogData">Raw RGBA8888 byte array, with CTT Header.</param>
+        /// <returns>Returns a byte array containing raw ETC1 data, with a CTT Header.</returns>
+        public static byte[] ETC1A4pack(byte[] ogData)
+        {
+            ushort width = (ushort)(ogData[0x20] | (ogData[0x21] << 8));
+            ushort height = (ushort)(ogData[0x22] | (ogData[0x23] << 8));
+            byte[] header = CTTHeader(width, height, (int)Format.ETC1A4);
+            byte[] newData = new byte[((ogData.Length - 0x80) / 4) + 0x80];
+
+            for (int i = 0; i < 0x80; i++)
+            {
+                newData[i] = header[i];
+            }
+
+            int l = 0x80;
+            for (int i = 0x80; i < newData.Length; i += 16)
+            {
+                byte[] colorBlock = new byte[16 * 3];
+                byte[] alphaBlock = new byte[16];
+
+                alphaBlock[0] = ogData[l++];
+                colorBlock[0 * 3 + 0] = ogData[l++];
+                colorBlock[0 * 3 + 1] = ogData[l++];
+                colorBlock[0 * 3 + 2] = ogData[l++];
+                alphaBlock[4] = ogData[l++];
+                colorBlock[4 * 3 + 0] = ogData[l++];
+                colorBlock[4 * 3 + 1] = ogData[l++];
+                colorBlock[4 * 3 + 2] = ogData[l++];
+                alphaBlock[8] = ogData[l++];
+                colorBlock[8 * 3 + 0] = ogData[l++];
+                colorBlock[8 * 3 + 1] = ogData[l++];
+                colorBlock[8 * 3 + 2] = ogData[l++];
+                alphaBlock[12] = ogData[l++];
+                colorBlock[12 * 3 + 0] = ogData[l++];
+                colorBlock[12 * 3 + 1] = ogData[l++];
+                colorBlock[12 * 3 + 2] = ogData[l++];
+
+                alphaBlock[1] = ogData[l++];
+                colorBlock[1 * 3 + 0] = ogData[l++];
+                colorBlock[1 * 3 + 1] = ogData[l++];
+                colorBlock[1 * 3 + 2] = ogData[l++];
+                alphaBlock[5] = ogData[l++];
+                colorBlock[5 * 3 + 0] = ogData[l++];
+                colorBlock[5 * 3 + 1] = ogData[l++];
+                colorBlock[5 * 3 + 2] = ogData[l++];
+                alphaBlock[9] = ogData[l++];
+                colorBlock[9 * 3 + 0] = ogData[l++];
+                colorBlock[9 * 3 + 1] = ogData[l++];
+                colorBlock[9 * 3 + 2] = ogData[l++];
+                alphaBlock[13] = ogData[l++];
+                colorBlock[13 * 3 + 0] = ogData[l++];
+                colorBlock[13 * 3 + 1] = ogData[l++];
+                colorBlock[13 * 3 + 2] = ogData[l++];
+
+                alphaBlock[2] = ogData[l++];
+                colorBlock[2 * 3 + 0] = ogData[l++];
+                colorBlock[2 * 3 + 1] = ogData[l++];
+                colorBlock[2 * 3 + 2] = ogData[l++];
+                alphaBlock[6] = ogData[l++];
+                colorBlock[6 * 3 + 0] = ogData[l++];
+                colorBlock[6 * 3 + 1] = ogData[l++];
+                colorBlock[6 * 3 + 2] = ogData[l++];
+                alphaBlock[10] = ogData[l++];
+                colorBlock[10 * 3 + 0] = ogData[l++];
+                colorBlock[10 * 3 + 1] = ogData[l++];
+                colorBlock[10 * 3 + 2] = ogData[l++];
+                alphaBlock[14] = ogData[l++];
+                colorBlock[14 * 3 + 0] = ogData[l++];
+                colorBlock[14 * 3 + 1] = ogData[l++];
+                colorBlock[14 * 3 + 2] = ogData[l++];
+
+                alphaBlock[3] = ogData[l++];
+                colorBlock[3 * 3 + 0] = ogData[l++];
+                colorBlock[3 * 3 + 1] = ogData[l++];
+                colorBlock[3 * 3 + 2] = ogData[l++];
+                alphaBlock[7] = ogData[l++];
+                colorBlock[7 * 3 + 0] = ogData[l++];
+                colorBlock[7 * 3 + 1] = ogData[l++];
+                colorBlock[7 * 3 + 2] = ogData[l++];
+                alphaBlock[11] = ogData[l++];
+                colorBlock[11 * 3 + 0] = ogData[l++];
+                colorBlock[11 * 3 + 1] = ogData[l++];
+                colorBlock[11 * 3 + 2] = ogData[l++];
+                alphaBlock[15] = ogData[l++];
+                colorBlock[15 * 3 + 0] = ogData[l++];
+                colorBlock[15 * 3 + 1] = ogData[l++];
+                colorBlock[15 * 3 + 2] = ogData[l++];
+
+                var block = BruteForce(colorBlock);
+
+
+                for (int o = 0; o < 16; o++)
+                {
+                    if (o < 8)
+                    {
+                        if (block.big[o])
+                        {
+                            newData[i + 8] += (byte)(1 << o);
+                        }
+
+                        if (block.sub[o])
+                        {
+                            newData[i + 8 + 2] += (byte)(1 << o);
+                        }
+                    }
+                    else
+                    {
+                        if (block.big[o])
+                        {
+                            newData[i + 8 + 1] += (byte)(1 << (o - 8));
+                        }
+
+                        if (block.sub[o])
+                        {
+                            newData[i + 8 + 3] += (byte)(1 << (o - 8));
+                        }
+                    }
+                }
+
+                if (block.flip)
+                {
+                    newData[i + 8 + 4] += 1;
+                }
+
+                if (block.diff)
+                {
+                    newData[i + 8 + 4] += (1 << 1);
+                }
+
+                newData[i + 8 + 4] += (byte)(block.offsetset2 << 2);
+                newData[i + 8 + 4] += (byte)(block.offsetset1 << 5);
+                newData[i + 8 + 5] = block.blue;
+                newData[i + 8 + 6] = block.green;
+                newData[i + 8 + 7] = block.red;
+
+                int k = 0;
+                for (int j = 0; j < 8; j++)
+                {
+                    newData[i + j] += (byte)(alphaBlock[k++] >> 4);
+                    newData[i + j] += (byte)((alphaBlock[k++] >> 4) << 4);
+                }
                 string message = "[";
                 char indicator = ' ';
                 int percent =

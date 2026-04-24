@@ -162,46 +162,55 @@
                 <TextBlock Foreground="#e8feff" HorizontalAlignment="Center" Text="Find More" VerticalAlignment="Center" FontSize="25" FontWeight="SemiBold"/>
             </Viewbox>
         </Grid>
-        <Grid Name="SettingsWindow" ColumnDefinitions="*,*" Grid.Row="1" Grid.ColumnSpan="2" IsVisible="False" Background="#005ada">
-            <Grid ColumnDefinitions="*,*" RowDefinitions="*,*,*,*,*,*,*,*" Margin="5">
-                <TextBlock Text="Settings" Foreground="White" FontSize="25" FontWeight="SemiBold" TextDecorations="Underline"/>
-                <TextBlock Text="Output Path" Foreground="White" FontSize="18" Grid.Row="1" ToolTip.Tip="After clicking Deploy, the mods will be placed in this path." VerticalAlignment="Center"/>
-                <TextBlock Text="Default Preview" Foreground="White" FontSize="18" Grid.Row="2" ToolTip.Tip="The preview that will show up if none is found." VerticalAlignment="Center"/>
-                <ScrollViewer Grid.Row="1" Grid.Column="1" HorizontalScrollBarVisibility="Auto">
-                    <StackPanel Orientation="Horizontal">
-                        <Button Name="PathButton" ToolTip.Tip="After clicking Deploy, the mods will be placed in this path." Click="Path_Click" Content="Browse"/>
-                        <TextBox Name="PathBox" Classes="NoHover" ToolTip.Tip="After clicking Deploy, the mods will be placed in this path." IsEnabled="False" Foreground="#b8dffd" Background="#003e94" TextChanged="PathBox_TextChanged"/>
-                    </StackPanel>
-                </ScrollViewer>
-                
-                <ComboBox Name="DefPrevBox" Grid.Row="2" Grid.Column="1" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" SelectionChanged="DefPrevBox_SelectionChanged">
-                    <ComboBoxItem IsSelected="True" Content="Dream Drop Distance"/>
-                    <ComboBoxItem Content="Final Chapter Prologue"/>
-                    <ComboBoxItem Content="The World Ends With You"/>
-                    <ComboBoxItem Content="Vacant House"/>
-                </ComboBox>
-                <TextBlock Text="Using an Emulator" Foreground="White" FontSize="18" Grid.Row="3" ToolTip.Tip="Enable this if using an emulator such as Azahar or Citra. This will enable emulator-specific parts of mods, such as HD Textures. If this is enabled, place your output path in your emulator's load folder." VerticalAlignment="Center"/>
-                <TextBlock Text="Region" Foreground="White" FontSize="18" Grid.Row="4" ToolTip.Tip="Enable this if using an emulator such as Azahar or Citra. This will enable emulator-specific parts of mods, such as HD Textures. If this is enabled, place your output path in your emulator's load folder." VerticalAlignment="Center"/>
-                <CheckBox Grid.Row="3" Grid.Column="1" Name="UsingEmulator" IsCheckedChanged="Emulator_Changed" ToolTip.Tip="Enable this if using an emulator such as Azahar or Citra. This will enable emulator-specific parts of mods, such as HD Textures. If this is enabled, place your output path in your emulator's load folder." VerticalAlignment="Center" HorizontalAlignment="Center" IsEnabled="True"/>
-                <ComboBox Name="RegionBox" Grid.Row="4" Grid.Column="1" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" SelectionChanged="DefPrevBox_SelectionChanged">
-                    <ComboBoxItem IsSelected="True" Content="North America"/>
-                    <ComboBoxItem Content="Europe"/>
-                    <ComboBoxItem Content="Japan"/>
-                </ComboBox>
-                <Button Grid.ColumnSpan="2" Grid.Row="5" Grid.RowSpan="2" FontWeight="Bold" FontSize="45" BorderThickness="5" Click="File_Unpack">
-                    Unpack Files
-                </Button>
+        <Viewbox  Grid.Row="1" Grid.ColumnSpan="2" >
+            <Grid Name="SettingsWindow" ColumnDefinitions="*,*" IsVisible="False" Background="#005ada" Width="800">
+                <Grid ColumnDefinitions="*,*" RowDefinitions="*,*,*,*,*,*,*,*" Margin="5">
+                    <TextBlock Text="Settings" Foreground="White" FontSize="25" FontWeight="SemiBold" TextDecorations="Underline"/>
+                    <TextBlock Text="Output Path" Foreground="White" FontSize="18" Grid.Row="1" ToolTip.Tip="After clicking Deploy, the mods will be placed in this path." VerticalAlignment="Center"/>
+                    <TextBlock Text="Default Preview" Foreground="White" FontSize="18" Grid.Row="2" ToolTip.Tip="The preview that will show up if none is found." VerticalAlignment="Center"/>
+                    <ScrollViewer Grid.Row="1" Grid.Column="1" HorizontalScrollBarVisibility="Auto">
+                        <StackPanel Orientation="Horizontal">
+                            <Button Name="PathButton" ToolTip.Tip="After clicking Deploy, the mods will be placed in this path." Click="Path_Click" Content="Browse"/>
+                            <TextBox Name="PathBox" Classes="NoHover" ToolTip.Tip="After clicking Deploy, the mods will be placed in this path." IsEnabled="False" Foreground="#b8dffd" Background="#003e94" TextChanged="PathBox_TextChanged"/>
+                        </StackPanel>
+                    </ScrollViewer>
+                    
+                    <ComboBox Name="DefPrevBox" Grid.Row="2" Grid.Column="1" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" SelectionChanged="DefPrevBox_SelectionChanged">
+                        <ComboBoxItem IsSelected="True" Content="Dream Drop Distance"/>
+                        <ComboBoxItem Content="Final Chapter Prologue"/>
+                        <ComboBoxItem Content="The World Ends With You"/>
+                        <ComboBoxItem Content="Vacant House"/>
+                    </ComboBox>
+                    <TextBlock Text="Using an Emulator" Foreground="White" FontSize="18" Grid.Row="3" ToolTip.Tip="Enable this if using an emulator such as Azahar or Citra. This will enable emulator-specific parts of mods, such as HD Textures. If this is enabled, place your output path in your emulator's load folder." VerticalAlignment="Center"/>
+                    <TextBlock Text="Region" Foreground="White" FontSize="18" Grid.Row="4" ToolTip.Tip="Enable this if using an emulator such as Azahar or Citra. This will enable emulator-specific parts of mods, such as HD Textures. If this is enabled, place your output path in your emulator's load folder." VerticalAlignment="Center"/>
+                    <TextBlock Text="ETC1 Encoder" Foreground="White" FontSize="18" Grid.Row="5" ToolTip.Tip="Enable this if using an emulator such as Azahar or Citra. This will enable emulator-specific parts of mods, such as HD Textures. If this is enabled, place your output path in your emulator's load folder." VerticalAlignment="Center"/>
+                    <CheckBox Grid.Row="3" Grid.Column="1" Name="UsingEmulator" IsCheckedChanged="Emulator_Changed" ToolTip.Tip="Enable this if using an emulator such as Azahar or Citra. This will enable emulator-specific parts of mods, such as HD Textures. If this is enabled, place your output path in your emulator's load folder." VerticalAlignment="Center" HorizontalAlignment="Center" IsEnabled="True"/>
+                    <ComboBox Name="RegionBox" Grid.Row="4" Grid.Column="1" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" SelectionChanged="DefPrevBox_SelectionChanged">
+                        <ComboBoxItem IsSelected="True" Content="North America"/>
+                        <ComboBoxItem Content="Europe"/>
+                        <ComboBoxItem Content="Japan"/>
+                    </ComboBox>
+                    <ComboBox Name="ETCBox" Grid.Row="5" Grid.Column="1" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" SelectionChanged="DefPrevBox_SelectionChanged">
+                        <ComboBoxItem Content="Windows"/>
+                        <ComboBoxItem Content="Wine (Experimental)"/>
+                        <ComboBoxItem IsSelected="True" Content="Compatibility"/>
+                    </ComboBox>
+                    <Button Grid.ColumnSpan="2" Grid.Row="6" Grid.RowSpan="2" FontWeight="Bold" FontSize="45" BorderThickness="5" Click="File_Unpack">
+                        Unpack Files
+                    </Button>
+                </Grid>
+                <Grid Grid.Column="1" Margin="5" Width="400">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="7*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="About Exam Editor" Foreground="White" FontSize="25" FontWeight="SemiBold" TextDecorations="Underline"/>
+                    <TextBlock Text="v1.0.0 " Foreground="White" FontSize="16" TextAlignment="Right" VerticalAlignment="Bottom" FontStyle="Italic" Margin="0,5"/>
+                    <TextBox IsReadOnly="True" Classes="NoHover" Grid.Row="1" Focusable="False" Foreground="#b8dffd" Background="#005ada" BorderThickness="0" FontSize="12" ScrollViewer.VerticalScrollBarVisibility="Auto" TextWrapping="WrapWithOverflow" Text="Exam Editor is a mod manager made by Solt11 specifically for the 3DS version of Kingdom Hearts Dream Drop Distance.&#xA;Please use OpenKH for the PC version, any mods I make will likely have an equivalent PC version.&#xD;&#xA;&#xD;&#xA;Nightmare Editor is the real program, and I go more in-depth on my explanations about what and why I made this in the FAQ section of Nightmare Editor's Help Window.&#xD;&#xA;&#xD;&#xA;Q: AUI?&#xD;&#xA;A: Avalonia UI. This is a port from the WPF version and has become the only supported version."/>
+                </Grid>
             </Grid>
-            <Grid Grid.Column="1" Margin="5">
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition Height="7*"/>
-                </Grid.RowDefinitions>
-                <TextBlock Text="About Exam Editor" Foreground="White" FontSize="25" FontWeight="SemiBold" TextDecorations="Underline"/>
-                <TextBlock Text="v1.0.0 " Foreground="White" FontSize="16" TextAlignment="Right" VerticalAlignment="Bottom" FontStyle="Italic" Margin="0,5"/>
-                <TextBox IsReadOnly="True" Classes="NoHover" Grid.Row="1" Focusable="False" Foreground="#b8dffd" Background="#005ada" BorderThickness="0" FontSize="12" ScrollViewer.VerticalScrollBarVisibility="Auto" TextWrapping="WrapWithOverflow" Text="Exam Editor is a mod manager made by Solt11 specifically for the 3DS version of Kingdom Hearts Dream Drop Distance.&#xA;Please use OpenKH for the PC version, any mods I make will likely have an equivalent PC version.&#xD;&#xA;&#xD;&#xA;Nightmare Editor is the real program, and I go more in-depth on my explanations about what and why I made this in the FAQ section of Nightmare Editor's Help Window.&#xD;&#xA;&#xD;&#xA;Q: AUI?&#xD;&#xA;A: Avalonia UI. This is a port from the WPF version and has become the only supported version."/>
-            </Grid>
-        </Grid>
+        </Viewbox>
+        
         <Grid Name="MusicWindow" Grid.Row="1" Grid.ColumnSpan="2" IsVisible="True">
             <Grid Background="#005ada" ColumnDefinitions="*,2*" RowDefinitions="*,*,*,*,*,*,*,*">
                 <TextBlock Text="Music Selector" Foreground="White" FontSize="25" FontWeight="SemiBold" TextDecorations="Underline"/>

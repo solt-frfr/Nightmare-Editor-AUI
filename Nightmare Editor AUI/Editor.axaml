@@ -52,17 +52,17 @@
         </Grid>
         <Grid RowDefinitions="3*,16*" ColumnDefinitions="*,*" Name="QueueWindow" Grid.RowSpan="3" Grid.Column="2" IsVisible="False" Background="Black" Panel.ZIndex="3">
             <ScrollViewer Grid.ColumnSpan="2" Grid.Row="1">
-                <StackPanel x:Name="Queued" VerticalAlignment="Top" Margin="3" Panel.ZIndex="2">
+                <StackPanel x:Name="Queued" VerticalAlignment="Top" Margin="3" Panel.ZIndex="1">
                     <!-- TextBox controls will be added here dynamically -->
                 </StackPanel>
             </ScrollViewer>
-			<TextBox Name="QueueBox" Classes="NoHover" Grid.ColumnSpan="2" Grid.Row="1" IsReadOnly="True" Focusable="False" BorderBrush="#4080f0" Background="LightGoldenrodYellow" BorderThickness="3"></TextBox>
+			<TextBox Name="QueueBox" Classes="NoHover" Grid.ColumnSpan="2" Grid.Row="1" IsReadOnly="True" Focusable="False" BorderBrush="#4080f0" Background="LightGoldenrodYellow" BorderThickness="3" ZIndex="-1"></TextBox>
             <TextBlock FontStyle="Italic" Grid.ColumnSpan="2" Foreground="LightGoldenrodYellow" Margin="5" FontSize="10" VerticalAlignment="Bottom" HorizontalAlignment="Right"><Run Text="Files listed here will be packed in the order shown into the rbins"/><LineBreak/><Run Text="below it. .l2d, .pmo, and .ctt files will be packed themselves first."/></TextBlock>
             <TextBlock Text="Packing Queue" Grid.ColumnSpan="2" Foreground="White" FontWeight="SemiBold" Margin="5" FontSize="25" VerticalAlignment="Top"/>
-            <Button Click="PackAll_Click" Classes="QueueButtons" Margin="0,0,5,0" Foreground="White" FontWeight='Black' BorderBrush="#4080f0" FontStyle="Italic" Background="#4080f0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" HorizontalAlignment="Stretch" Grid.Row="2" Cursor="Hand">
+            <Button Click="PackAll_Click" Classes="QueueButtons" Margin="0,0,5,0" Foreground="White" FontWeight='Black' BorderBrush="#4080f0" FontStyle="Italic" Background="#4080f0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Grid.Row="2" Cursor="Hand">
                 <TextBlock Text="Pack Queued" TextDecorations="Underline" FontSize="25"/>
             </Button>
-            <Button Click="ExpMod_Click" Classes="QueueButtons" Margin="5,0,0,0" Grid.Column="1" Foreground="White" FontWeight='Black' BorderBrush="#4080f0" FontStyle="Italic" Background="#4080f0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" HorizontalAlignment="Stretch" Grid.Row="2" Cursor="Hand">
+            <Button Click="ExpMod_Click" Classes="QueueButtons" Margin="5,0,0,0" Grid.Column="1" Foreground="White" FontWeight='Black' BorderBrush="#4080f0" FontStyle="Italic" Background="#4080f0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Grid.Row="2" Cursor="Hand">
                 <TextBlock Text="Export Mod" TextDecorations="Underline" FontSize="25"/>
             </Button>
         </Grid>
