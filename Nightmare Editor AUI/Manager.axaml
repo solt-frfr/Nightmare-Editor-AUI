@@ -4,10 +4,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Nightmare_Editor"
+        xmlns:skia="clr-namespace:Avalonia.Svg.Skia;assembly=Svg.Controls.Skia.Avalonia"
         mc:Ignorable="d"
         Title="Exam Editor" Height="450" Width="800" Icon="/Assets/dreameater.ico">
     <Window.Background>
-        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+        <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,75%">
             <GradientStop Color="#ADD8E6" Offset="0"/>
             <GradientStop Color="#FFA580" Offset="1"/>
         </LinearGradientBrush>
@@ -32,25 +33,25 @@
         <Grid RowDefinitions="2*,3*">
             <Viewbox>
                 <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
-                    <TextBox Name="GitRepoBox" VerticalAlignment="Center" Width="150" HorizontalAlignment="Left" Watermark="user/repository"/>
+                    <TextBox Name="GitRepoBox" VerticalAlignment="Center" Width="150" HorizontalAlignment="Left" PlaceholderText="user/repository"/>
                     <Button Click="Git_Click">Install from Git Repository</Button>
                     <Button Name="UpdateButton" Click="UpdateGit_Click">Update Mods</Button>
                 </StackPanel>
             </Viewbox>
             <Grid Grid.Row="2" VerticalAlignment="Bottom" ColumnDefinitions="*,*,*" Margin="5,5,5,0">
                 <Grid Grid.Column="0">
-                    <Button Name="ModsButton" Margin="5,5,5,-1" Click="Mods_Click" Cursor="Hand" Padding="0" BorderThickness="0">
-						<Image Name="ModsImage" Source="/Images/ModsSel.png" RenderOptions.BitmapInterpolationMode="HighQuality"/>
+                    <Button Name="ModsButton" Margin="5,5,5,0" Click="Mods_Click" Cursor="Hand" Padding="0" BorderThickness="0">
+
                     </Button>
                 </Grid>
                 <Grid Grid.Column="1">
-                    <Button Name="MusicButton" Margin="5,5,5,-1" Click="Music_Click" Cursor="Hand" Padding="0" BorderThickness="0">
-						<Image Name="MusicImage" Source="/Images/SettingsUnsel.png" RenderOptions.BitmapInterpolationMode="HighQuality"/>
+                    <Button Name="MusicButton" Margin="5,5,5,0" Click="Music_Click" Cursor="Hand" Padding="0" BorderThickness="0">
+                        
                     </Button>
                 </Grid>
                 <Grid Grid.Column="2">
-                    <Button Name="SettingsButton" Margin="5,5,5,-1" Click="Settings_Click" Cursor="Hand" Padding="0" BorderThickness="0">
-						<Image Name="SettingsImage" Source="/Images/SettingsUnsel.png" RenderOptions.BitmapInterpolationMode="HighQuality"/>
+                    <Button Name="SettingsButton" Margin="5,5,5,0" Click="Settings_Click" Cursor="Hand" Padding="0" BorderThickness="0">
+                        
                     </Button>
                 </Grid>
             </Grid>
@@ -77,7 +78,7 @@
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Grid>
-                                    <CheckBox Name="RowCheckBox" HorizontalAlignment="Center" IsChecked="{Binding IsChecked}" Cursor="Hand" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked" Padding="0"/>
+                                    <CheckBox Name="RowCheckBox" HorizontalAlignment="Center" IsChecked="{Binding IsChecked}" Cursor="Hand" IsCheckedChanged="CheckBox_Checked" Padding="0"/>
                                 </Grid>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
@@ -212,60 +213,30 @@
         </Viewbox>
         
         <Grid Name="MusicWindow" Grid.Row="1" Grid.ColumnSpan="2" IsVisible="True">
-            <Grid Background="#005ada" ColumnDefinitions="*,2*" RowDefinitions="*,*,*,*,*,*,*,*">
-                <TextBlock Text="Music Selector" Foreground="White" FontSize="25" FontWeight="SemiBold" TextDecorations="Underline"/>
-                <TextBlock Text="This was done quickly and is not cleaned up. It will be before release." Foreground="White" FontSize="18" Grid.Row="1" Grid.ColumnSpan="2" VerticalAlignment="Center"/>
-                <TextBlock Text="Traverse Town Field Theme" Foreground="White" FontSize="18" Grid.Row="2" VerticalAlignment="Center"/>
-                <TextBlock Text="Traverse Town Battle Theme" Foreground="White" FontSize="18" Grid.Row="3" VerticalAlignment="Center"/>
-                <TextBlock Text="The Grid Field Theme" Foreground="White" FontSize="18" Grid.Row="4" VerticalAlignment="Center"/>
-                <TextBlock Text="The Grid Battle Theme" Foreground="White" FontSize="18" Grid.Row="5" VerticalAlignment="Center"/>
-                <TextBlock Text="TWTNW Field Theme" Foreground="White" FontSize="18" Grid.Row="6" VerticalAlignment="Center"/>
-                <TextBlock Text="TWTNW Battle Theme" Foreground="White" FontSize="18" Grid.Row="7" VerticalAlignment="Center"/>
-                <ComboBox Name="TTF" Grid.Row="2" Grid.Column="1" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Stretch" SelectionChanged="TTF_SelectionChanged">
-                    <ComboBoxItem IsSelected="True" Content="Traverse in Trance (from Dream Drop Distance)"/>
-                    <ComboBoxItem Content="Traverse Town (from Kingdom Hearts)"/>
-                    <ComboBoxItem Content="Traverse Town (from HD I.5 ReMIX)"/>
-                    <ComboBoxItem Content="Traverse Town (from Chain of Memories)"/>
-                    <ComboBoxItem Content="Traverse Town (from coded)"/>
-                    <ComboBoxItem Content="Traverse Town (from Re:coded)"/>
-                </ComboBox>
-                <ComboBox Name="TTB" Grid.Row="3" Grid.Column="1" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Stretch" SelectionChanged="TTB_SelectionChanged">
-                    <ComboBoxItem IsSelected="True" Content="Hand to Hand (from Dream Drop Distance)"/>
-                    <ComboBoxItem Content="Hand in Hand (from Kingdom Hearts)"/>
-                    <ComboBoxItem Content="Hand in Hand (from HD I.5 ReMIX)"/>
-                    <ComboBoxItem Content="Hand in Hand (from Chain of Memories)"/>
-                    <ComboBoxItem Content="Night of Fate (from Kingdom Hearts)"/>
-                    <ComboBoxItem Content="Night of Fate (from HD I.5 ReMIX)"/>
-                    <ComboBoxItem Content="Night of Fate (from coded)"/>
-                    <ComboBoxItem Content="Night of Fate (from Re:coded)"/>
-                </ComboBox>
-                <ComboBox Name="TGF" Grid.Row="4" Grid.Column="1" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Stretch" SelectionChanged="TGF_SelectionChanged">
-                    <ComboBoxItem IsSelected="True" Content="Access the Grid (from Dream Drop Distance)"/>
-                    <ComboBoxItem Content="Space Paranoids (from Kingdom Hearts II)"/>
-                    <ComboBoxItem Content="Space Paranoids (from HD II.5 ReMIX)"/>
-                </ComboBox>
-                <ComboBox Name="TGB" Grid.Row="5" Grid.Column="1" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Stretch" SelectionChanged="TGB_SelectionChanged">
-                    <ComboBoxItem IsSelected="True" Content="Digital Domination (from Dream Drop Distance)"/>
-                    <ComboBoxItem Content="Byte Bashing (from Kingdom Hearts II)"/>
-                    <ComboBoxItem Content="Byte Bashing (from HD II.5 ReMIX)"/>
-                    <ComboBoxItem Content="Byte Striking (from HD II.5 ReMIX)"/>
-                </ComboBox>
-                <ComboBox Name="NWF" Grid.Row="6" Grid.Column="1" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Stretch" SelectionChanged="NWF_SelectionChanged">
-                    <ComboBoxItem IsSelected="True" Content="Sacred Distance (from Dream Drop Distance)"/>
-                    <ComboBoxItem Content="Sacred Moon (from Kingdom Hearts II)"/>
-                    <ComboBoxItem Content="Sacred Moon (from HD II.5 ReMIX)"/>
-                    <ComboBoxItem Content="Sacred Moon (from 358/2 Days)"/>
-                    <ComboBoxItem Content="Sacred Moon (from Birth by Sleep &amp; 358/2 Days Original Soundtrack)"/>
-                    <ComboBoxItem Content="Mystic Moon (from 358/2 Days)"/>
-                    <ComboBoxItem Content="Mystic Moon (from Birth by Sleep &amp; 358/2 Days Original Soundtrack)"/>
-                </ComboBox>
-                <ComboBox Name="NWB" Grid.Row="7" Grid.Column="1" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Stretch" SelectionChanged="NWB_SelectionChanged">
-                    <ComboBoxItem IsSelected="True" Content="Deep Drop (from Dream Drop Distance)"/>
-                    <ComboBoxItem Content="Deep Drive (from Kingdom Hearts II)"/>
-                    <ComboBoxItem Content="Deep Drive (from HD II.5 ReMIX)"/>
-                    <ComboBoxItem Content="Critical Drive (from 358/2 Days)"/>
-                    <ComboBoxItem Content="Critical Drive (from Birth by Sleep &amp; 358/2 Days Original Soundtrack)"/>
-                </ComboBox>
+            <Grid ColumnDefinitions="*,*">
+                <Viewbox Stretch="Uniform">
+                    <Grid Margin="30">
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <ComboBox Name="MusicInputBox" Foreground="White">
+                            </ComboBox>
+                            <TextBlock Name="MusicInfoBox1" Text="Description of the track" Foreground="White"></TextBlock>
+                            <TextBlock Name="MusicInfoBox2" Text="Filename" Foreground="White"></TextBlock>
+                        </StackPanel>
+                    </Grid>
+                </Viewbox>
+                <Viewbox Grid.Column="1">
+                    <Grid Margin="30">
+                        <StackPanel Grid.Column="1" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <ComboBox Name="MusicOutputBox" HorizontalAlignment="Right" Foreground="White">
+                            </ComboBox>
+                            <TextBlock Name="MusicInfoBox3" HorizontalAlignment="Right" Text="Description of the track" Foreground="White"></TextBlock>
+                            <TextBlock Name="MusicInfoBox4" HorizontalAlignment="Right" Text="Filename" Foreground="White"></TextBlock>
+                        </StackPanel>
+                    </Grid>
+                </Viewbox>
+                <Image Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="100" Source="{skia:SvgImage /Images/sora.svg}" ZIndex="3"/>
+                
+                    
             </Grid>
         </Grid>
     </Grid>

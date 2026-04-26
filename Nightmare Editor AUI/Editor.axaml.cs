@@ -1695,7 +1695,7 @@ namespace Nightmare_Editor
                         Console.WriteLine("Save file operation canceled.");
                         return;
                     }
-                    using var archive = SharpCompress.Archives.Zip.ZipArchive.Create();
+                    using var archive = SharpCompress.Archives.Zip.ZipArchive.CreateArchive();
                     archive.AddAllFromDirectory(Path.Combine(Misc.Paths.temp, meta.ID));
                     archive.SaveTo(file.Path.LocalPath, SharpCompress.Common.CompressionType.Deflate);
                     Directory.Delete(Path.Combine(Misc.Paths.temp, meta.ID, meta.Name), true);

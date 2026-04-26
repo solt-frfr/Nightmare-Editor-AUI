@@ -18,16 +18,16 @@
 				Value="White" />
 			<Setter Property="Template">
 				<ControlTemplate>
-					<Border Background="{TemplateBinding Background}"
-							BorderBrush="{TemplateBinding BorderBrush}"
-							BorderThickness="{TemplateBinding BorderThickness}">
+					<Border Background="{Binding Background, RelativeSource={RelativeSource TemplatedParent}}"
+							BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource TemplatedParent}}"
+							BorderThickness="{Binding BorderThickness, RelativeSource={RelativeSource TemplatedParent}}">
 						<ScrollViewer x:Name="PART_ContentHost">
 							<TextPresenter x:Name="PART_TextPresenter"
-										   Text="{TemplateBinding Text, Mode=TwoWay}"
-										   Margin="{TemplateBinding Padding}"
-										   TextWrapping="{TemplateBinding TextWrapping}"
-										   VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-										   HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
+							               Text="{Binding Text, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"										   
+							               Margin="{Binding Padding, RelativeSource={RelativeSource TemplatedParent}}"
+										   TextWrapping="{Binding TextWrapping, RelativeSource={RelativeSource TemplatedParent}}"
+										   VerticalAlignment="{Binding VerticalContentAlignment, RelativeSource={RelativeSource TemplatedParent}}"
+										   HorizontalAlignment="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource TemplatedParent}}"/>
 						</ScrollViewer>
 					</Border>
 				</ControlTemplate>
@@ -41,16 +41,16 @@
 			<Setter Property="Template">
 				<ControlTemplate>
 					<ContentPresenter x:Name="PART_ContentPresenter"
-						Background="{TemplateBinding Background}"
-						BorderBrush="{TemplateBinding BorderBrush}"
-						BorderThickness="{TemplateBinding BorderThickness}"
-						CornerRadius="{TemplateBinding CornerRadius}"
-						Content="{TemplateBinding Content}"
-						ContentTemplate="{TemplateBinding ContentTemplate}"
-						Padding="{TemplateBinding Padding}"
+						Background="{Binding Background, RelativeSource={RelativeSource TemplatedParent}}"
+						BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource TemplatedParent}}"
+						BorderThickness="{Binding BorderThickness, RelativeSource={RelativeSource TemplatedParent}}"
+						CornerRadius="{Binding CornerRadius, RelativeSource={RelativeSource TemplatedParent}}"
+						Content="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}"
+						ContentTemplate="{Binding ContentTemplate, RelativeSource={RelativeSource TemplatedParent}}"
+						Padding="{Binding Padding, RelativeSource={RelativeSource TemplatedParent}}"
 						RecognizesAccessKey="True"
-						HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-						VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+						HorizontalContentAlignment="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource TemplatedParent}}"
+						VerticalContentAlignment="{Binding VerticalContentAlignment, RelativeSource={RelativeSource TemplatedParent}}" />
 				</ControlTemplate>
 			</Setter>
 		</Style>

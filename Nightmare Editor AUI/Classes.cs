@@ -17,6 +17,13 @@ namespace Nightmare_Editor
     {
         public List<string[]> Music { get; set; }
     }
+    
+    public class MusicEntry
+    {
+        public string Track { get; set; }
+        public string Description { get; set; }
+        public string Filename { get; set; }
+    }
 
     public class Meta
     {

@@ -18,9 +18,4 @@
       </None>
     </ItemGroup>
 
-    <ItemGroup>
-      <PackageReference Include="Avalonia" Version="11.3.10" />
-      <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.3.10" />
-    </ItemGroup>
-
 </Project>
