@@ -20,183 +20,478 @@
     "Filename": "bgm_004.bcstm"
   },
   {
-    "Track": "track",
-    "Description": "desc",
-    "Filename": "bgm_00.bcstm"
+    "Track": "Symphony No.6 \"Pastoral\" Op.68",
+    "Description": "The theme of Sora's Symphony of Sorcery.",
+    "Filename": "bgm_005.bcstm"
   },
   {
-    "Track": "track",
-    "Description": "desc",
-    "Filename": "bgm_004.bcstm"
+    "Track": "The Nutcracker Suite Op.71",
+    "Description": "The theme of Riku's Symphony of Sorcery.",
+    "Filename": "bgm_006.bcstm"
   },
   {
-    "Track": "track",
-    "Description": "desc",
-    "Filename": "bgm_004.bcstm"
+    "Track": "L'Apprenti Sorcier",
+    "Description": "The general theme of Symphony of Sorcery.",
+    "Filename": "bgm_007.bcstm"
   },
   {
-    "Track": "track",
-    "Description": "desc",
-    "Filename": "bgm_004.bcstm"
+    "Track": "A Night on the Bare Mountain",
+    "Description": "The boss theme of Chernabog.",
+    "Filename": "bgm_008.bcstm"
   },
   {
-    "Track": "track",
-    "Description": "desc",
-    "Filename": "bgm_004.bcstm"
+    "Track": "La Cloche",
+    "Description": "The field theme of La Cité des Cloches.",
+    "Filename": "bgm_009.bcstm"
   },
   {
-    "Track": "track",
-    "Description": "desc",
-    "Filename": "bgm_004.bcstm"
+    "Track": "Magical Mystery",
+    "Description": "The field theme of The Mysterious Tower.",
+    "Filename": "bgm_010.bcstm"
   },
   {
-    "Track": "track",
-    "Description": "desc",
-    "Filename": "bgm_004.bcstm"
+    "Track": "Access the Grid",
+    "Description": "The field theme of The Grid.",
+    "Filename": "bgm_011.bcstm"
   },
   {
-    "Track": "track",
-    "Description": "desc",
-    "Filename": "bgm_004.bcstm"
+    "Track": "Sacred Distance",
+    "Description": "The field theme of The World That Never Was.",
+    "Filename": "bgm_012.bcstm"
   },
   {
-    "Track": "track",
-    "Description": "desc",
-    "Filename": "bgm_004.bcstm"
+    "Track": "Sacred Moon",
+    "Description": "The field theme of The World That Never Was in KHII. Plays in one cutscene.",
+    "Filename": "bgm_013.bcstm"
   },
   {
-    "Track": "track",
-    "Description": "desc",
-    "Filename": "bgm_004.bcstm"
+    "Track": "Hand to Hand",
+    "Description": "The battle theme of Traverse Town.",
+    "Filename": "bgm_014.bcstm"
   },
   {
-    "Track": "track",
-    "Description": "desc",
-    "Filename": "bgm_004.bcstm"
+    "Track": "All for One",
+    "Description": "The battle theme of Country of the Musketeers.",
+    "Filename": "bgm_015.bcstm"
   },
   {
-    "Track": "track",
-    "Description": "desc",
-    "Filename": "bgm_004.bcstm"
+    "Track": "Prankster's Party",
+    "Description": "The battle theme of Sora's Prankster's Paradise.",
+    "Filename": "bgm_016.bcstm"
   },
   {
-    "Track": "track",
-    "Description": "desc",
-    "Filename": "bgm_004.bcstm"
+    "Track": "Monstrous Monstro",
+    "Description": "The battle theme of Riku's Prankster's Paradise.",
+    "Filename": "bgm_017.bcstm"
   },
   {
-    "Track": "track",
-    "Description": "desc",
-    "Filename": "bgm_004.bcstm"
+    "Track": "Le Sanctuaire",
+    "Description": "The battle theme of La Cité des Cloches.",
+    "Filename": "bgm_018.bcstm"
   },
   {
-    "Track": "track",
-    "Description": "desc",
-    "Filename": "bgm_004.bcstm"
+    "Track": "Digital Domination",
+    "Description": "The battle theme of The Grid.",
+    "Filename": "bgm_020.bcstm"
   },
   {
-    "Track": "track",
-    "Description": "desc",
-    "Filename": "bgm_004.bcstm"
+    "Track": "Deep Drop",
+    "Description": "The battle theme of The World That Never Was.",
+    "Filename": "bgm_021.bcstm"
   },
   {
-    "Track": "track",
-    "Description": "desc",
-    "Filename": "bgm_004.bcstm"
+    "Track": "Deep Drive",
+    "Description": "The battle theme of The World That Never Was in KHII. Unused.",
+    "Filename": "bgm_022.bcstm"
   },
   {
-    "Track": "track",
-    "Description": "desc",
-    "Filename": "bgm_004.bcstm"
+    "Track": "Majestic Wings",
+    "Description": "The boss theme of the Wargoyle.",
+    "Filename": "bgm_023.bcstm"
   },
   {
-    "Track": "track",
-    "Description": "desc",
-    "Filename": "bgm_004.bcstm"
+    "Track": "UNTAMABLE",
+    "Description": "The boss theme of various Nightmare bosses.",
+    "Filename": "bgm_024.bcstm"
   },
   {
-    "Track": "track",
-    "Description": "desc",
-    "Filename": "bgm_004.bcstm"
+    "Track": "Ice-hot Lobster",
+    "Description": "The boss theme of the Chill Clawbster and Char Clawbster.",
+    "Filename": "bgm_025.bcstm"
   },
   {
-    "Track": "track",
-    "Description": "desc",
-    "Filename": "bgm_004.bcstm"
+    "Track": "Gigabyte Mantis",
+    "Description": "The boss theme of the Commantis.",
+    "Filename": "bgm_026.bcstm"
   },
   {
-    "Track": "track",
-    "Description": "desc",
-    "Filename": "bgm_004.bcstm"
+    "Track": "Rowdy Rumble",
+    "Description": "A battle theme primarily used for the Beagle Boys and Pete.",
+    "Filename": "bgm_027.bcstm"
   },
   {
-    "Track": "track",
-    "Description": "desc",
-    "Filename": "bgm_004.bcstm"
+    "Track": "The Encounter",
+    "Description": "A boss battle theme used for Julius.",
+    "Filename": "bgm_028.bcstm"
   },
   {
-    "Track": "track",
-    "Description": "desc",
-    "Filename": "bgm_004.bcstm"
+    "Track": "L'Oscurità dell'Ignoto",
+    "Description": "The battle theme of Xemnas.",
+    "Filename": "bgm_029.bcstm"
   },
   {
-    "Track": "track",
-    "Description": "desc",
-    "Filename": "bgm_004.bcstm"
+    "Track": "L'Eminenza Oscura I",
+    "Description": "The phase one boss theme of Ansem, Seeker of Darkness.",
+    "Filename": "bgm_030.bcstm"
   },
   {
-    "Track": "track",
-    "Description": "desc",
-    "Filename": "bgm_004.bcstm"
+    "Track": "L'Eminenza Oscura II",
+    "Description": "The phase two boss theme of Ansem, Seeker of Darkness.",
+    "Filename": "bgm_031.bcstm"
   },
   {
-    "Track": "track",
-    "Description": "desc",
-    "Filename": "bgm_004.bcstm"
+    "Track": "L'Impeto Oscuro",
+    "Description": "The boss theme of Young Xehanort.",
+    "Filename": "bgm_032.bcstm"
   },
   {
-    "Track": "track",
-    "Description": "desc",
-    "Filename": "bgm_004.bcstm"
+    "Track": "Destiny's Force",
+    "Description": "Used in a mob battle against Dream Eaters in the circus.",
+    "Filename": "bgm_033.bcstm"
   },
   {
-    "Track": "track",
-    "Description": "desc",
-    "Filename": "bgm_004.bcstm"
+    "Track": "Shrouding Dark Cloud",
+    "Description": "Used as the boss battle theme for Tyranto Rex.",
+    "Filename": "bgm_034.bcstm"
   },
   {
-    "Track": "track",
-    "Description": "desc",
-    "Filename": "bgm_004.bcstm"
+    "Track": "Dream Matchup",
+    "Description": "The Flick Rush battle theme.",
+    "Filename": "bgm_035.bcstm"
   },
   {
-    "Track": "track",
-    "Description": "desc",
-    "Filename": "bgm_004.bcstm"
+    "Track": "The Flick Finalist",
+    "Description": "The Flick Rush finals battle theme.",
+    "Filename": "bgm_036.bcstm"
   },
   {
-    "Track": "track",
-    "Description": "desc",
-    "Filename": "bgm_004.bcstm"
+    "Track": "The World of Dream Drops",
+    "Description": "The world map theme.",
+    "Filename": "bgm_037.bcstm"
   },
   {
-    "Track": "track",
-    "Description": "desc",
-    "Filename": "bgm_004.bcstm"
+    "Track": "Dearly Beloved",
+    "Description": "The main theme of Dream Drop Distance.",
+    "Filename": "bgm_038.bcstm"
   },
   {
-    "Track": "track",
-    "Description": "desc",
-    "Filename": "bgm_004.bcstm"
+    "Track": "Innocent Times",
+    "Description": "An event theme used in lighthearted and playful scenes.",
+    "Filename": "bgm_039.bcstm"
   },
   {
-    "Track": "track",
+    "Track": "bgm_040",
     "Description": "desc",
-    "Filename": "bgm_004.bcstm"
+    "Filename": "bgm_040.bcstm"
   },
   {
-    "Track": "track",
+    "Track": "Peaceful Hearts",
+    "Description": "An event theme used for peaceful resolutions.",
+    "Filename": "bgm_041.bcstm"
+  },
+  {
+    "Track": "bgm_042",
     "Description": "desc",
-    "Filename": "bgm_004.bcstm"
+    "Filename": "bgm_042.bcstm"
+  },
+  {
+    "Track": "bgm_043",
+    "Description": "desc",
+    "Filename": "bgm_043.bcstm"
+  },
+  {
+    "Track": "bgm_044",
+    "Description": "desc",
+    "Filename": "bgm_044.bcstm"
+  },
+  {
+    "Track": "Broken Reality",
+    "Description": "An event theme used for uncertain and sinister moments.",
+    "Filename": "bgm_045.bcstm"
+  },
+  {
+    "Track": "Ever After",
+    "Description": "An event theme used for happy or bittersweet conclusions.",
+    "Filename": "bgm_046.bcstm"
+  },
+  {
+    "Track": "Sora",
+    "Description": "Sora's character theme.",
+    "Filename": "bgm_047.bcstm"
+  },
+  {
+    "Track": "bgm_048",
+    "Description": "desc",
+    "Filename": "bgm_048.bcstm"
+  },
+  {
+    "Track": "Road to a Hero",
+    "Description": "Used during some of Sora's moments in Country of the Musketeers.",
+    "Filename": "bgm_050.bcstm"
+  },
+  {
+    "Track": "Villains of a Sort",
+    "Description": "An event theme primarily associated with Disney villains.",
+    "Filename": "bgm_051.bcstm"
+  },
+  {
+    "Track": "bgm_052",
+    "Description": "desc",
+    "Filename": "bgm_052.bcstm"
+  },
+  {
+    "Track": "Night of Fate",
+    "Description": "The boss theme of Ursula.",
+    "Filename": "bgm_053.bcstm"
+  },
+  {
+    "Track": "bgm_059",
+    "Description": "desc",
+    "Filename": "bgm_059.bcstm"
+  },
+  {
+    "Track": "bgm_060",
+    "Description": "desc",
+    "Filename": "bgm_060.bcstm"
+  },
+  {
+    "Track": "bgm_061",
+    "Description": "desc",
+    "Filename": "bgm_061.bcstm"
+  },
+  {
+    "Track": "Xehanort -The Early Years-",
+    "Description": "Young Xehanort's character theme.",
+    "Filename": "bgm_062.bcstm"
+  },
+  {
+    "Track": "Xigbar",
+    "Description": "Plays when Sora encounters Xigbar in The World That Never Was.",
+    "Filename": "bgm_063.bcstm"
+  },
+  {
+    "Track": "Organization XIII",
+    "Description": "The theme of Organization XIII.",
+    "Filename": "bgm_065.bcstm"
+  },
+  {
+    "Track": "bgm_066",
+    "Description": "desc",
+    "Filename": "bgm_066.bcstm"
+  },
+  {
+    "Track": "Dream Eaters",
+    "Description": "A theme associated with Dream Eaters and used in the Dream Eater mini-games.",
+    "Filename": "bgm_067.bcstm"
+  },
+  {
+    "Track": "TWISTER -KINGDOM MIX-",
+    "Description": "A remix of a song from The World Ends with You.",
+    "Filename": "bgm_068.bcstm"
+  },
+  {
+    "Track": "CALLING -KINGDOM MIX-",
+    "Description": "A remix of a song from The World Ends with You.",
+    "Filename": "bgm_069.bcstm"
+  },
+  {
+    "Track": "Dearly Beloved (Strings)",
+    "Description": "Used in Symphony of Sorcery.",
+    "Filename": "bgm_070.bcstm"
+  },
+  {
+    "Track": "Dearly Beloved (Piano)",
+    "Description": "Used in Symphony of Sorcery.",
+    "Filename": "bgm_071.bcstm"
+  },
+  {
+    "Track": "bgm_072",
+    "Description": "desc",
+    "Filename": "bgm_072.bcstm"
+  },
+  {
+    "Track": "bgm_073",
+    "Description": "desc",
+    "Filename": "bgm_073.bcstm"
+  },
+  {
+    "Track": "bgm_074",
+    "Description": "desc",
+    "Filename": "bgm_074.bcstm"
+  },
+  {
+    "Track": "bgm_075",
+    "Description": "desc",
+    "Filename": "bgm_075.bcstm"
+  },
+  {
+    "Track": "bgm_076",
+    "Description": "desc",
+    "Filename": "bgm_076.bcstm"
+  },
+  {
+    "Track": "Link to All",
+    "Description": "An event theme primarily used in moments of triumph or great emotion.",
+    "Filename": "bgm_077.bcstm"
+  },
+  {
+    "Track": "Distant from You...",
+    "Description": "An event theme used during emotional or wistful moments.",
+    "Filename": "bgm_078.bcstm"
+  },
+  {
+    "Track": "Sweet Spirits♡",
+    "Description": "The theme of the Spirits menu.",
+    "Filename": "bgm_083.bcstm"
+  },
+  {
+    "Track": "Ready to Rush",
+    "Description": "The Flick Rush menu theme.",
+    "Filename": "bgm_084.bcstm"
+  },
+  {
+    "Track": "Victor's Pride",
+    "Description": "The Flick Rush victory theme.",
+    "Filename": "bgm_085.bcstm"
+  },
+  {
+    "Track": "Keyblade Cycle",
+    "Description": "The theme of the Keyblade Cycle mini-game.",
+    "Filename": "bgm_086.bcstm"
+  },
+  {
+    "Track": "Storm Diver",
+    "Description": "The Dive Mode theme.",
+    "Filename": "bgm_087.bcstm"
+  },
+  {
+    "Track": "Wild Blue",
+    "Description": "The Dive Mode boss theme.",
+    "Filename": "bgm_088.bcstm"
+  },
+  {
+    "Track": "My Heart's Descent",
+    "Description": "The track that accompanies Riku's dive into Sora's dream.",
+    "Filename": "bgm_089.bcstm"
+  },
+  {
+    "Track": "Dream Drop Distance -The Next Awakening-",
+    "Description": "The credits theme of Dream Drop Distance.",
+    "Filename": "bgm_091.bcstm"
+  },
+  {
+    "Track": "They Eye of Darkness",
+    "Description": "The boss theme of the Armored Ventus Nightmare.",
+    "Filename": "bgm_093.bcstm"
+  },
+  {
+    "Track": "bgm_094",
+    "Description": "desc",
+    "Filename": "bgm_094.bcstm"
+  },
+  {
+    "Track": "SOMEDAY -KINGDOM MIX-",
+    "Description": "A remix of a song from The World Ends with You.",
+    "Filename": "bgm_095.bcstm"
+  },
+  {
+    "Track": "bgm_097",
+    "Description": "desc",
+    "Filename": "bgm_097.bcstm"
+  },
+  {
+    "Track": "TWISTER",
+    "Description": "A song from The World Ends with You.",
+    "Filename": "bgm_098.bcstm"
+  },
+  {
+    "Track": "CALLING",
+    "Description": "A song from The World Ends with You.",
+    "Filename": "bgm_099.bcstm"
+  },
+  {
+    "Track": "bgm_100",
+    "Description": "desc",
+    "Filename": "bgm_100.bcstm"
+  },
+  {
+    "Track": "bgm_101",
+    "Description": "desc",
+    "Filename": "bgm_101.bcstm"
+  },
+  {
+    "Track": "bgm_102",
+    "Description": "desc",
+    "Filename": "bgm_102.bcstm"
+  },
+  {
+    "Track": "bgm_103",
+    "Description": "desc",
+    "Filename": "bgm_103.bcstm"
+  },
+  {
+    "Track": "bgm_104",
+    "Description": "desc",
+    "Filename": "bgm_104.bcstm"
+  },
+  {
+    "Track": "bgm_106",
+    "Description": "desc",
+    "Filename": "bgm_106.bcstm"
+  },
+  {
+    "Track": "bgm_107",
+    "Description": "desc",
+    "Filename": "bgm_107.bcstm"
+  },
+  {
+    "Track": "bgm_109",
+    "Description": "desc",
+    "Filename": "bgm_109.bcstm"
+  },
+  {
+    "Track": "bgm_110",
+    "Description": "desc",
+    "Filename": "bgm_110.bcstm"
+  },
+  {
+    "Track": "bgm_111",
+    "Description": "desc",
+    "Filename": "bgm_111.bcstm"
+  },
+  {
+    "Track": "Dearly Beloved -KINGDOM HEARTS II-",
+    "Description": "The main theme of Kingdom Hearts II.",
+    "Filename": "bgm_112.bcstm"
+  },
+  {
+    "Track": "Dearly Beloved -Reprise-",
+    "Description": "A reprise used in the Battle Report.",
+    "Filename": "bgm_113.bcstm"
+  },
+  {
+    "Track": "Roxas",
+    "Description": "Roxas's character theme.",
+    "Filename": "bgm_114.bcstm"
+  },
+  {
+    "Track": "Ventus",
+    "Description": "Ventus' character theme.",
+    "Filename": "bgm_115.bcstm"
+  },
+  {
+    "Track": "bgm_116",
+    "Description": "desc",
+    "Filename": "bgm_116.bcstm"
   }
 ]

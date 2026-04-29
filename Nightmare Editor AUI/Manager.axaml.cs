@@ -59,12 +59,12 @@ namespace Nightmare_Editor
             SettingsWindow.IsVisible = false;
             MusicWindow.IsVisible = false;
             Directory.CreateDirectory(Misc.Paths.mods);
+            var jsonoptions = new JsonSerializerOptions
+            {
+                WriteIndented = true
+            };
             if (!System.IO.File.Exists(Misc.Jsons.settings))
             {
-                var jsonoptions = new JsonSerializerOptions
-                {
-                    WriteIndented = true
-                };
                 Settings settings = new Settings();
                 settings.DeployPath = "";
                 settings.DefaultImage = 0;
@@ -76,58 +76,13 @@ namespace Nightmare_Editor
             }
             if (!System.IO.File.Exists(Misc.Jsons.enabled))
             {
-                var jsonoptions = new JsonSerializerOptions
-                {
-                    WriteIndented = true
-                };
                 string jsonString = JsonSerializer.Serialize<List<string>>(new List<string>(), jsonoptions);
                 System.IO.File.WriteAllText(Misc.Jsons.enabled, jsonString);
-            }
-            if (!System.IO.File.Exists(Misc.Jsons.music))
-            {
-                var jsonoptions = new JsonSerializerOptions
-                {
-                    WriteIndented = true
-                };
-                string jsonString = JsonSerializer.Serialize<List<string[]>>(new List<string[]>(), jsonoptions);
-                System.IO.File.WriteAllText(Misc.Jsons.music, jsonString);
-            }
-            else
-            {
-                /*
-                QuickMusicJson(false);
-                foreach (var arr in music)
-                {
-                    if (arr.Length >= 3 && arr[1] == "bgm_001.bcstm")
-                    {
-                        TTF.SelectedIndex = Int32.Parse(arr[2]);
-                    }
-                    else if (arr.Length >= 3 && arr[1] == "bgm_014.bcstm")
-                    {
-                        TTB.SelectedIndex = Int32.Parse(arr[2]);
-                    }
-                    else if (arr.Length >= 3 && arr[1] == "bgm_011.bcstm")
-                    {
-                        TGF.SelectedIndex = Int32.Parse(arr[2]);
-                    }
-                    else if (arr.Length >= 3 && arr[1] == "bgm_020.bcstm")
-                    {
-                        TGB.SelectedIndex = Int32.Parse(arr[2]);
-                    }
-                    else if (arr.Length >= 3 && arr[1] == "bgm_012.bcstm")
-                    {
-                        NWF.SelectedIndex = Int32.Parse(arr[2]);
-                    }
-                    else if (arr.Length >= 3 && arr[1] == "bgm_021.bcstm")
-                    {
-                        NWB.SelectedIndex = Int32.Parse(arr[2]);
-                    }
-                }
-                */
             }
             Refresh();
             isInitialized = true;
             DataContext = viewModel;
+            
         }
         
         public static Grid MainButtonContent(bool on, string text)
@@ -268,12 +223,21 @@ namespace Nightmare_Editor
             string[] griditems = CountFolders(Misc.Paths.mods);
             Settings settings = new Settings();
             List<string> blacklist = new List<string>();
+            var jsonoptions = new JsonSerializerOptions
+            {
+                WriteIndented = true
+            };
+            List<MusicEntry> musicEntries = JsonSerializer.Deserialize<List<MusicEntry>>(AssetLoader.Open(new Uri($"avares://Nightmare Editor AUI/Music/database.json", UriKind.RelativeOrAbsolute)), jsonoptions);
+            MusicInputBox.Items.Clear();
+            for (int i = 0; i < musicEntries.Count; i++)
+            {
+                MusicInputBox.Items.Add(musicEntries[i].Track);
+            }
+
+            MusicInputBox.SelectedIndex = 0;
+            
             if (System.IO.File.Exists(Misc.Jsons.settings))
             {
-                var jsonoptions = new JsonSerializerOptions
-                {
-                    WriteIndented = true
-                };
                 string jsonString = System.IO.File.ReadAllText(Misc.Jsons.settings);
                 settings = JsonSerializer.Deserialize<Settings>(jsonString, jsonoptions);
                 PathBox.Text = settings.DeployPath;
@@ -296,19 +260,11 @@ namespace Nightmare_Editor
                 {
                     string genid = modpath.Replace(Misc.Paths.mods, "");
                     mod.Name = mod.ID = genid = genid.TrimStart(Path.DirectorySeparatorChar);
-                    var jsonoptions = new JsonSerializerOptions
-                    {
-                        WriteIndented = true
-                    };
                     string jsonString = JsonSerializer.Serialize(mod, jsonoptions);
                     System.IO.File.WriteAllText(filepath, jsonString);
                 }
                 if (System.IO.File.Exists(filepath))
                 {
-                    var jsonoptions = new JsonSerializerOptions
-                    {
-                        WriteIndented = true
-                    };
                     string jsonString = System.IO.File.ReadAllText(filepath);
                     mod = JsonSerializer.Deserialize<Meta>(jsonString, jsonoptions);
                     if (!viewModel.AllMods.Contains(mod))
@@ -1078,6 +1034,43 @@ namespace Nightmare_Editor
 
             await box.ShowAsPopupAsync(this);
             Refresh();
+        }
+
+        private void MusicInputBox_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+        {
+            if (sender is ComboBox comboBox && comboBox.SelectedIndex != null && comboBox.SelectedValue != null)
+            {
+                var jsonoptions = new JsonSerializerOptions
+                {
+                    WriteIndented = true
+                };
+                List<MusicEntry> musicEntries = JsonSerializer.Deserialize<List<MusicEntry>>(AssetLoader.Open(new Uri($"avares://Nightmare Editor AUI/Music/database.json", UriKind.RelativeOrAbsolute)), jsonoptions);
+                var correct = musicEntries.FirstOrDefault(me => me.Track == comboBox.SelectedValue.ToString());
+                MusicInfoBox1.Text = correct.Description;
+                MusicInfoBox2.Text = correct.Filename;
+            }
+        }
+
+        private async void MusicPathButton_OnClick(object? sender, RoutedEventArgs e)
+        {
+            var files = await this.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions()
+            {
+                Title = "Select a music file.",
+                AllowMultiple = false,
+                FileTypeFilter = Misc.FileFilters.bcstm
+            });
+            if (files.Count == 1)
+            {
+                if (!string.IsNullOrWhiteSpace(files[0].Path.LocalPath))
+                {
+                    MusicPathBox.Text = files[0].Path.LocalPath;
+                }
+            }
+        }
+
+        private void MusicReplaceButton_OnClick(object? sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
         }
     }
 }

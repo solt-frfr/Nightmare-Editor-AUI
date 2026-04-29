@@ -168,6 +168,13 @@ namespace Nightmare_Editor.NewTools
                     Patterns = new List<string> { "*.pmp" }
                 }
             };
+            public static readonly List<FilePickerFileType> bcstm = new List<FilePickerFileType>()
+            {
+                new FilePickerFileType("Music files")
+                {
+                    Patterns = new List<string> { "*.bcstm" }
+                }
+            };
         }
         
         public static string ReplaceFirst(string str, string term, string replace)

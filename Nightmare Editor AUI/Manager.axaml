@@ -6,13 +6,19 @@
         xmlns:local="clr-namespace:Nightmare_Editor"
         xmlns:skia="clr-namespace:Avalonia.Svg.Skia;assembly=Svg.Controls.Skia.Avalonia"
         mc:Ignorable="d"
-        Title="Exam Editor" Height="450" Width="800" Icon="/Assets/dreameater.ico">
+        Title="Exam Editor" Height="480" Width="800" Icon="/Assets/dreameater.ico">
     <Window.Background>
         <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,75%">
             <GradientStop Color="#ADD8E6" Offset="0"/>
             <GradientStop Color="#FFA580" Offset="1"/>
         </LinearGradientBrush>
     </Window.Background>
+    <Window.Resources>
+        <local:PixelWidth x:Key="PixelWidth"/>
+        <local:PixelMargin x:Key="PixelMargin"/>
+        <FontFamily x:Key="JetBrains Mono">avares://Nightmare Editor AUI/Assets/fonts#JetBrains Mono</FontFamily>
+        <FontFamily x:Key="KH2 Menu">avares://Nightmare Editor AUI/Assets/fonts#KH2 ALL MENU</FontFamily>
+    </Window.Resources>
 	<!--<Window.Resources>
         <Style x:Key="Transparent Button" TargetType="Button">
             <Setter Property="Background" Value="Transparent" />
@@ -29,215 +35,301 @@
             </Setter>
         </Style>
     </Window.Resources>-->
-    <Grid Margin="10" ColumnDefinitions="3*,auto" RowDefinitions="1*,3*,0.5*">
-        <Grid RowDefinitions="2*,3*">
-            <Viewbox>
-                <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
-                    <TextBox Name="GitRepoBox" VerticalAlignment="Center" Width="150" HorizontalAlignment="Left" PlaceholderText="user/repository"/>
-                    <Button Click="Git_Click">Install from Git Repository</Button>
-                    <Button Name="UpdateButton" Click="UpdateGit_Click">Update Mods</Button>
-                </StackPanel>
-            </Viewbox>
-            <Grid Grid.Row="2" VerticalAlignment="Bottom" ColumnDefinitions="*,*,*" Margin="5,5,5,0">
-                <Grid Grid.Column="0">
-                    <Button Name="ModsButton" Margin="5,5,5,0" Click="Mods_Click" Cursor="Hand" Padding="0" BorderThickness="0">
+    <Grid >
+        <Grid Margin="10" ColumnDefinitions="3*,2*" RowDefinitions="1*,3*,0.5*">
+                <Grid RowDefinitions="2*,3*">
+                <Viewbox>
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBox Name="GitRepoBox" VerticalAlignment="Center" Width="150" HorizontalAlignment="Left" PlaceholderText="user/repository"/>
+                        <Button Click="Git_Click">Install from Git Repository</Button>
+                        <Button Name="UpdateButton" Click="UpdateGit_Click">Update Mods</Button>
+                    </StackPanel>
+                </Viewbox>
+                <Grid Grid.Row="2" VerticalAlignment="Bottom" ColumnDefinitions="*,*,*" Margin="5,5,5,0">
+                    <Grid Grid.Column="0">
+                        <Button Name="ModsButton" Margin="5,5,5,0" Click="Mods_Click" Cursor="Hand" Padding="0" BorderThickness="0">
 
-                    </Button>
-                </Grid>
-                <Grid Grid.Column="1">
-                    <Button Name="MusicButton" Margin="5,5,5,0" Click="Music_Click" Cursor="Hand" Padding="0" BorderThickness="0">
-                        
-                    </Button>
-                </Grid>
-                <Grid Grid.Column="2">
-                    <Button Name="SettingsButton" Margin="5,5,5,0" Click="Settings_Click" Cursor="Hand" Padding="0" BorderThickness="0">
-                        
-                    </Button>
+                        </Button>
+                    </Grid>
+                    <Grid Grid.Column="1">
+                        <Button Name="MusicButton" Margin="5,5,5,0" Click="Music_Click" Cursor="Hand" Padding="0" BorderThickness="0">
+                            
+                        </Button>
+                    </Grid>
+                    <Grid Grid.Column="2">
+                        <Button Name="SettingsButton" Margin="5,5,5,0" Click="Settings_Click" Cursor="Hand" Padding="0" BorderThickness="0">
+                            
+                        </Button>
+                    </Grid>
                 </Grid>
             </Grid>
-        </Grid>
-        <Viewbox Grid.RowSpan="2" Grid.Column="1">
-            <Grid RowDefinitions="9*,1*,9*,3*"  Name="ModContent" IsVisible="True" Margin="10" Width="250">
+            <Grid Grid.RowSpan="2" Grid.Column="1" RowDefinitions="9*,1*,9*,3*" Name="ModContent" IsVisible="True" Margin="10">
                 <Image Name="Preview" Source="/Images/Preview0.png" Stretch="Uniform" VerticalAlignment="Top" HorizontalAlignment="Center" RenderOptions.BitmapInterpolationMode="HighQuality"/>
                 <Grid Grid.RowSpan="2" Grid.Row="2">
-                    <TextBox Name="DescBox" Height="200" Classes="NoHover" FontSize="12" Background="#F04080" BorderBrush="White" Foreground="#ffffff" TextWrapping="WrapWithOverflow" IsReadOnly="True" Text="Make Sora and Riku's mark of mastery exam your own. You're seeing this because this mod has no description, or no mod is selected.&#xA;&#xA;Confused about the buttons at the bottom? Hover over them for more info."/>
+                    <TextBox Name="DescBox" VerticalAlignment="Stretch" Classes="NoHover" FontSize="12" Background="#F04080" BorderBrush="White" Foreground="#ffffff" TextWrapping="WrapWithOverflow" IsReadOnly="True" Text="Make Sora and Riku's mark of mastery exam your own. You're seeing this because this mod has no description, or no mod is selected.&#xA;&#xA;Confused about the buttons at the bottom? Hover over them for more info."/>
                 </Grid>
             </Grid>
-        </Viewbox>
-        
-        <Grid RowDefinitions="4*" Grid.Row="1" Name="Mods" IsVisible="True">
-            <DataGrid Name="ModDataGrid"  Grid.Column="0" Grid.Row="0" Margin="10,0,10,10"
-                      RowBackground="#F04080" AutoGenerateColumns="False" SelectionChanged="currentrow" Background="#ADD8E6" SelectionMode="Single" BorderBrush="#F04080" Foreground="White" ItemsSource="{Binding AllMods}">
-                <DataGrid.Styles>
-                    <Style Selector="DataGridRow:nth-child(even)">
-                        <Setter Property="Background" Value="#D02060"/>
-                    </Style>
-                </DataGrid.Styles>
-                <DataGrid.Columns>
-                    <DataGridTemplateColumn Header="On" Width="32">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <Grid>
-                                    <CheckBox Name="RowCheckBox" HorizontalAlignment="Center" IsChecked="{Binding IsChecked}" Cursor="Hand" IsCheckedChanged="CheckBox_Checked" Padding="0"/>
-                                </Grid>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" IsReadOnly="True" Width="4*"/>
-                    <DataGridTextColumn Header="Author" Binding="{Binding Authors}" IsReadOnly="True" Width="2*"/>
-                    <DataGridTemplateColumn Header="Link" Width="32">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <Button Name="LinkButton" CommandParameter="{Binding Link}" Click="OpenLink_Click" Cursor="Hand" Padding="0">
-                                    <Image Name="LinkImage" Source="{Binding LinkImage}" Height="32" Width="32"/>
-                                </Button>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                </DataGrid.Columns>
-                <DataGrid.ContextMenu>
-                    <ContextMenu>
-                        <MenuItem Header="Open Folder"
-                      Click="Folder_OnClick"
-                      CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent}"/>
-                        <MenuItem Header="Edit Metadata"
-                      Click="Edit_OnClick"
-                      CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent}"/>
-                        <MenuItem Header="Zip Mod"
-                      Click="Zip_OnClick"
-                      CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent}"/>
-                        <MenuItem Header="Delete"
-                      Click="Delete_OnClick"
-                      CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent}"/>
-                    </ContextMenu>
-                </DataGrid.ContextMenu>
-            </DataGrid>
-        </Grid>
-        <Viewbox>
             
-        </Viewbox>
-        <Grid ColumnDefinitions="*,*,*,*,5*,*,*,*,*" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,5,0,0">
-            <Button Name="DeployButton" Click="Deploy_Click" Grid.Column="0" Cursor="Hand" ToolTip.Tip="Deploy mods to selected folder.">
-                <Button.Template>
-                    <ControlTemplate>
-                        <Image Name="DeployImage" Source="/Images/Deploy.png" RenderOptions.BitmapInterpolationMode="HighQuality"/>
-                    </ControlTemplate>
-                </Button.Template>
-            </Button>
-            <Button Name="NewButton" Click="New_OnClick" Grid.Column="4" Cursor="Hand" ToolTip.Tip="Go to Nightmare Editor" HorizontalAlignment="Left">
-                <Button.Template>
-                    <ControlTemplate>
-                        <Image Name="NewImage" Source="/Images/nightmare.png" RenderOptions.BitmapInterpolationMode="HighQuality"/>
-                    </ControlTemplate>
-                </Button.Template>
-            </Button>
-            <Button Name="RefreshButton" Click="Refresh_Click" Grid.Column="1" Cursor="Hand" ToolTip.Tip="Refresh mods and settings.">
-                <Button.Template>
-                    <ControlTemplate>
-                        <Image Name="RefreshImage" Source="/Images/Refresh.png" RenderOptions.BitmapInterpolationMode="HighQuality"/>
-                    </ControlTemplate>
-                </Button.Template>
-            </Button>
-            <Button Name="OpenFolderButton" Click="OpenFolder_Click" Grid.Column="2" Cursor="Hand" ToolTip.Tip="Open the mods folder.">
-                <Button.Template>
-                    <ControlTemplate>
-                        <Image Name="OpenFolderImage" Source="/Images/OpenFolder.png" RenderOptions.BitmapInterpolationMode="HighQuality"/>
-                    </ControlTemplate>
-                </Button.Template>
-            </Button>
-            <Button Name="InstallArchiveButton" Click="InstallArchive_Click" Grid.Column="3" Cursor="Hand" ToolTip.Tip="Install a mod from an archive.">
-                <Button.Template>
-                    <ControlTemplate>
-                        <Image Name="InstallArchiveImage" Source="/Images/InstallArchive.png" RenderOptions.BitmapInterpolationMode="HighQuality"/>
-                    </ControlTemplate>
-                </Button.Template>
-            </Button>
-            <Button Name="DownloadButton" Click="Download_Click" Grid.Column="7" Cursor="Hand" Grid.ColumnSpan="2">
-                <Button.Template>
-                    <ControlTemplate>
-                        <Image Name="DownloadImage" Source="/Images/DownloadUnsel.png" RenderOptions.BitmapInterpolationMode="HighQuality"/>
-                    </ControlTemplate>
-                </Button.Template>
-            </Button>
-            <Viewbox Grid.ColumnSpan="2" Grid.Column="5" >
-                <TextBlock Foreground="#e8feff" HorizontalAlignment="Center" Text="Find More" VerticalAlignment="Center" FontSize="25" FontWeight="SemiBold"/>
+            <Grid RowDefinitions="4*" Grid.Row="1" Name="Mods" IsVisible="True">
+                <DataGrid Name="ModDataGrid"  Grid.Column="0" Grid.Row="0" Margin="10,0,10,10"
+                          RowBackground="#F04080" AutoGenerateColumns="False" SelectionChanged="currentrow" Background="#ADD8E6" SelectionMode="Single" BorderBrush="#F04080" Foreground="White" ItemsSource="{Binding AllMods}">
+                    <DataGrid.Styles>
+                        <Style Selector="DataGridRow:nth-child(even)">
+                            <Setter Property="Background" Value="#D02060"/>
+                        </Style>
+                    </DataGrid.Styles>
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Header="On" Width="32">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <CheckBox Name="RowCheckBox" HorizontalAlignment="Center" IsChecked="{Binding IsChecked}" Cursor="Hand" IsCheckedChanged="CheckBox_Checked" Padding="0"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" IsReadOnly="True" Width="4*"/>
+                        <DataGridTextColumn Header="Author" Binding="{Binding Authors}" IsReadOnly="True" Width="2*"/>
+                        <DataGridTemplateColumn Header="Link" Width="32">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Name="LinkButton" CommandParameter="{Binding Link}" Click="OpenLink_Click" Cursor="Hand" Padding="0">
+                                        <Image Name="LinkImage" Source="{Binding LinkImage}" Height="32" Width="32"/>
+                                    </Button>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                    <DataGrid.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Open Folder"
+                          Click="Folder_OnClick"
+                          CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent}"/>
+                            <MenuItem Header="Edit Metadata"
+                          Click="Edit_OnClick"
+                          CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent}"/>
+                            <MenuItem Header="Zip Mod"
+                          Click="Zip_OnClick"
+                          CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent}"/>
+                            <MenuItem Header="Delete"
+                          Click="Delete_OnClick"
+                          CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent}"/>
+                        </ContextMenu>
+                    </DataGrid.ContextMenu>
+                </DataGrid>
+            </Grid>
+            <Viewbox>
+                
             </Viewbox>
-        </Grid>
-        <Viewbox  Grid.Row="1" Grid.ColumnSpan="2" >
-            <Grid Name="SettingsWindow" ColumnDefinitions="*,*" IsVisible="False" Background="#005ada" Width="800">
-                <Grid ColumnDefinitions="*,*" RowDefinitions="*,*,*,*,*,*,*,*" Margin="5">
-                    <TextBlock Text="Settings" Foreground="White" FontSize="25" FontWeight="SemiBold" TextDecorations="Underline"/>
-                    <TextBlock Text="Output Path" Foreground="White" FontSize="18" Grid.Row="1" ToolTip.Tip="After clicking Deploy, the mods will be placed in this path." VerticalAlignment="Center"/>
-                    <TextBlock Text="Default Preview" Foreground="White" FontSize="18" Grid.Row="2" ToolTip.Tip="The preview that will show up if none is found." VerticalAlignment="Center"/>
-                    <ScrollViewer Grid.Row="1" Grid.Column="1" HorizontalScrollBarVisibility="Auto">
-                        <StackPanel Orientation="Horizontal">
-                            <Button Name="PathButton" ToolTip.Tip="After clicking Deploy, the mods will be placed in this path." Click="Path_Click" Content="Browse"/>
-                            <TextBox Name="PathBox" Classes="NoHover" ToolTip.Tip="After clicking Deploy, the mods will be placed in this path." IsEnabled="False" Foreground="#b8dffd" Background="#003e94" TextChanged="PathBox_TextChanged"/>
-                        </StackPanel>
-                    </ScrollViewer>
-                    
-                    <ComboBox Name="DefPrevBox" Grid.Row="2" Grid.Column="1" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" SelectionChanged="DefPrevBox_SelectionChanged">
-                        <ComboBoxItem IsSelected="True" Content="Dream Drop Distance"/>
-                        <ComboBoxItem Content="Final Chapter Prologue"/>
-                        <ComboBoxItem Content="The World Ends With You"/>
-                        <ComboBoxItem Content="Vacant House"/>
-                    </ComboBox>
-                    <TextBlock Text="Using an Emulator" Foreground="White" FontSize="18" Grid.Row="3" ToolTip.Tip="Enable this if using an emulator such as Azahar or Citra. This will enable emulator-specific parts of mods, such as HD Textures. If this is enabled, place your output path in your emulator's load folder." VerticalAlignment="Center"/>
-                    <TextBlock Text="Region" Foreground="White" FontSize="18" Grid.Row="4" ToolTip.Tip="Enable this if using an emulator such as Azahar or Citra. This will enable emulator-specific parts of mods, such as HD Textures. If this is enabled, place your output path in your emulator's load folder." VerticalAlignment="Center"/>
-                    <TextBlock Text="ETC1 Encoder" Foreground="White" FontSize="18" Grid.Row="5" ToolTip.Tip="Enable this if using an emulator such as Azahar or Citra. This will enable emulator-specific parts of mods, such as HD Textures. If this is enabled, place your output path in your emulator's load folder." VerticalAlignment="Center"/>
-                    <CheckBox Grid.Row="3" Grid.Column="1" Name="UsingEmulator" IsCheckedChanged="Emulator_Changed" ToolTip.Tip="Enable this if using an emulator such as Azahar or Citra. This will enable emulator-specific parts of mods, such as HD Textures. If this is enabled, place your output path in your emulator's load folder." VerticalAlignment="Center" HorizontalAlignment="Center" IsEnabled="True"/>
-                    <ComboBox Name="RegionBox" Grid.Row="4" Grid.Column="1" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" SelectionChanged="DefPrevBox_SelectionChanged">
-                        <ComboBoxItem IsSelected="True" Content="North America"/>
-                        <ComboBoxItem Content="Europe"/>
-                        <ComboBoxItem Content="Japan"/>
-                    </ComboBox>
-                    <ComboBox Name="ETCBox" Grid.Row="5" Grid.Column="1" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" SelectionChanged="DefPrevBox_SelectionChanged">
-                        <ComboBoxItem Content="Windows"/>
-                        <ComboBoxItem Content="Wine (Experimental)"/>
-                        <ComboBoxItem IsSelected="True" Content="Compatibility"/>
-                    </ComboBox>
-                    <Button Grid.ColumnSpan="2" Grid.Row="6" Grid.RowSpan="2" FontWeight="Bold" FontSize="45" BorderThickness="5" Click="File_Unpack">
-                        Unpack Files
-                    </Button>
+            <Grid ColumnDefinitions="*,*,*,*,5*,*,*,*,*" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,5,0,0">
+                <Button Name="DeployButton" Click="Deploy_Click" Grid.Column="0" Cursor="Hand" ToolTip.Tip="Deploy mods to selected folder.">
+                    <Button.Template>
+                        <ControlTemplate>
+                            <Image Name="DeployImage" Source="/Images/Deploy.png" RenderOptions.BitmapInterpolationMode="HighQuality"/>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+                <Button Name="NewButton" Click="New_OnClick" Grid.Column="4" Cursor="Hand" ToolTip.Tip="Go to Nightmare Editor" HorizontalAlignment="Left">
+                    <Button.Template>
+                        <ControlTemplate>
+                            <Image Name="NewImage" Source="/Images/nightmare.png" RenderOptions.BitmapInterpolationMode="HighQuality"/>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+                <Button Name="RefreshButton" Click="Refresh_Click" Grid.Column="1" Cursor="Hand" ToolTip.Tip="Refresh mods and settings.">
+                    <Button.Template>
+                        <ControlTemplate>
+                            <Image Name="RefreshImage" Source="/Images/Refresh.png" RenderOptions.BitmapInterpolationMode="HighQuality"/>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+                <Button Name="OpenFolderButton" Click="OpenFolder_Click" Grid.Column="2" Cursor="Hand" ToolTip.Tip="Open the mods folder.">
+                    <Button.Template>
+                        <ControlTemplate>
+                            <Image Name="OpenFolderImage" Source="/Images/OpenFolder.png" RenderOptions.BitmapInterpolationMode="HighQuality"/>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+                <Button Name="InstallArchiveButton" Click="InstallArchive_Click" Grid.Column="3" Cursor="Hand" ToolTip.Tip="Install a mod from an archive.">
+                    <Button.Template>
+                        <ControlTemplate>
+                            <Image Name="InstallArchiveImage" Source="/Images/InstallArchive.png" RenderOptions.BitmapInterpolationMode="HighQuality"/>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+                <Button Name="DownloadButton" Click="Download_Click" Grid.Column="7" Cursor="Hand" Grid.ColumnSpan="2">
+                    <Button.Template>
+                        <ControlTemplate>
+                            <Image Name="DownloadImage" Source="/Images/DownloadUnsel.png" RenderOptions.BitmapInterpolationMode="HighQuality"/>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+                <Viewbox Grid.ColumnSpan="2" Grid.Column="5" >
+                    <TextBlock Foreground="#e8feff" HorizontalAlignment="Center" Text="Find More" VerticalAlignment="Center" FontSize="25" FontWeight="SemiBold"/>
+                </Viewbox>
+            </Grid>
+            <Viewbox  Grid.Row="1" Grid.ColumnSpan="2" >
+                <Grid Name="SettingsWindow" ColumnDefinitions="*,*" IsVisible="False" Background="#005ada" Width="800">
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="*,*,*,*,*,*,*,*" Margin="5">
+                        <TextBlock Text="Settings" Foreground="White" FontSize="25" FontWeight="SemiBold" TextDecorations="Underline"/>
+                        <TextBlock Text="Output Path" Foreground="White" FontSize="18" Grid.Row="1" ToolTip.Tip="After clicking Deploy, the mods will be placed in this path." VerticalAlignment="Center"/>
+                        <TextBlock Text="Default Preview" Foreground="White" FontSize="18" Grid.Row="2" ToolTip.Tip="The preview that will show up if none is found." VerticalAlignment="Center"/>
+                        <ScrollViewer Grid.Row="1" Grid.Column="1" HorizontalScrollBarVisibility="Auto">
+                            <StackPanel Orientation="Horizontal">
+                                <Button Name="PathButton" ToolTip.Tip="After clicking Deploy, the mods will be placed in this path." Click="Path_Click" Content="Browse"/>
+                                <TextBox Name="PathBox" Classes="NoHover" ToolTip.Tip="After clicking Deploy, the mods will be placed in this path." IsEnabled="False" Foreground="#b8dffd" Background="#003e94" TextChanged="PathBox_TextChanged"/>
+                            </StackPanel>
+                        </ScrollViewer>
+                        
+                        <ComboBox Name="DefPrevBox" Grid.Row="2" Grid.Column="1" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" SelectionChanged="DefPrevBox_SelectionChanged">
+                            <ComboBoxItem IsSelected="True" Content="Dream Drop Distance"/>
+                            <ComboBoxItem Content="Final Chapter Prologue"/>
+                            <ComboBoxItem Content="The World Ends With You"/>
+                            <ComboBoxItem Content="Vacant House"/>
+                        </ComboBox>
+                        <TextBlock Text="Using an Emulator" Foreground="White" FontSize="18" Grid.Row="3" ToolTip.Tip="Enable this if using an emulator such as Azahar or Citra. This will enable emulator-specific parts of mods, such as HD Textures. If this is enabled, place your output path in your emulator's load folder." VerticalAlignment="Center"/>
+                        <TextBlock Text="Region" Foreground="White" FontSize="18" Grid.Row="4" ToolTip.Tip="Enable this if using an emulator such as Azahar or Citra. This will enable emulator-specific parts of mods, such as HD Textures. If this is enabled, place your output path in your emulator's load folder." VerticalAlignment="Center"/>
+                        <TextBlock Text="ETC1 Encoder" Foreground="White" FontSize="18" Grid.Row="5" ToolTip.Tip="Enable this if using an emulator such as Azahar or Citra. This will enable emulator-specific parts of mods, such as HD Textures. If this is enabled, place your output path in your emulator's load folder." VerticalAlignment="Center"/>
+                        <CheckBox Grid.Row="3" Grid.Column="1" Name="UsingEmulator" IsCheckedChanged="Emulator_Changed" ToolTip.Tip="Enable this if using an emulator such as Azahar or Citra. This will enable emulator-specific parts of mods, such as HD Textures. If this is enabled, place your output path in your emulator's load folder." VerticalAlignment="Center" HorizontalAlignment="Center" IsEnabled="True"/>
+                        <ComboBox Name="RegionBox" Grid.Row="4" Grid.Column="1" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" SelectionChanged="DefPrevBox_SelectionChanged">
+                            <ComboBoxItem IsSelected="True" Content="North America"/>
+                            <ComboBoxItem Content="Europe"/>
+                            <ComboBoxItem Content="Japan"/>
+                        </ComboBox>
+                        <ComboBox Name="ETCBox" Grid.Row="5" Grid.Column="1" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" SelectionChanged="DefPrevBox_SelectionChanged">
+                            <ComboBoxItem Content="Windows"/>
+                            <ComboBoxItem Content="Wine (Experimental)"/>
+                            <ComboBoxItem IsSelected="True" Content="Compatibility"/>
+                        </ComboBox>
+                        <Button Grid.ColumnSpan="2" Grid.Row="6" Grid.RowSpan="2" FontWeight="Bold" FontSize="45" BorderThickness="5" Click="File_Unpack">
+                            Unpack Files
+                        </Button>
+                    </Grid>
+                    <Grid Grid.Column="1" Margin="5" Width="400">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition Height="7*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="About Exam Editor" Foreground="White" FontSize="25" FontWeight="SemiBold" TextDecorations="Underline"/>
+                        <TextBlock Text="v1.0.0 " Foreground="White" FontSize="16" TextAlignment="Right" VerticalAlignment="Bottom" FontStyle="Italic" Margin="0,5"/>
+                        <TextBox IsReadOnly="True" Classes="NoHover" Grid.Row="1" Focusable="False" Foreground="#b8dffd" Background="#005ada" BorderThickness="0" FontSize="12" ScrollViewer.VerticalScrollBarVisibility="Auto" TextWrapping="WrapWithOverflow" Text="Exam Editor is a mod manager made by Solt11 specifically for the 3DS version of Kingdom Hearts Dream Drop Distance.&#xA;Please use OpenKH for the PC version, any mods I make will likely have an equivalent PC version.&#xD;&#xA;&#xD;&#xA;Nightmare Editor is the real program, and I go more in-depth on my explanations about what and why I made this in the FAQ section of Nightmare Editor's Help Window.&#xD;&#xA;&#xD;&#xA;Q: AUI?&#xD;&#xA;A: Avalonia UI. This is a port from the WPF version and has become the only supported version."/>
+                    </Grid>
                 </Grid>
-                <Grid Grid.Column="1" Margin="5" Width="400">
-                    <Grid.RowDefinitions>
-                        <RowDefinition/>
-                        <RowDefinition Height="7*"/>
-                    </Grid.RowDefinitions>
-                    <TextBlock Text="About Exam Editor" Foreground="White" FontSize="25" FontWeight="SemiBold" TextDecorations="Underline"/>
-                    <TextBlock Text="v1.0.0 " Foreground="White" FontSize="16" TextAlignment="Right" VerticalAlignment="Bottom" FontStyle="Italic" Margin="0,5"/>
-                    <TextBox IsReadOnly="True" Classes="NoHover" Grid.Row="1" Focusable="False" Foreground="#b8dffd" Background="#005ada" BorderThickness="0" FontSize="12" ScrollViewer.VerticalScrollBarVisibility="Auto" TextWrapping="WrapWithOverflow" Text="Exam Editor is a mod manager made by Solt11 specifically for the 3DS version of Kingdom Hearts Dream Drop Distance.&#xA;Please use OpenKH for the PC version, any mods I make will likely have an equivalent PC version.&#xD;&#xA;&#xD;&#xA;Nightmare Editor is the real program, and I go more in-depth on my explanations about what and why I made this in the FAQ section of Nightmare Editor's Help Window.&#xD;&#xA;&#xD;&#xA;Q: AUI?&#xD;&#xA;A: Avalonia UI. This is a port from the WPF version and has become the only supported version."/>
+            </Viewbox>
+            
+            <Grid Name="MusicWindow" Grid.Row="1" Grid.ColumnSpan="2" IsVisible="True">
+                <Grid ColumnDefinitions="*,*" RowDefinitions="*,15*">
+                    <Viewbox Grid.ColumnSpan="2">
+                        <TextBlock Text="Songs are sorted by filename." Foreground="White"/>
+                    </Viewbox>
+                    <Viewbox Grid.Row="1" Stretch="Uniform" VerticalAlignment="Top">
+                        <Grid RowDefinitions="auto,auto,auto,auto" ColumnDefinitions="10,*" Margin="30" Width="250" Height="150">
+                            <TextBlock Grid.ColumnSpan="2" Text="What song will you replace?" Foreground="White" FontWeight="DemiBold"></TextBlock>
+                            <ComboBox Grid.ColumnSpan="2" Grid.Row="1" Name="MusicInputBox" Foreground="White" SelectionChanged="MusicInputBox_OnSelectionChanged" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            </ComboBox>
+                            <TextBlock Grid.Column="1" Grid.Row="2" Margin="5" Name="MusicInfoBox1" Text="Description of the track" Foreground="White" FontWeight="Bold" TextWrapping="Wrap" HorizontalAlignment="Left" VerticalAlignment="Top"></TextBlock>
+                            <TextBlock Grid.Column="1" Grid.Row="3" Margin="5" Name="MusicInfoBox2" Text="Filename" Foreground="White" FontWeight="Bold"></TextBlock>
+                            <Viewbox Grid.Row="2" Grid.RowSpan="2" Stretch="Fill">
+                                <Rectangle Height="1" Width="1" Fill="White"></Rectangle>
+                            </Viewbox>
+                        </Grid>
+                    </Viewbox>
+                    <Viewbox Grid.Row="1" Grid.Column="1" Stretch="Uniform" VerticalAlignment="Top">
+                        <Grid RowDefinitions="auto,auto,auto,auto" ColumnDefinitions="*,10" Margin="30" Width="250" Height="150">
+                            <TextBlock Grid.ColumnSpan="2" Text="What will you replace it with?" Foreground="Black" FontWeight="DemiBold" HorizontalAlignment="Right"></TextBlock>
+                            <ComboBox Grid.Row="1" Grid.ColumnSpan="2" Name="MusicOutputBox" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Foreground="Black">
+                            </ComboBox>
+                            <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Auto">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <Button Name="MusicPathButton" ToolTip.Tip="If you have a specific file, click here to select it." Click="MusicPathButton_OnClick" Content="Browse" Foreground="Black"/>
+                                    <TextBox Name="MusicPathBox" Classes="NoHover" ToolTip.Tip="If you have a specific file, click the button to select it." IsEnabled="False" HorizontalAlignment="Stretch" Foreground="Black"/>
+                                </StackPanel>
+                            </ScrollViewer>
+                            <Button Grid.Row="3" HorizontalAlignment="Right" Name="MusicReplaceButton" Foreground="Black" ToolTip.Tip="Replace the selected track on the left with the selected track on the right." Click="MusicReplaceButton_OnClick" Content="Replace"/>
+                            <Viewbox Grid.Column="1" Grid.Row="2" Grid.RowSpan="2" Stretch="Fill">
+                                <Rectangle Height="1" Width="1" Fill="Black"></Rectangle>
+                            </Viewbox>
+                        </Grid>
+                    </Viewbox>
+                    <Grid Grid.Row="1" Grid.Column="1" Grid.RowDefinitions="*,2*">
+                        <Image Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" IsHitTestVisible="False" Source="{skia:SvgImage /Images/sora.svg}" ZIndex="3"/>
+                    </Grid>
+                    
+                        
                 </Grid>
             </Grid>
-        </Viewbox>
-        
-        <Grid Name="MusicWindow" Grid.Row="1" Grid.ColumnSpan="2" IsVisible="True">
-            <Grid ColumnDefinitions="*,*">
-                <Viewbox Stretch="Uniform">
-                    <Grid Margin="30">
-                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <ComboBox Name="MusicInputBox" Foreground="White">
-                            </ComboBox>
-                            <TextBlock Name="MusicInfoBox1" Text="Description of the track" Foreground="White"></TextBlock>
-                            <TextBlock Name="MusicInfoBox2" Text="Filename" Foreground="White"></TextBlock>
-                        </StackPanel>
+        </Grid>
+        <Grid Background="#F04080" Grid.RowDefinitions="28*,160*,52*">
+            <!-- Upper Section -->
+            <Grid>
+                <Grid.Background>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                        <GradientStop Color="#00001d" Offset="0"/>
+                        <GradientStop Color="#00006e" Offset="1"/>
+                    </LinearGradientBrush>
+                </Grid.Background>
+                <Viewbox Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0.7.0.0}" HorizontalAlignment="Left" VerticalAlignment="Top">
+                    <Grid Height="20" Width="240">
+                        <Ellipse Height="16" Width="16" Margin="214,2,0,0" Fill="Black" HorizontalAlignment="Left"></Ellipse>
+                        <Rectangle Height="16" Width="220" Fill="#990000" HorizontalAlignment="Left"></Rectangle>
+                        <Ellipse Height="16" Width="16" Margin="212,0,0,0" Fill="#990000" HorizontalAlignment="Left"></Ellipse>
+                        <TextBlock FontFamily="{StaticResource 'KH2 Menu'}" Text="Mods" VerticalAlignment="Bottom" FontSize="9" Margin="171,0,0,3" Foreground="Black"></TextBlock>
+                        <TextBlock FontFamily="{StaticResource 'KH2 Menu'}" Text="Mods" VerticalAlignment="Bottom" FontSize="9" Margin="170,0,0,4" Foreground="White"></TextBlock>
+                        <Ellipse Height="20" Width="20" Margin="142,2,0,0" Fill="Black" HorizontalAlignment="Left"></Ellipse>
+                        <Rectangle Height="20" Width="150" Fill="#002eff" HorizontalAlignment="Left"></Rectangle>
+                        <Ellipse Height="20" Width="20" Margin="140,0,0,0" Fill="#002eff" HorizontalAlignment="Left"></Ellipse>
+                        <TextBlock FontFamily="{StaticResource 'KH2 Menu'}" Text="Exam Editor" FontSize="11" Margin="13,1,0,0" Foreground="Black"></TextBlock>
+                        <TextBlock FontFamily="{StaticResource 'KH2 Menu'}" Text="Exam Editor" FontSize="11" Margin="12,0,0,0" Foreground="White"></TextBlock>
                     </Grid>
                 </Viewbox>
-                <Viewbox Grid.Column="1">
-                    <Grid Margin="30">
-                        <StackPanel Grid.Column="1" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <ComboBox Name="MusicOutputBox" HorizontalAlignment="Right" Foreground="White">
-                            </ComboBox>
-                            <TextBlock Name="MusicInfoBox3" HorizontalAlignment="Right" Text="Description of the track" Foreground="White"></TextBlock>
-                            <TextBlock Name="MusicInfoBox4" HorizontalAlignment="Right" Text="Filename" Foreground="White"></TextBlock>
-                        </StackPanel>
-                    </Grid>
-                </Viewbox>
-                <Image Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="100" Source="{skia:SvgImage /Images/sora.svg}" ZIndex="3"/>
                 
-                    
+                <Rectangle Fill="#002eff" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=2}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"></Rectangle>
+            </Grid>
+            
+            <!-- Lower Section -->
+            <Grid Grid.Row="2" Grid.ColumnDefinitions="90*,308*">
+                <Grid Grid.Column="0" Grid.ColumnDefinitions="*,Auto" Grid.RowDefinitions="Auto,*" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0.0.1.0}">
+                    <Rectangle Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=2}" HorizontalAlignment="Stretch" Fill="#002eff"/>
+                    <Rectangle Grid.Row="1" Grid.Column="1" Width="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=2}" VerticalAlignment="Stretch" Fill="#002eff"/>
+                    <Viewbox Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=2}" Grid.Column="1" StretchDirection="Both" >
+                        <Grid Width="25">
+                            <Ellipse Width="50" Height="50" Fill="#002eff" Margin="-25,0,0,-25"></Ellipse>
+                        </Grid>
+                    </Viewbox>
+                    <!-- Lower-Left Body -->
+                    <Grid Grid.Row="1">
+                        <Grid.Background>
+                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                                <GradientStop Color="#00006e" Offset="0"/>
+                                <GradientStop Color="#00001d" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Grid.Background>
+                    </Grid>
+                </Grid>
+                <Grid Grid.Column="2" Grid.ColumnDefinitions="Auto,*" Grid.RowDefinitions="Auto,*" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=1.0.0.0}">
+                    <Rectangle Grid.Column="1" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=2}" HorizontalAlignment="Stretch" Fill="#002eff"/>
+                    <Rectangle Grid.Row="1" Width="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=2}" VerticalAlignment="Stretch" Fill="#002eff"/>
+                    <Viewbox Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=2}" StretchDirection="Both" >
+                        <Grid Width="25">
+                            <Ellipse Width="50" Height="50" Fill="#002eff" Margin="0,0,-25,-25"></Ellipse>
+                        </Grid>
+                    </Viewbox>
+                    <!-- Lower-Right Body -->
+                    <Grid Grid.Row="1" Grid.Column="1">
+                        <Image Source="{skia:SvgImage /Images/menu_heart.svg}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0.0.8.0}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=40}"/>
+                        <Grid.Background>
+                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                                <GradientStop Color="#00006e" Offset="0"/>
+                                <GradientStop Color="#00001d" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Grid.Background>
+                    </Grid>
+                </Grid>
             </Grid>
         </Grid>
     </Grid>
+        
+    
+    
+    
 </Window>
