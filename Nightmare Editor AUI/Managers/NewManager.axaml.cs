@@ -1,9 +1,19 @@
+using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Data.Converters;
 using Avalonia.Input;
+using Avalonia.Layout;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media;
+using Avalonia.Platform;
+using Avalonia.Svg.Skia;
+using Nightmare_Editor;
+using Nightmare_Editor_AUI;
+using Nightmare_Editor_AUI.Managers;
+using static Nightmare_Editor_AUI.Managers.Standard;
+using Nightmare_Editor_AUI.Controls;
 
 namespace Nightmare_Editor_AUI;
 
@@ -13,44 +23,25 @@ public partial class NewManager : Window
     {
         InitializeComponent();
     }
-    
+
+
     private void MenuButton_Hover(object? sender, PointerEventArgs e)
     {
-        if (sender is Grid grid)
-        {
-            grid.Bind(
-                MarginProperty,
-                new Binding
-                {
-                    Path = "Height",
-                    RelativeSource = new RelativeSource(RelativeSourceMode.FindAncestor)
-                    {
-                        AncestorType = typeof(Window)
-                    },
-                    Converter = (IValueConverter)this.Resources["PixelMargin"],
-                    ConverterParameter = "12.0.0.3"
-                }
-            );
-        }
+        if (sender is Nightmare_Editor_AUI.Controls.MenuButton mb)
+            BottomRightText.Text = mb.Description;
     }
 
-    private void MenuButton_EndHover(object? sender, PointerEventArgs e)
+    
+
+    private void Menu_NE_OnClick(object? sender, EventArgs e)
     {
-        if (sender is Grid grid)
-        {
-            grid.Bind(
-                MarginProperty,
-                new Binding
-                {
-                    Path = "Height",
-                    RelativeSource = new RelativeSource(RelativeSourceMode.FindAncestor)
-                    {
-                        AncestorType = typeof(Window)
-                    },
-                    Converter = (IValueConverter)this.Resources["PixelMargin"],
-                    ConverterParameter = "0.0.0.3"
-                }
-            );
-        }
+        var ew = new Editor();
+        ew.Show();
+        Close();
+    }
+    
+    private void Menu_Download_OnClick(object? sender, EventArgs e)
+    {
+        OpenGamebanana();
     }
 }

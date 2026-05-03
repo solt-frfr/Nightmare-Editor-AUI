@@ -7,11 +7,14 @@
         <entry key="Nightmare Editor AUI/App.axaml" value="Nightmare Editor AUI/Nightmare Editor AUI.csproj" />
         <entry key="Nightmare Editor AUI/Assets/fonts/KH3D-0/48.xaml" value="Nightmare Editor AUI/Nightmare Editor AUI.csproj" />
         <entry key="Nightmare Editor AUI/Controls/KH3DText.axaml" value="Nightmare Editor AUI/Nightmare Editor AUI.csproj" />
+        <entry key="Nightmare Editor AUI/Controls/MenuButton.axaml" value="Nightmare Editor AUI/Nightmare Editor AUI.csproj" />
         <entry key="Nightmare Editor AUI/Editor.axaml" value="Nightmare Editor AUI/Nightmare Editor AUI.csproj" />
         <entry key="Nightmare Editor AUI/Help.axaml" value="Nightmare Editor AUI/Nightmare Editor AUI.csproj" />
         <entry key="Nightmare Editor AUI/KH3DText.axaml" value="Nightmare Editor AUI/Nightmare Editor AUI.csproj" />
         <entry key="Nightmare Editor AUI/MakePack.axaml" value="Nightmare Editor AUI/Nightmare Editor AUI.csproj" />
         <entry key="Nightmare Editor AUI/Manager.axaml" value="Nightmare Editor AUI/Nightmare Editor AUI.csproj" />
+        <entry key="Nightmare Editor AUI/Managers/Manager.axaml" value="Nightmare Editor AUI/Nightmare Editor AUI.csproj" />
+        <entry key="Nightmare Editor AUI/Managers/NewManager.axaml" value="Nightmare Editor AUI/Nightmare Editor AUI.csproj" />
         <entry key="Nightmare Editor AUI/NewManager.axaml" value="Nightmare Editor AUI/Nightmare Editor AUI.csproj" />
         <entry key="Nightmare Editor AUI/PickText.axaml" value="Nightmare Editor AUI/Nightmare Editor AUI.csproj" />
       </map>

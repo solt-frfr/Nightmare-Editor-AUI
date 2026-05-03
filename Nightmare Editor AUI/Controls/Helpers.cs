@@ -27,7 +27,7 @@ namespace Nightmare_Editor_AUI.Controls;
         {
             if (value is double d)
             {
-                var parts = parameter.ToString().Split('.');
+                var parts = parameter.ToString().Split('|');
                 if (parts.Length == 1)
                 {
                     return new Thickness(d * double.Parse(parts[0]) / 240.0);
