@@ -4,6 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Nightmare_Editor"
+        xmlns:rewrite="clr-namespace:Nightmare_Editor_AUI"
+        xmlns:controls="clr-namespace:Nightmare_Editor_AUI.Controls"
         xmlns:skia="clr-namespace:Avalonia.Svg.Skia;assembly=Svg.Controls.Skia.Avalonia"
         mc:Ignorable="d"
         Title="Exam Editor" Height="480" Width="800" Icon="/Assets/dreameater.ico">
@@ -14,10 +16,11 @@
         </LinearGradientBrush>
     </Window.Background>
     <Window.Resources>
-        <local:PixelWidth x:Key="PixelWidth"/>
-        <local:PixelMargin x:Key="PixelMargin"/>
+        <controls:PixelWidth x:Key="PixelWidth"/>
+        <controls:PixelMargin x:Key="PixelMargin"/>
         <FontFamily x:Key="JetBrains Mono">avares://Nightmare Editor AUI/Assets/fonts#JetBrains Mono</FontFamily>
         <FontFamily x:Key="KH2 Menu">avares://Nightmare Editor AUI/Assets/fonts#KH2 ALL MENU</FontFamily>
+        <FontFamily x:Key="KH3D Accuracy">avares://Nightmare Editor AUI/Assets/fonts#KH3D Accuracy</FontFamily>
     </Window.Resources>
 	<!--<Window.Resources>
         <Style x:Key="Transparent Button" TargetType="Button">
@@ -253,76 +256,6 @@
                     </Viewbox>
                     <Grid Grid.Row="1" Grid.Column="1" Grid.RowDefinitions="*,2*">
                         <Image Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" IsHitTestVisible="False" Source="{skia:SvgImage /Images/sora.svg}" ZIndex="3"/>
-                    </Grid>
-                    
-                        
-                </Grid>
-            </Grid>
-        </Grid>
-        <Grid Background="#F04080" Grid.RowDefinitions="28*,160*,52*">
-            <!-- Upper Section -->
-            <Grid>
-                <Grid.Background>
-                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
-                        <GradientStop Color="#00001d" Offset="0"/>
-                        <GradientStop Color="#00006e" Offset="1"/>
-                    </LinearGradientBrush>
-                </Grid.Background>
-                <Viewbox Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0.7.0.0}" HorizontalAlignment="Left" VerticalAlignment="Top">
-                    <Grid Height="20" Width="240">
-                        <Ellipse Height="16" Width="16" Margin="214,2,0,0" Fill="Black" HorizontalAlignment="Left"></Ellipse>
-                        <Rectangle Height="16" Width="220" Fill="#990000" HorizontalAlignment="Left"></Rectangle>
-                        <Ellipse Height="16" Width="16" Margin="212,0,0,0" Fill="#990000" HorizontalAlignment="Left"></Ellipse>
-                        <TextBlock FontFamily="{StaticResource 'KH2 Menu'}" Text="Mods" VerticalAlignment="Bottom" FontSize="9" Margin="171,0,0,3" Foreground="Black"></TextBlock>
-                        <TextBlock FontFamily="{StaticResource 'KH2 Menu'}" Text="Mods" VerticalAlignment="Bottom" FontSize="9" Margin="170,0,0,4" Foreground="White"></TextBlock>
-                        <Ellipse Height="20" Width="20" Margin="142,2,0,0" Fill="Black" HorizontalAlignment="Left"></Ellipse>
-                        <Rectangle Height="20" Width="150" Fill="#002eff" HorizontalAlignment="Left"></Rectangle>
-                        <Ellipse Height="20" Width="20" Margin="140,0,0,0" Fill="#002eff" HorizontalAlignment="Left"></Ellipse>
-                        <TextBlock FontFamily="{StaticResource 'KH2 Menu'}" Text="Exam Editor" FontSize="11" Margin="13,1,0,0" Foreground="Black"></TextBlock>
-                        <TextBlock FontFamily="{StaticResource 'KH2 Menu'}" Text="Exam Editor" FontSize="11" Margin="12,0,0,0" Foreground="White"></TextBlock>
-                    </Grid>
-                </Viewbox>
-                
-                <Rectangle Fill="#002eff" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=2}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"></Rectangle>
-            </Grid>
-            
-            <!-- Lower Section -->
-            <Grid Grid.Row="2" Grid.ColumnDefinitions="90*,308*">
-                <Grid Grid.Column="0" Grid.ColumnDefinitions="*,Auto" Grid.RowDefinitions="Auto,*" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0.0.1.0}">
-                    <Rectangle Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=2}" HorizontalAlignment="Stretch" Fill="#002eff"/>
-                    <Rectangle Grid.Row="1" Grid.Column="1" Width="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=2}" VerticalAlignment="Stretch" Fill="#002eff"/>
-                    <Viewbox Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=2}" Grid.Column="1" StretchDirection="Both" >
-                        <Grid Width="25">
-                            <Ellipse Width="50" Height="50" Fill="#002eff" Margin="-25,0,0,-25"></Ellipse>
-                        </Grid>
-                    </Viewbox>
-                    <!-- Lower-Left Body -->
-                    <Grid Grid.Row="1">
-                        <Grid.Background>
-                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
-                                <GradientStop Color="#00006e" Offset="0"/>
-                                <GradientStop Color="#00001d" Offset="1"/>
-                            </LinearGradientBrush>
-                        </Grid.Background>
-                    </Grid>
-                </Grid>
-                <Grid Grid.Column="2" Grid.ColumnDefinitions="Auto,*" Grid.RowDefinitions="Auto,*" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=1.0.0.0}">
-                    <Rectangle Grid.Column="1" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=2}" HorizontalAlignment="Stretch" Fill="#002eff"/>
-                    <Rectangle Grid.Row="1" Width="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=2}" VerticalAlignment="Stretch" Fill="#002eff"/>
-                    <Viewbox Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=2}" StretchDirection="Both" >
-                        <Grid Width="25">
-                            <Ellipse Width="50" Height="50" Fill="#002eff" Margin="0,0,-25,-25"></Ellipse>
-                        </Grid>
-                    </Viewbox>
-                    <!-- Lower-Right Body -->
-                    <Grid Grid.Row="1" Grid.Column="1">
-                        <Image Source="{skia:SvgImage /Images/menu_heart.svg}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0.0.8.0}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=40}"/>
-                        <Grid.Background>
-                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
-                                <GradientStop Color="#00006e" Offset="0"/>
-                                <GradientStop Color="#00001d" Offset="1"/>
-                            </LinearGradientBrush>
-                        </Grid.Background>
                     </Grid>
                 </Grid>
             </Grid>

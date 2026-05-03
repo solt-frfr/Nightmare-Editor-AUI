@@ -63,13 +63,8 @@ namespace Nightmare_Editor
             }
             else
             {
-                string settingspath = Misc.Jsons.settings;
-                string jsonString = System.IO.File.ReadAllText(settingspath);
-                var jsonoptions = new JsonSerializerOptions
-                {
-                    WriteIndented = true
-                };
-                Settings settings = JsonSerializer.Deserialize<Settings>(jsonString, jsonoptions);
+                Settings settings = Nightmare_Editor_AUI.Managers.Standard.Settings;
+
                 File.Move(inputFile, settings.DeployPath + $@"\{filename}", true);
             }
             Directory.Delete(Path.Combine(Misc.Paths.toolkit, Path.GetFileNameWithoutExtension(filename)), true);
@@ -118,12 +113,7 @@ namespace Nightmare_Editor
 
         public static void CTTPack(string filename, string path, string format)
         {
-            string jsonString = System.IO.File.ReadAllText(Misc.Jsons.settings);
-            var jsonoptions = new JsonSerializerOptions
-            {
-                WriteIndented = true
-            };
-            Settings settings = JsonSerializer.Deserialize<Settings>(jsonString, jsonoptions);
+            Settings settings = Nightmare_Editor_AUI.Managers.Standard.Settings;
             
             string toolkitPath = Path.Combine(Misc.Paths.toolkit, "ETC.exe");
             if (format != "ETC1" && format != "ETC1A4")

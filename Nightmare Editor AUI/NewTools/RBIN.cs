@@ -14,6 +14,7 @@ using System.Text.Json.Serialization;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using OpenKh.Ddd.Utils;
+using static Nightmare_Editor_AUI.Managers.Standard;
 
 namespace Nightmare_Editor.NewTools;
 
@@ -319,13 +320,12 @@ public class RBIN
         }
         else if (string.IsNullOrWhiteSpace(output))
         {
-            string settingspath = Misc.Jsons.settings;
-            jsonString = System.IO.File.ReadAllText(settingspath);
-            Settings settings = JsonSerializer.Deserialize<Settings>(jsonString, jsonoptions);
+            Settings settings = Nightmare_Editor_AUI.Managers.Standard.Settings;
+
             if (settings.Emulator)
             {
-                Directory.CreateDirectory(Path.Combine(settings.DeployPath, "mods", Manager.GetTitleIDFromRegion(settings.Region), "romfs"));
-                File.WriteAllBytes(Path.Combine(settings.DeployPath, "mods", Manager.GetTitleIDFromRegion(settings.Region), "romfs", Path.GetFileName(filename)), data.ToArray());
+                Directory.CreateDirectory(Path.Combine(settings.DeployPath, "mods", GetTitleIDFromRegion(settings.Region), "romfs"));
+                File.WriteAllBytes(Path.Combine(settings.DeployPath, "mods", GetTitleIDFromRegion(settings.Region), "romfs", Path.GetFileName(filename)), data.ToArray());
             }
             else
             {

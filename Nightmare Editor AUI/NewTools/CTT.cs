@@ -138,12 +138,7 @@ namespace Nightmare_Editor.NewTools
         /// <param name="texture">Filepath containing a PNG texture to Encode into the CTT file.</param>
         public static void Encode(string file, string texture)
         {
-            string jsonString = System.IO.File.ReadAllText(Misc.Jsons.settings);
-            var jsonoptions = new JsonSerializerOptions
-            {
-                WriteIndented = true
-            };
-            Settings settings = JsonSerializer.Deserialize<Settings>(jsonString, jsonoptions);
+            Settings settings = Nightmare_Editor_AUI.Managers.Standard.Settings;
             
             byte[] data = File.ReadAllBytes(texture);
             int formatByte = GetFormat(file);

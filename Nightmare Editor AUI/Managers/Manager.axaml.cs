@@ -28,6 +28,7 @@ using MsBox.Avalonia.Enums;
 using MsBox.Avalonia;
 using Nightmare_Editor_AUI.ViewModels;
 using LibGit2Sharp;
+using static Nightmare_Editor_AUI.Managers.Standard;
 using Path = System.IO.Path;
 
 
@@ -44,11 +45,6 @@ namespace Nightmare_Editor
         private List<string[]> music = new List<string[]>();
         private MainWindowViewModel viewModel = new MainWindowViewModel();
 
-        public static readonly string UStitleID = "000400000008D300";
-        public static readonly string EUtitleID = "0004000000095500";
-        public static readonly string JPtitleID = "000400000004EE00";
-        public static readonly string JPtitleIDupdate = "0004000E0004EE00";
-
         public Manager()
         {
             InitializeComponent();
@@ -63,17 +59,6 @@ namespace Nightmare_Editor
             {
                 WriteIndented = true
             };
-            if (!System.IO.File.Exists(Misc.Jsons.settings))
-            {
-                Settings settings = new Settings();
-                settings.DeployPath = "";
-                settings.DefaultImage = 0;
-                settings.Region = 0;
-                settings.Emulator = false;
-                settings.ETC1Encoder = 2;
-                string jsonString = JsonSerializer.Serialize<Settings>(settings, jsonoptions);
-                System.IO.File.WriteAllText(Misc.Jsons.settings, jsonString);
-            }
             if (!System.IO.File.Exists(Misc.Jsons.enabled))
             {
                 string jsonString = JsonSerializer.Serialize<List<string>>(new List<string>(), jsonoptions);
@@ -145,30 +130,6 @@ namespace Nightmare_Editor
 
             return grid;
         }
-        
-        public static string GetTitleIDFromRegion(int i)
-        {
-            if (i == 0)
-            {
-                return UStitleID;
-            }
-            if (i == 1)
-            {
-                return EUtitleID;
-            }
-            if (i == 2)
-            {
-                return JPtitleID;
-            }
-            if (i == 3)
-            {
-                return JPtitleIDupdate;
-            }
-            else
-            {
-                return UStitleID;
-            }
-        }
 
         private string[] CountFolders(string folderPath)
         {
@@ -238,8 +199,8 @@ namespace Nightmare_Editor
             
             if (System.IO.File.Exists(Misc.Jsons.settings))
             {
-                string jsonString = System.IO.File.ReadAllText(Misc.Jsons.settings);
-                settings = JsonSerializer.Deserialize<Settings>(jsonString, jsonoptions);
+                settings = Nightmare_Editor_AUI.Managers.Standard.Settings;
+
                 PathBox.Text = settings.DeployPath;
                 DefPrevBox.SelectedIndex = settings.DefaultImage;
                 UsingEmulator.IsChecked = settings.Emulator;
@@ -383,7 +344,7 @@ namespace Nightmare_Editor
 
                     if (result == ButtonResult.Yes)
                     {
-                        Directory.Delete(Path.Combine(Misc.Paths.mods, row.ID), true);
+                        Directory.Delete(GetModFolder(row.ID), true);
                     }
                 }
             }
@@ -410,29 +371,7 @@ namespace Nightmare_Editor
             }
             try
             {
-                string modpath = "";
-                foreach (string path in CountFolders(Misc.Paths.mods))
-                {
-                    Meta mod = new Meta();
-                    string filepath = Path.Combine(path, "meta.json");
-                    if (!System.IO.File.Exists(filepath))
-                    {
-                        continue;
-                    }
-                    if (System.IO.File.Exists(filepath))
-                    {
-                        var jsonoptions = new JsonSerializerOptions
-                        {
-                            WriteIndented = true
-                        };
-                        string jsonString = System.IO.File.ReadAllText(filepath);
-                        mod = JsonSerializer.Deserialize<Meta>(jsonString, jsonoptions);
-                        if (mod.ID == row.ID)
-                        {
-                            modpath = path;
-                        }
-                    }
-                }
+                string modpath = GetModFolder(row.ID);
                 if (System.IO.File.Exists(Path.Combine(modpath, "preview.webp")))
                 {
                     string imagePath = Path.Combine(modpath, "preview.webp");
@@ -504,15 +443,7 @@ namespace Nightmare_Editor
 
         private void Download_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                System.Diagnostics.Process.Start(new ProcessStartInfo
-                {
-                    FileName = "https://gamebanana.com/games/17208",
-                    UseShellExecute = true
-                });
-            }
-            catch { }
+            OpenGamebanana();
         }
         private void Refresh_Click(object sender, RoutedEventArgs e)
         {
@@ -521,12 +452,8 @@ namespace Nightmare_Editor
 
         private async void Deploy_Click2(string deploypath)
         {
-            string jsonString = System.IO.File.ReadAllText(Misc.Jsons.settings);
-            var jsonoptions = new JsonSerializerOptions
-            {
-                WriteIndented = true
-            };
-            Settings settings = JsonSerializer.Deserialize<Settings>(jsonString, jsonoptions);
+            Settings settings = Nightmare_Editor_AUI.Managers.Standard.Settings;
+
             if (settings.Emulator)
             {
                 Directory.CreateDirectory(Path.Combine(deploypath, "mods", GetTitleIDFromRegion(settings.Region), "romfs"));
@@ -543,51 +470,42 @@ namespace Nightmare_Editor
                 Directory.CreateDirectory(deploypath);
             }
             List<string> rbins = new List<string>();
-            string[] folders = Directory.GetDirectories(Misc.Paths.mods);
             List<string> modFolders = new List<string>();
-            foreach (string folder in folders)
+
+            foreach (string ID in enabledmods)
             {
-                try
+                string folder = GetModFolder(ID);
+                Meta meta = JsonSerializer.Deserialize<Meta>(File.ReadAllText(Path.Combine(folder, "meta.json")), WriteIndented);
+                if (!string.IsNullOrWhiteSpace(meta.Prefix))
                 {
-                    jsonoptions = new JsonSerializerOptions
+                    Path.Combine(folder, meta.Prefix);
+                }
+                modFolders.Add(folder);
+                string[] subdirectories = Directory.GetDirectories(folder);
+                foreach (string subdir in subdirectories)
+                {
+                    DirectoryInfo dir = new DirectoryInfo(subdir);
+                    string rbin = dir.Name;
+                    if (rbin == "~emulator-textures" && settings.Emulator)
                     {
-                        WriteIndented = true
-                    };
-                    jsonString = System.IO.File.ReadAllText(Path.Combine(folder, "meta.json"));
-                    Meta meta = JsonSerializer.Deserialize<Meta>(jsonString, jsonoptions);
-                    if (enabledmods.Contains(meta.ID))
+                        Directory.CreateDirectory(Path.Combine(deploypath, "textures",
+                            Path.GetFileName(folder)));
+                        Editor.BetterDirCopy(Path.Combine(folder, "~emulator-textures"),
+                            Path.Combine(deploypath, "textures", GetTitleIDFromRegion(settings.Region),
+                                "NightmareEditor", Path.GetFileName(folder)), false);
+                    }
+                    else if (!rbins.Contains(rbin) && Misc.accepted_rbins.Contains(rbin))
                     {
-                        modFolders.Add(folder);
-                        string[] subdirectories = Directory.GetDirectories(folder);
-                        foreach (string subdir in subdirectories)
-                        {
-                            DirectoryInfo dir = new DirectoryInfo(subdir);
-                            string rbin = dir.Name;
-                            if (rbin == "~emulator-textures" && settings.Emulator)
-                            {
-                                Directory.CreateDirectory(Path.Combine(deploypath, "textures",
-                                    Path.GetFileName(folder)));
-                                Editor.BetterDirCopy(Path.Combine(folder, "~emulator-textures"),
-                                    Path.Combine(deploypath, "textures", GetTitleIDFromRegion(settings.Region),
-                                        "NightmareEditor", Path.GetFileName(folder)), false);
-                            }
-                            else if (!rbins.Contains(rbin) && Misc.accepted_rbins.Contains(rbin))
-                            {
-                                rbins.Add(rbin);
-                            }
-                            else if (Misc.accepted_folders.Contains(rbin))
-                            {
-                                Directory.CreateDirectory(Path.Combine(deploypath, rbin));
-                                Editor.BetterDirCopy(subdir, Path.Combine(deploypath, rbin), false);
-                            }
-                        }
+                        rbins.Add(rbin);
+                    }
+                    else if (Misc.accepted_folders.Contains(rbin))
+                    {
+                        Directory.CreateDirectory(Path.Combine(deploypath, rbin));
+                        Editor.BetterDirCopy(subdir, Path.Combine(deploypath, rbin), false);
                     }
                 }
-                catch
-                {
-
-                }
             }
+            
             bool stop = false;
             foreach (string rbin in rbins)
             {
@@ -625,7 +543,7 @@ namespace Nightmare_Editor
             string musicpath = Path.Combine(deploypath, "sound", "en", "output", "stream");
             if (settings.Emulator)
             {
-                musicpath = Path.Combine(deploypath, "mods", Manager.GetTitleIDFromRegion(settings.Region), "romfs", "sound", "en", "output", "stream");
+                musicpath = Path.Combine(deploypath, "mods", GetTitleIDFromRegion(settings.Region), "romfs", "sound", "en", "output", "stream");
             }
             Directory.CreateDirectory(musicpath);
             foreach (string[] track in music)
@@ -643,16 +561,10 @@ namespace Nightmare_Editor
 
         private async void Deploy_Click(object sender, RoutedEventArgs e)
         {
-            string x = "";
             try
             {
-                string jsonString = System.IO.File.ReadAllText(Misc.Jsons.settings);
-                var jsonoptions = new JsonSerializerOptions
-                {
-                    WriteIndented = true
-                };
-                Settings settings = JsonSerializer.Deserialize<Settings>(jsonString, jsonoptions);
-                x = settings.DeployPath;
+                Settings settings = Nightmare_Editor_AUI.Managers.Standard.Settings;
+                
                 if (!string.IsNullOrWhiteSpace(settings.DeployPath) && settings != null)
                 {
                     string text = $@"This will delete all files inside {settings.DeployPath}. Is this okay?";
@@ -737,62 +649,18 @@ namespace Nightmare_Editor
             {
                 settings.Emulator = false;
             }
-            string jsonString = System.IO.File.ReadAllText(Misc.Jsons.settings);
-            var jsonoptions = new JsonSerializerOptions
-            {
-                WriteIndented = true
-            };
-            jsonString = JsonSerializer.Serialize(settings, jsonoptions);
-            System.IO.File.WriteAllText(Misc.Jsons.settings, jsonString);
-            settings = JsonSerializer.Deserialize<Settings>(jsonString, jsonoptions);
+            SetSettings(settings);
             Refresh();
         }
 
         private void OpenFolder_Click(object sender, RoutedEventArgs e)
         {
-            if (Directory.Exists(Misc.Paths.mods))
-            {
-                ProcessStartInfo StartInformation = new ProcessStartInfo();
-                StartInformation.FileName = Misc.Paths.mods;
-                StartInformation.UseShellExecute = true;
-                Process process = Process.Start(StartInformation);
-            }
+            OpenModsFolder();
         }
 
         private async void InstallArchive_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                var files = await this.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
-                {
-                    Title = "Select Mod Archive",
-                    AllowMultiple = false,
-                    FileTypeFilter = new List<FilePickerFileType>
-                    {
-                        new FilePickerFileType("Mod Archive")
-                        {
-                            Patterns = new List<string> { "*.zip" }
-                        },
-                        new FilePickerFileType("Legacy Mod Archive")
-                        {
-                            Patterns = new List<string> { "*.7z" }
-                        }
-                    }
-                });
-                if (files.Count == 1)
-                {
-                    using var archive = ArchiveFactory.OpenArchive(files[0].Path.LocalPath);
-                    foreach (var entry in archive.Entries.Where(entry => !entry.IsDirectory))
-                    {
-                        entry.WriteToDirectory(Misc.Paths.mods, new ExtractionOptions()
-                        {
-                            ExtractFullPath = true,
-                            Overwrite = true
-                        });
-                    }
-                }
-            }
-            catch { }
+            InstallArchive(this);
         }
 
         private void OpenLink_Click(object sender, RoutedEventArgs e)

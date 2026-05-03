@@ -197,4 +197,15 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Managers\Manager.axaml.cs">
+      <DependentUpon>Manager.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Managers\NewManager.axaml.cs">
+      <DependentUpon>NewManager.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
 </Project>
