@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using Avalonia.Platform.Storage;
 using Avalonia.Controls;
 using System.Threading.Tasks;
+using static Nightmare_Editor_AUI.Managers.Standard;
 
 namespace Nightmare_Editor
 {
@@ -63,7 +64,7 @@ namespace Nightmare_Editor
             }
             else
             {
-                Settings settings = Nightmare_Editor_AUI.Managers.Standard.Settings;
+                Settings settings = MainSettings;
 
                 File.Move(inputFile, settings.DeployPath + $@"\{filename}", true);
             }
@@ -113,7 +114,7 @@ namespace Nightmare_Editor
 
         public static void CTTPack(string filename, string path, string format)
         {
-            Settings settings = Nightmare_Editor_AUI.Managers.Standard.Settings;
+            Settings settings = MainSettings;
             
             string toolkitPath = Path.Combine(Misc.Paths.toolkit, "ETC.exe");
             if (format != "ETC1" && format != "ETC1A4")

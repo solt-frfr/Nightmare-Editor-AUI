@@ -19,7 +19,7 @@ public static class Standard
         WriteIndented = true
     };
     
-    public static Settings Settings
+    public static Settings MainSettings
     {
         get => GetSettings();
         set => SetSettings(value);
@@ -158,5 +158,32 @@ public static class Standard
             });
         }
         catch { }
+    }
+
+    public async static void SetModDeployPath(Window sender)
+    {
+        IStorageFolder? startFolder = null;
+        if (Directory.Exists(MainSettings.DeployPath))
+        {
+            startFolder = await sender.StorageProvider.TryGetFolderFromPathAsync(
+                MainSettings.DeployPath
+            );
+        }
+        
+        var files = await sender.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+        {
+            Title = "Select Mod Deploy Path",
+            AllowMultiple = false,
+            SuggestedStartLocation = startFolder
+        });
+        if (files.Count == 1)
+        {
+            if (!string.IsNullOrWhiteSpace(files[0].Path.LocalPath))
+            {
+                var settings = MainSettings;
+                settings.DeployPath = files[0].Path.LocalPath;
+                SetSettings(settings);
+            }
+        }
     }
 }

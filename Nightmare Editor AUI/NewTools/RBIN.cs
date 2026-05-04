@@ -320,7 +320,7 @@ public class RBIN
         }
         else if (string.IsNullOrWhiteSpace(output))
         {
-            Settings settings = Nightmare_Editor_AUI.Managers.Standard.Settings;
+            Settings settings = MainSettings;
 
             if (settings.Emulator)
             {

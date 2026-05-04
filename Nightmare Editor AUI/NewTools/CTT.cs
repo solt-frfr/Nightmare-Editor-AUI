@@ -16,6 +16,7 @@ using SixLabors.ImageSharp.Processing.Processors.Quantization;
 using SixLabors.ImageSharp.Drawing.Processing;
 using Color = ExCSS.Color;
 using static Nightmare_Editor.NewTools.ETC;
+using static Nightmare_Editor_AUI.Managers.Standard;
 
 namespace Nightmare_Editor.NewTools
 {
@@ -138,7 +139,7 @@ namespace Nightmare_Editor.NewTools
         /// <param name="texture">Filepath containing a PNG texture to Encode into the CTT file.</param>
         public static void Encode(string file, string texture)
         {
-            Settings settings = Nightmare_Editor_AUI.Managers.Standard.Settings;
+            Settings settings = MainSettings;
             
             byte[] data = File.ReadAllBytes(texture);
             int formatByte = GetFormat(file);

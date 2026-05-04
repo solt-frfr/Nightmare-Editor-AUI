@@ -12,6 +12,7 @@ using Avalonia.Media.Immutable;
 using Avalonia.Platform;
 using Avalonia.Reactive;
 using Avalonia.Svg.Skia;
+using Avalonia.Threading;
 
 namespace Nightmare_Editor_AUI.Controls;
 
@@ -89,51 +90,97 @@ public partial class KH3DText : UserControl
         }
         foreach (string word in Text.Split(' '))
         {
-            StackPanel tempPanel = new StackPanel();
-            tempPanel.Orientation = Orientation.Horizontal;
-            if (Font == FontChoices.Accurate)
+            string[] splitwords = word.Split(System.IO.Path.DirectorySeparatorChar);
+            foreach (string splitword in splitwords)
             {
-                tempPanel.Margin = new Thickness(0,0,3,0);
-                tempPanel.Height = 16;
-            }
-            if (Font == FontChoices.SmallAccurate)
-            {
-                tempPanel.Margin = new Thickness(0,0,2,0);
-                tempPanel.Height = 14;
-            }
-            foreach (char character in word)
-            {
-                try
+                FontChoices fontToUse = Font;
+                if (word != splitword)
                 {
-                    Path tempPath = FontPath(Font, character);
-                    tempPath.Fill = Color;
-                    tempPanel.Children.Add(new Viewbox
+                    if (Font == FontChoices.Accurate)
                     {
-                        Child = tempPath,
-                        Margin = new Thickness(0, 0, 1, GetBottomThickness(character)),
-                        Height = tempPath.Height,
-                        Width = tempPath.Width,
-                        Stretch = Stretch.Fill,
-                        VerticalAlignment = VerticalAlignment.Bottom,
-                        HorizontalAlignment = HorizontalAlignment.Left,
-                        StretchDirection = StretchDirection.Both
-                        
-                    });
+                        fontToUse = FontChoices.SmallAccurate;
+                    }
+                    if (Font == FontChoices.Appeal)
+                    {
+                        fontToUse = FontChoices.SmallAppeal;
+                    }
                 }
-                catch (Exception e)
+                StackPanel tempPanel = new StackPanel();
+                tempPanel.Orientation = Orientation.Horizontal;
+                if (Font == FontChoices.Accurate)
                 {
-                    Console.WriteLine(e);
+                    tempPanel.Margin = new Thickness(0,0,3,0);
+                    tempPanel.Height = 16;
                 }
-            }
+                if (Font == FontChoices.SmallAccurate)
+                {
+                    tempPanel.Margin = new Thickness(0,0,2,0);
+                    tempPanel.Height = 14;
+                }
+
+                if (splitword != splitwords[splitwords.Length - 1])
+                {
+                    tempPanel.Margin = new Thickness(0,0,1,0);
+                }
+
+                if (splitword != splitwords[0])
+                {
+                    try
+                    {
+                        Path tempPath = FontPath(fontToUse, '/');
+                        tempPath.Fill = Color;
+                        tempPanel.Children.Add(new Viewbox
+                        {
+                            Child = tempPath,
+                            Margin = new Thickness(0, 0, 1, GetBottomThickness('/', fontToUse)),
+                            Height = tempPath.Height,
+                            Width = tempPath.Width,
+                            Stretch = Stretch.Fill,
+                            VerticalAlignment = VerticalAlignment.Bottom,
+                            HorizontalAlignment = HorizontalAlignment.Left,
+                            StretchDirection = StretchDirection.Both
+                            
+                        });
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                    }
+                }
+                foreach (char character in splitword)
+                {
+                    try
+                    {
+                        Path tempPath = FontPath(fontToUse, character);
+                        tempPath.Fill = Color;
+                        tempPanel.Children.Add(new Viewbox
+                        {
+                            Child = tempPath,
+                            Margin = new Thickness(0, 0, 1, GetBottomThickness(character, fontToUse)),
+                            Height = tempPath.Height,
+                            Width = tempPath.Width,
+                            Stretch = Stretch.Fill,
+                            VerticalAlignment = VerticalAlignment.Bottom,
+                            HorizontalAlignment = HorizontalAlignment.Left,
+                            StretchDirection = StretchDirection.Both
+                            
+                        });
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                    }
+                }
 
             Panel.Children.Add(tempPanel);
+            }
         }
     }
 
-    public double GetBottomThickness(char character)
+    public double GetBottomThickness(char character, FontChoices font)
     {
         int index = (int)character;
-        if (Font == FontChoices.Accurate)
+        if (font == FontChoices.Accurate)
         {
             if (character == 'g' || character == 'j' || character == 'p' || character == 'q' || 
                 character == ',')
@@ -158,7 +205,7 @@ public partial class KH3DText : UserControl
             return 2;
         }
 
-        if (Font == FontChoices.SmallAccurate)
+        if (font == FontChoices.SmallAccurate)
         {
             if (character == 'j' || character == ',')
                 return 1;

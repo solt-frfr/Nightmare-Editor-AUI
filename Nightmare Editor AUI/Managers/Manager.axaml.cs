@@ -199,7 +199,7 @@ namespace Nightmare_Editor
             
             if (System.IO.File.Exists(Misc.Jsons.settings))
             {
-                settings = Nightmare_Editor_AUI.Managers.Standard.Settings;
+                settings = MainSettings;
 
                 PathBox.Text = settings.DeployPath;
                 DefPrevBox.SelectedIndex = settings.DefaultImage;
@@ -452,7 +452,7 @@ namespace Nightmare_Editor
 
         private async void Deploy_Click2(string deploypath)
         {
-            Settings settings = Nightmare_Editor_AUI.Managers.Standard.Settings;
+            Settings settings = MainSettings;
 
             if (settings.Emulator)
             {
@@ -563,7 +563,7 @@ namespace Nightmare_Editor
         {
             try
             {
-                Settings settings = Nightmare_Editor_AUI.Managers.Standard.Settings;
+                Settings settings = MainSettings;
                 
                 if (!string.IsNullOrWhiteSpace(settings.DeployPath) && settings != null)
                 {
@@ -619,18 +619,8 @@ namespace Nightmare_Editor
 
         private async void Path_Click(object sender, RoutedEventArgs e)
         {
-            var files = await this.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
-            {
-                Title = "Select Mod Deploy Path",
-                AllowMultiple = false
-            });
-            if (files.Count == 1)
-            {
-                if (!string.IsNullOrWhiteSpace(files[0].Path.LocalPath))
-                {
-                    PathBox.Text = files[0].Path.LocalPath;
-                }
-            }
+            SetModDeployPath(this);
+            PathBox.Text = MainSettings.DeployPath;
         }
 
         private void PathBox_TextChanged(object sender, TextChangedEventArgs e)

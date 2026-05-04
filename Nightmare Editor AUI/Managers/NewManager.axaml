@@ -7,13 +7,13 @@
         xmlns:controls="clr-namespace:Nightmare_Editor_AUI.Controls"
         xmlns:skia="clr-namespace:Avalonia.Svg.Skia;assembly=Svg.Controls.Skia.Avalonia"
         x:Class="Nightmare_Editor_AUI.NewManager"
-        Title="Exam Editor - Menu Edition" Height="480" Width="800" Icon="/Assets/dreameater.ico">
+        Title="Exam Editor - Menu Edition" Height="480" Width="800" Icon="/Assets/dreameater.ico"
+        KeyDown="Window_OnKeyDown">
     <Window.Resources>
         <controls:PixelWidth x:Key="PixelWidth"/>
         <controls:PixelMargin x:Key="PixelMargin"/>
         <FontFamily x:Key="JetBrains Mono">avares://Nightmare Editor AUI/Assets/fonts#JetBrains Mono</FontFamily>
         <FontFamily x:Key="KH2 Menu">avares://Nightmare Editor AUI/Assets/fonts#KH2 ALL MENU</FontFamily>
-        <FontFamily x:Key="KH3D Accuracy">avares://Nightmare Editor AUI/Assets/fonts#KH3D Accuracy</FontFamily>
     </Window.Resources>
     <Grid Background="#F04080" Grid.RowDefinitions="28*,160*,52*" IsVisible="True">
         <!-- Background separator thingy -->
@@ -33,11 +33,62 @@
             <StackPanel Name="MenuButtonsPanel" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=10|8}">
                 <controls:MenuButton Name="Menu_Mods" PointerEntered="MenuButton_Hover" Text="Mods" Description="Explore the mods that you've downloaded." HorizontalAlignment="Left" VerticalAlignment="Top" Scale="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|0|-1}"/>
                 <controls:MenuButton Name="Menu_Music" PointerEntered="MenuButton_Hover" Text="Music" Description="Replace the game's music tracks with others or your own." HorizontalAlignment="Left" VerticalAlignment="Top" Scale="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|0|-1}"/>
-                <controls:MenuButton Name="Menu_Settings" PointerEntered="MenuButton_Hover" Text="Settings" Description="Change settings regarding your Deploy Path and more." HorizontalAlignment="Left" VerticalAlignment="Top" Scale="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|0|-1}"/>
+                <controls:MenuButton Name="Menu_Settings" Click="Menu_Settings_OnClick" PointerEntered="MenuButton_Hover" Text="Settings" Description="Change settings regarding your Deploy Path and more." HorizontalAlignment="Left" VerticalAlignment="Top" Scale="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|0|-1}"/>
                 <controls:MenuButton Name="Menu_About" PointerEntered="MenuButton_Hover" Text="About" Description="Learn about this tool's creation and supporters." HorizontalAlignment="Left" VerticalAlignment="Top" Scale="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|0|-1}"/>
                 <controls:MenuButton Name="Menu_NE" Click="Menu_NE_OnClick" PointerEntered="MenuButton_Hover" Text="Nightmare Editor" Description="Open Nightmare Editor, the tool for making new mods." HorizontalAlignment="Left" VerticalAlignment="Top" Scale="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|0|-1}"/>
                 <controls:MenuButton Name="Menu_Download" Click="Menu_Download_OnClick" PointerEntered="MenuButton_Hover" Text="Open Gamebanana" Description="Open this game's Gamebanana page in your default browser." HorizontalAlignment="Left" VerticalAlignment="Top" Scale="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|0|-1}"/>
             </StackPanel>
+            
+            <Viewbox Name="SettingsWindow" IsVisible="False" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=13|5}">
+                <Grid Width="374" Height="150">
+                    <Grid.Background>
+                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                            <GradientStop Color="#1420ff" Offset="0"/>
+                            <GradientStop Color="#002a90" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Grid.Background>
+                    <Grid.Clip>
+                        <PathGeometry Figures="
+                            M 0,0
+                            L 370,0
+                            L 374,4
+                            L 374,150
+                            L 5,150
+                            A 5,5 0 0 1 0,145
+                            Z"/>
+                    </Grid.Clip>
+                    <Rectangle Height="1" VerticalAlignment="Bottom">
+                        <Rectangle.Fill>
+                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                                <GradientStop Color="#0000154c" Offset="0"/>
+                                <GradientStop Color="#00154c" Offset="0.02"/>
+                            </LinearGradientBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                    <Rectangle Width="1" HorizontalAlignment="Left">
+                        <Rectangle.Fill>
+                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                                <GradientStop Color="#535bff" Offset="0"/>
+                                <GradientStop Color="#4463ae" Offset="0.95"/>
+                                <GradientStop Color="#004463ae" Offset="0.99"/>
+                            </LinearGradientBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                    <Rectangle Width="1" HorizontalAlignment="Right">
+                        <Rectangle.Fill>
+                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                                <GradientStop Color="#0c15ab" Offset="0"/>
+                                <GradientStop Color="#001a64" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                    <Rectangle Height="1" Fill="#a1a6ff" VerticalAlignment="Top"></Rectangle>
+                    <StackPanel>
+                        <controls:ConfigSlot Name="DeployPathConfig" LeftText="Deploy Path" RightText="Browse" Click="DeployPathConfig_OnClick" PointerEntered="MenuButton_Hover" Description="After clicking Deploy, the mods will be placed in this path." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16,6"/>
+                    </StackPanel>
+                </Grid>
+            </Viewbox>
+            
         </Grid>
         
         
@@ -59,8 +110,8 @@
                     <Ellipse Height="20" Width="20" Margin="142,2,0,0" Fill="Black" HorizontalAlignment="Left"></Ellipse>
                     <Rectangle Height="20" Width="150" Fill="#002eff" HorizontalAlignment="Left"></Rectangle>
                     <Ellipse Height="20" Width="20" Margin="140,0,0,0" Fill="#002eff" HorizontalAlignment="Left"></Ellipse>
-                    <TextBlock FontFamily="{StaticResource 'KH2 Menu'}" Text="Exam Editor" FontSize="11" Margin="13,1,0,0" Foreground="Black"></TextBlock>
-                    <TextBlock FontFamily="{StaticResource 'KH2 Menu'}" Text="Exam Editor" FontSize="11" Margin="12,0,0,0" Foreground="White"></TextBlock>
+                    <TextBlock Name="MainTextShadow" FontFamily="{StaticResource 'KH2 Menu'}" Text="Exam Editor" FontSize="11" Margin="13,1,0,0" Foreground="Black"></TextBlock>
+                    <TextBlock Name="MainText" FontFamily="{StaticResource 'KH2 Menu'}" Text="Exam Editor" FontSize="11" Margin="12,0,0,0" Foreground="White"></TextBlock>
                 </Grid>
             </Viewbox>
             

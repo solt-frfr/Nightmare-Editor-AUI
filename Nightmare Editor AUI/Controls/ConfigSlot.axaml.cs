@@ -1,35 +1,41 @@
 using System;
+using System.Net.Mime;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Data;
-using Avalonia.Data.Converters;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
-using Avalonia.Media.Immutable;
 using Avalonia.Reactive;
 using Avalonia.Svg.Skia;
 
 namespace Nightmare_Editor_AUI.Controls;
 
-public partial class MenuButton : UserControl
+public partial class ConfigSlot : UserControl
 {
-    public static readonly StyledProperty<string> TextProperty =
-        AvaloniaProperty.Register<MenuButton, string>(nameof(Text), defaultValue: "");
+    public static readonly StyledProperty<string> LeftTextProperty =
+        AvaloniaProperty.Register<MenuButton, string>(nameof(LeftText), defaultValue: "");
+    public static readonly StyledProperty<string> RightTextProperty =
+        AvaloniaProperty.Register<MenuButton, string>(nameof(RightText), defaultValue: "");
     public static readonly StyledProperty<string> DescriptionProperty =
         AvaloniaProperty.Register<MenuButton, string>(nameof(Description), defaultValue: "");
     public static readonly StyledProperty<FontChoices> FontProperty =
-        AvaloniaProperty.Register<MenuButton, FontChoices>(nameof(Font), defaultValue: FontChoices.SmallAccurate);
+        AvaloniaProperty.Register<MenuButton, FontChoices>(nameof(Font), defaultValue: FontChoices.Accurate);
     public static readonly StyledProperty<double> ScaleProperty =
         AvaloniaProperty.Register<MenuButton, double>(nameof(Scale), defaultValue: 1);
     public event EventHandler? Click;
     
     private bool IsPressed = false;
     
-    public string Text
+    public string LeftText
     {
-        get => GetValue(TextProperty);
-        set => SetValue(TextProperty, value);
+        get => GetValue(LeftTextProperty);
+        set => SetValue(LeftTextProperty, value);
+    }
+    
+    public string RightText
+    {
+        get => GetValue(RightTextProperty);
+        set => SetValue(RightTextProperty, value);
     }
     
     public string Description
@@ -59,15 +65,16 @@ public partial class MenuButton : UserControl
         set => SetValue(ScaleProperty, value);
     }
     
-    
-    public MenuButton()
+    public ConfigSlot()
     {
         InitializeComponent();
         
-        this.GetObservable(TextProperty)
+        this.GetObservable(LeftTextProperty)
+            .Subscribe(new AnonymousObserver<string?>(e => Update()));
+        this.GetObservable(RightTextProperty)
             .Subscribe(new AnonymousObserver<string?>(e => Update()));
         this.GetObservable(FontProperty)
-            .Subscribe(new AnonymousObserver<FontChoices>(e => Update()));
+            .Subscribe(new AnonymousObserver<ConfigSlot.FontChoices>(e => Update()));
         this.GetObservable(DescriptionProperty)
             .Subscribe(new AnonymousObserver<string?>(e => Update()));
         this.GetObservable(ScaleProperty)
@@ -77,19 +84,16 @@ public partial class MenuButton : UserControl
     private void Update()
     {
         InternalLayoutTransformControl.LayoutTransform = new ScaleTransform(Scale, Scale);
-        InternalKH3DText.Font = (KH3DText.FontChoices)(int)Font;
-        InternalKH3DText.Text = Text;
+        InfoKH3DText.Font = (KH3DText.FontChoices)(int)Font;
+        InfoKH3DText.Text = LeftText;
+        
+        SelectionKH3DText.Font = (KH3DText.FontChoices)(int)Font;
+        SelectionKH3DText.Text = RightText;
     }
     
     private void MenuButton_Hover(object? sender, PointerEventArgs e)
     {
-        
-        InternalGrid.Margin = new Thickness(12 * Scale,0,0,0);
-        InternalImage.Source = new SvgImage
-        {
-            Source = SvgSource.Load($"avares://Nightmare Editor AUI/Images/menu_selected.svg")
-        };
-        InternalImage.Effect = new DropShadowEffect
+        SelectionImage.Effect = new DropShadowEffect
         {
             Color = Color.Parse("#cbc91f"),
             OffsetX = 0,
@@ -98,7 +102,7 @@ public partial class MenuButton : UserControl
             BlurRadius = 2
         };
 
-        InternalGrid.Effect = new DropShadowEffect
+        EffectAmplifier.Effect = new DropShadowEffect
         {
             Color = Color.Parse("#cbc91f"),
             OffsetX = 0,
@@ -110,15 +114,9 @@ public partial class MenuButton : UserControl
 
     private void MenuButton_EndHover(object? sender, PointerEventArgs e)
     {
-        InternalGrid.Margin = new Thickness(0,0,0,0);
+        EffectAmplifier.Effect = null;
 
-        InternalImage.Source = new SvgImage
-        {
-            Source = SvgSource.Load($"avares://Nightmare Editor AUI/Images/menu_option.svg")
-        };
-        InternalImage.Effect = null;
-
-        InternalGrid.Effect = null;
+        SelectionImage.Effect = null;
         IsPressed = false;
     }
 

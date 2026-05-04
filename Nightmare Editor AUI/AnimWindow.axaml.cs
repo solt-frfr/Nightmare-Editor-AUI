@@ -784,7 +784,7 @@ namespace Nightmare_Editor
                     {
                         byte[] image = System.IO.File.ReadAllBytes(open[0].Path.LocalPath);
                         byte[] textwheader = CTT.Swizzle(image, main.DestTextures[j].Texture[0x1C]);
-                        byte[] text = new byte[dest.Length - 0x80];
+                        byte[] text = new byte[textwheader.Length - 0x80];
                         for (int k = 0; k < text.Length; k++)
                         {
                             text[k] = textwheader[k + 0x80];
