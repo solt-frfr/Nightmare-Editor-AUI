@@ -35,6 +35,7 @@ public static class Standard
             settings.Region = 0;
             settings.Emulator = false;
             settings.ETC1Encoder = 2;
+            settings.UI = 1;
             string jsonString = JsonSerializer.Serialize<Settings>(settings, WriteIndented);
             System.IO.File.WriteAllText(Misc.Jsons.settings, jsonString);
         }

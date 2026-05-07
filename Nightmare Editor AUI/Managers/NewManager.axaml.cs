@@ -24,6 +24,14 @@ public partial class NewManager : Window
         InitializeComponent();
         Refresh();
     }
+    
+    private void Menu_Mods_OnClick(object? sender, EventArgs e)
+    {
+        MenuButtonsPanel.IsVisible = false;
+        ModsWindow.IsVisible = true;
+        MainText.Text = "Installed";
+        MainTextShadow.Text = "Installed";
+    }
 
 
     private void MenuButton_Hover(object? sender, PointerEventArgs e)
@@ -63,19 +71,90 @@ public partial class NewManager : Window
     private void Refresh()
     {
         DeployPathConfig.Description = "After clicking Deploy, the mods will be placed in \" " + MainSettings.DeployPath + " \".";
+        
+        EmulatorConfig.RightText = "No";
+        if (MainSettings.Emulator)
+        {
+            EmulatorConfig.RightText = "Yes";
+        }
+        switch (MainSettings.Region)
+        {
+            case 0:
+                RegionConfig.RightText = "North America";
+                break;
+            case 1:
+                RegionConfig.RightText = "Europe";
+                break;
+            case 2:
+                RegionConfig.RightText = "Japan";
+                break;
+            default:
+                RegionConfig.RightText = "Unknown";
+                break;
+        }
+        switch (MainSettings.ETC1Encoder)
+        {
+            case 0:
+                ETCConfig.RightText = "Windows";
+                break;
+            case 1:
+                ETCConfig.RightText = "Wine";
+                break;
+            case 2:
+                ETCConfig.RightText = "Compatibility";
+                break;
+            default:
+                ETCConfig.RightText = "Unknown";
+                break;
+        }
     }
     
     private void Window_OnKeyDown(object? sender, KeyEventArgs e)
     {
         if (e.Key == Key.Escape)
         {
-            if (SettingsWindow.IsVisible)
+            if (SettingsWindow.IsVisible || ModsWindow.IsVisible)
             {
                 MenuButtonsPanel.IsVisible = true;
                 SettingsWindow.IsVisible = false;
+                ModsWindow.IsVisible = false;
                 MainText.Text = "Exam Editor";
                 MainTextShadow.Text = "Exam Editor";
             }
         }
+    }
+
+    private void SwitchUIConfig_OnClick(object? sender, EventArgs e)
+    {
+        Settings settings = MainSettings;
+        settings.UI = 0;
+        SetSettings(settings);
+        var mw = new Manager();
+        mw.Show();
+        Close();
+    }
+
+    private void EmulatorConfig_OnClick(object? sender, EventArgs e)
+    {
+        Settings settings = MainSettings;
+        settings.Emulator = !settings.Emulator;
+        SetSettings(settings);
+        Refresh();
+    }
+    
+    private void RegionConfig_OnClick(object? sender, EventArgs e)
+    {
+        Settings settings = MainSettings;
+        settings.Region = (settings.Region + 1) % 3;
+        SetSettings(settings);
+        Refresh();
+    }
+    
+    private void ETCConfig_OnClick(object? sender, EventArgs e)
+    {
+        Settings settings = MainSettings;
+        settings.ETC1Encoder = (settings.ETC1Encoder + 1) % 3;
+        SetSettings(settings);
+        Refresh();
     }
 }

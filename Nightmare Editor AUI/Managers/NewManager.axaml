@@ -20,10 +20,10 @@
         <Grid Grid.RowSpan="3">
             <Grid.Background>
                 <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
-                    <GradientStop Color="#000" Offset="0.075"/>
-                    <GradientStop Color="#4000" Offset="0.175"/>
-                    <GradientStop Color="#4000" Offset="0.825"/>
-                    <GradientStop Color="#000" Offset="0.925"/>
+                    <GradientStop Color="#011446" Offset="0.075"/>
+                    <GradientStop Color="#000" Offset="0.175"/>
+                    <GradientStop Color="#000" Offset="0.825"/>
+                    <GradientStop Color="#011446" Offset="0.925"/>
                 </LinearGradientBrush>
             </Grid.Background>
         </Grid>
@@ -31,7 +31,7 @@
         <!-- Middle Section -->
         <Grid Grid.Row="1">
             <StackPanel Name="MenuButtonsPanel" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=10|8}">
-                <controls:MenuButton Name="Menu_Mods" PointerEntered="MenuButton_Hover" Text="Mods" Description="Explore the mods that you've downloaded." HorizontalAlignment="Left" VerticalAlignment="Top" Scale="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|0|-1}"/>
+                <controls:MenuButton Name="Menu_Mods" Click="Menu_Mods_OnClick" PointerEntered="MenuButton_Hover" Text="Mods" Description="Explore the mods that you've downloaded." HorizontalAlignment="Left" VerticalAlignment="Top" Scale="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|0|-1}"/>
                 <controls:MenuButton Name="Menu_Music" PointerEntered="MenuButton_Hover" Text="Music" Description="Replace the game's music tracks with others or your own." HorizontalAlignment="Left" VerticalAlignment="Top" Scale="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|0|-1}"/>
                 <controls:MenuButton Name="Menu_Settings" Click="Menu_Settings_OnClick" PointerEntered="MenuButton_Hover" Text="Settings" Description="Change settings regarding your Deploy Path and more." HorizontalAlignment="Left" VerticalAlignment="Top" Scale="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|0|-1}"/>
                 <controls:MenuButton Name="Menu_About" PointerEntered="MenuButton_Hover" Text="About" Description="Learn about this tool's creation and supporters." HorizontalAlignment="Left" VerticalAlignment="Top" Scale="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|0|-1}"/>
@@ -84,13 +84,143 @@
                     </Rectangle>
                     <Rectangle Height="1" Fill="#a1a6ff" VerticalAlignment="Top"></Rectangle>
                     <StackPanel>
-                        <controls:ConfigSlot Name="DeployPathConfig" LeftText="Deploy Path" RightText="Browse" Click="DeployPathConfig_OnClick" PointerEntered="MenuButton_Hover" Description="After clicking Deploy, the mods will be placed in this path." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16,6"/>
+                        <controls:ConfigSlot Name="DeployPathConfig" LeftText="Deploy Path" RightText="Browse" Click="DeployPathConfig_OnClick" PointerEntered="MenuButton_Hover" Description="After clicking Deploy, the mods will be placed in this path." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16,6,16,1"/>
+                        <controls:ConfigSlot Name="EmulatorConfig" LeftText="Using an Emulator" RightText="Yes" Click="EmulatorConfig_OnClick" PointerEntered="MenuButton_Hover" Description="Enable emulator-specific enhancements. Place the Deploy path in your emulator's /load folder." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16,0"/>
+                        <controls:ConfigSlot Name="RegionConfig" LeftText="Game Region" RightText="North America" Click="RegionConfig_OnClick" PointerEntered="MenuButton_Hover" Description="Used to ensure the directories are correct for your game version." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16,0"/>
+                        <controls:ConfigSlot Name="ETCConfig" LeftText="ETC1 Encoder" RightText="Yes" Click="ETCConfig_OnClick" PointerEntered="MenuButton_Hover" Description="Change the ETC1 Encoder used in Nightmare Editor. Wine is experimental." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16,0"/>
+                        <controls:ConfigSlot Name="SwitchUIConfig" LeftText="Switch UI" RightText="Menu UI" Click="SwitchUIConfig_OnClick" PointerEntered="MenuButton_Hover" Description="Switch the UI." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16,0"/>
                     </StackPanel>
                 </Grid>
             </Viewbox>
             
+            <Grid Name="ModsWindow" IsVisible="False" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <LayoutTransformControl>
+                    <LayoutTransformControl.LayoutTransform>
+                        <ScaleTransform ScaleX="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" ScaleY="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}"/>
+                    </LayoutTransformControl.LayoutTransform>
+                    <Grid Width="311" Height="150" RowDefinitions="1,*" ColumnDefinitions="154,6,151">
+                        <Grid Grid.Row="1" Width="154" Height="149">
+                            <Grid.Background>
+                                <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                                    <GradientStop Color="#525252" Offset="0"/>
+                                    <GradientStop Color="#3e3e3e" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Grid.Background>
+                            <Grid.Clip>
+                                <PathGeometry Figures="
+                                M 0,0
+                                L 124,0
+                                L 128,4
+                                L 128,12
+                                L 150,12
+                                L 154,16
+                                L 154,149
+                                L 5,149
+                                A 5,5 0 0 1 0,144
+                                Z"/>
+                            </Grid.Clip>
+                            <Grid RowDefinitions="12,*" ColumnDefinitions="128,*">
+                                <Rectangle Grid.RowSpan="2"  Width="1" HorizontalAlignment="Left">
+                                    <Rectangle.Fill>
+                                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                                            <GradientStop Color="#717171" Offset="0"/>
+                                            <GradientStop Color="#525252" Offset="0.95"/>
+                                            <GradientStop Color="#00525252" Offset="0.99"/>
+                                        </LinearGradientBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                                <Rectangle Grid.Row="1" Grid.Column="1" Width="1" HorizontalAlignment="Right">
+                                    <Rectangle.Fill>
+                                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                                            <GradientStop Color="#353535" Offset="0"/>
+                                            <GradientStop Color="#282828" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                                <Rectangle Width="1" HorizontalAlignment="Right">
+                                    <Rectangle.Fill>
+                                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                                            <GradientStop Color="#2f2f2f" Offset="0"/>
+                                            <GradientStop Color="#2f2f2f" Offset="0.75"/>
+                                            <GradientStop Color="#424242" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                                <Rectangle Grid.Row="1" Grid.Column="1" Height="1" VerticalAlignment="Top" Margin="-1,0,0,0">
+                                    <Rectangle.Fill>
+                                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                                            <GradientStop Color="#00ffffff" Offset="0"/>
+                                            <GradientStop Color="#bababa" Offset="0.2"/>
+                                            <GradientStop Color="#bababa" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                                <Rectangle Height="1" Fill="#bababa" VerticalAlignment="Top"></Rectangle>
+                                <Rectangle Grid.Row="1" Grid.ColumnSpan="2" Height="1" VerticalAlignment="Bottom">
+                                    <Rectangle.Fill>
+                                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                                            <GradientStop Color="#00202020" Offset="0"/>
+                                            <GradientStop Color="#202020" Offset="0.1"/>
+                                        </LinearGradientBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                            </Grid>
+                        </Grid>
+                        <Grid Grid.RowSpan="2" Grid.Column="2">
+                            <Grid Margin="5,0" VerticalAlignment="Top" Height="96">
+                                <Image Source="{skia:SvgImage /Images/mod_bg.svg}" Margin="3"/>
+                                <Image Name="ModPreview" Margin="3"/>
+                                <Image Source="{skia:SvgImage /Images/mod_border.svg}" VerticalAlignment="Top"/>
+                            </Grid>
+                        </Grid>
+                        <Grid Grid.Row="1" Grid.Column="2" ColumnDefinitions="58,*" Height="59" VerticalAlignment="Bottom">
+                            <Rectangle Height="1" VerticalAlignment="Bottom" Margin="0,0,0,0">
+                                <Rectangle.Fill>
+                                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                                        <GradientStop Color="#030300" Offset="0"/>
+                                        <GradientStop Color="#818143" Offset="0.5"/>
+                                        <GradientStop Color="#f9f9f7" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Rectangle.Fill>
+                            </Rectangle>
+                            <Rectangle Grid.Column="1" Height="1" VerticalAlignment="Bottom" Margin="0,0,0,0">
+                                <Rectangle.Fill>
+                                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                                        <GradientStop Color="#828282" Offset="0"/>
+                                        <GradientStop Color="#fbfbfb" Offset="0.25"/>
+                                        <GradientStop Color="#fbfbfb" Offset="0.5"/>
+                                        <GradientStop Color="#00818143" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Rectangle.Fill>
+                            </Rectangle>
+                            <Rectangle Height="1" VerticalAlignment="Bottom" Margin="0,0,0,18">
+                                <Rectangle.Fill>
+                                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                                        <GradientStop Color="#030300" Offset="0"/>
+                                        <GradientStop Color="#818143" Offset="0.5"/>
+                                        <GradientStop Color="#f9f9f7" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Rectangle.Fill>
+                            </Rectangle>
+                            <Rectangle Grid.Column="1" Height="1" VerticalAlignment="Bottom" Margin="0,0,0,18">
+                                <Rectangle.Fill>
+                                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                                        <GradientStop Color="#828282" Offset="0"/>
+                                        <GradientStop Color="#fbfbfb" Offset="0.25"/>
+                                        <GradientStop Color="#fbfbfb" Offset="0.5"/>
+                                        <GradientStop Color="#00818143" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Rectangle.Fill>
+                            </Rectangle>
+                            <controls:KH3DText Text="Author(s)" Font="SmallAccurate" Color="#fcfc01" VerticalAlignment="Bottom" Margin="10,0,0,20"/>
+                            <controls:KH3DText Grid.Column="1" Name="AuthorKH3DText" Text="" Font="SmallAccurate" Color="White" VerticalAlignment="Bottom" Margin="4,0,0,20"/>
+                            <controls:KH3DText Text="ID" Font="SmallAccurate" Color="#fcfc01" VerticalAlignment="Bottom" Margin="10,0,0,2"/>
+                            <controls:KH3DText Grid.Column="1" Name="IDKH3DText" Text="" Font="SmallAccurate" Color="White" VerticalAlignment="Bottom" Margin="4,0,0,2"/>
+                        </Grid>
+                    </Grid>
+                </LayoutTransformControl>
+            </Grid>
         </Grid>
-        
         
         <!-- Upper Section -->
         <Grid>

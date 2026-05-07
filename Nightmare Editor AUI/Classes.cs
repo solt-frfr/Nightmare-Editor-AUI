@@ -50,5 +50,6 @@ namespace Nightmare_Editor
         public bool Emulator { get; set; }
         public int Region { get; set; }
         public int ETC1Encoder { get; set; }
+        public int UI { get; set; }
     }
 }

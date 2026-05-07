@@ -28,6 +28,7 @@ using MsBox.Avalonia.Enums;
 using MsBox.Avalonia;
 using Nightmare_Editor_AUI.ViewModels;
 using LibGit2Sharp;
+using Nightmare_Editor_AUI;
 using static Nightmare_Editor_AUI.Managers.Standard;
 using Path = System.IO.Path;
 
@@ -929,6 +930,16 @@ namespace Nightmare_Editor
         private void MusicReplaceButton_OnClick(object? sender, RoutedEventArgs e)
         {
             throw new NotImplementedException();
+        }
+
+        private void SwitchUI_OnClick(object? sender, RoutedEventArgs e)
+        {
+            Settings settings = MainSettings;
+            settings.UI = 1;
+            SetSettings(settings);
+            var nmw = new NewManager();
+            nmw.Show();
+            Close();
         }
     }
 }

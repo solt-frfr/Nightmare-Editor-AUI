@@ -93,7 +93,7 @@ public partial class ConfigSlot : UserControl
     
     private void MenuButton_Hover(object? sender, PointerEventArgs e)
     {
-        SelectionImage.Effect = new DropShadowEffect
+        EffectAmplifier.Effect = new DropShadowEffect
         {
             Color = Color.Parse("#cbc91f"),
             OffsetX = 0,
@@ -102,7 +102,7 @@ public partial class ConfigSlot : UserControl
             BlurRadius = 2
         };
 
-        EffectAmplifier.Effect = new DropShadowEffect
+        SelectionImage.Effect = new DropShadowEffect
         {
             Color = Color.Parse("#cbc91f"),
             OffsetX = 0,

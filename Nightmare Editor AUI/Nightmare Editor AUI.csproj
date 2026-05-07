@@ -207,5 +207,11 @@
       <DependentUpon>NewManager.axaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Controls\MenuButton.axaml.cs">
+      <DependentUpon>MenuButton.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Controls\ConfigSlot.axaml.cs">
+      <DependentUpon>ConfigSlot.axaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 </Project>

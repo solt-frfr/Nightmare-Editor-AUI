@@ -7,6 +7,7 @@ using Avalonia.Markup.Xaml;
 using Nightmare_Editor;
 using Nightmare_Editor_AUI.ViewModels;
 using Nightmare_Editor_AUI;
+using static Nightmare_Editor_AUI.Managers.Standard;
 
 namespace Nightmare_Editor_AUI
 {
@@ -21,10 +22,21 @@ namespace Nightmare_Editor_AUI
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                desktop.MainWindow = new NewManager
+                if (MainSettings.UI == 0)
                 {
-                    DataContext = new MainWindowViewModel(),
-                };
+                    desktop.MainWindow = new Manager
+                    {
+                        DataContext = new MainWindowViewModel(),
+                    };
+                }
+                else
+                {
+                    desktop.MainWindow = new NewManager
+                    {
+                        DataContext = new MainWindowViewModel(),
+                    };
+                }
+                
             }
             base.OnFrameworkInitializationCompleted();
         }
