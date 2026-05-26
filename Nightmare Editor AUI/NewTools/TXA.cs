@@ -10,6 +10,7 @@ using SixLabors.ImageSharp.PixelFormats;
 using System.Reflection;
 using SixLabors.ImageSharp.ColorSpaces;
 using System.Text.Json.Serialization;
+using SixLabors.ImageSharp.Processing;
 using static Nightmare_Editor.NewTools.TXA;
 
 
@@ -47,6 +48,7 @@ namespace Nightmare_Editor.NewTools
             public int DestHeight { get; set; }
             public int DestWidth { get; set; }
             public int Default { get; set; }
+            public int Format { get; set; }
             public List<Anim> Anims { get; set; }
         }
         public class Frame
@@ -69,7 +71,7 @@ namespace Nightmare_Editor.NewTools
         /// <summary>
         /// Create a TXAFile class from a TXA file.
         /// </summary>
-        public static TXAFile Load(string file)
+        public static TXAFile Load(string file, string searchDir = "defaultDir/puttingstuffheretomakesurenooneusesthisexactstringofcharacters/hiitsmesolt11/balls")
         {
             TXAFile txa = new TXAFile();
             txa.Groups = new List<AnimGroup>();
@@ -93,6 +95,8 @@ namespace Nightmare_Editor.NewTools
                 textBytes = textBytes.Where(b => b != 0).ToArray();
                 group.DestTexture = System.Text.Encoding.ASCII.GetString(textBytes);
                 string search = Path.Combine(Misc.Paths.work, Path.GetFileName(Path.GetDirectoryName(file)));
+                if (searchDir != "defaultDir/puttingstuffheretomakesurenooneusesthisexactstringofcharacters/hiitsmesolt11/balls")
+                    search = searchDir;
                 string[] files2 = Directory.GetFiles(search, $"*{group.DestTexture}.ctt", SearchOption.AllDirectories);
                 string file2 = files2[0];
                 byte[] data2 = File.ReadAllBytes(file2);
@@ -110,11 +114,12 @@ namespace Nightmare_Editor.NewTools
                     txa.DestTextures.Add(new DestTexture() { Name = group.DestTexture, Texture = data2 });
                 }
                 int format = data2[0x1C];
+                group.Format = format;
                 int total = 0;
 
                 j += 4;
-                group.DestHeight = data[j++] + (data[j++] * 0x100);
                 group.DestWidth = data[j++] + (data[j++] * 0x100);
+                group.DestHeight = data[j++] + (data[j++] * 0x100);
                 if (format == 0)
                 {
                     total = group.DestHeight * group.DestWidth * 4;
@@ -185,7 +190,7 @@ namespace Nightmare_Editor.NewTools
                             {
                                 zeros += "0";
                             }
-                            SixLabors.ImageSharp.Image decode = CTT.Deswizzle(image, group.DestHeight, group.DestWidth, format);
+                            SixLabors.ImageSharp.Image decode = CTT.Deswizzle(image, group.DestWidth, group.DestHeight, format);
                             txa.DecodedTextures.Add(decode);
                         }
                         anim.Frames.Add(frame);
@@ -345,6 +350,93 @@ namespace Nightmare_Editor.NewTools
                 byte[] result = memoryStream.ToArray();
                 return result;
             }
+        }
+        
+        public static Image Atlas(TXAFile txa, int destTextureIndex)
+        {
+            AnimGroup group = null;
+            int y = 0;
+            for (int i = 0; i < txa.Groups.Count; i++)
+            {
+                if (txa.Groups[i].DestTexture == txa.DestTextures[destTextureIndex].Name)
+                {
+                    group = txa.Groups[i];
+                    break;
+                }
+            }
+            if (group == null)
+            {
+                return null;
+            }
+
+            int height = 0;
+            
+            for (int i = 0; i < txa.Textures.Count; i++)
+            {
+                if (txa.Textures[i].DestTexture == txa.DestTextures[destTextureIndex].Name)
+                {
+                    height += group.DestHeight;
+                }
+            }
+
+            Image<Rgb24> largerCanvas = new Image<Rgb24>(group.DestWidth, height);
+            for (int i = 0; i < txa.Textures.Count; i++)
+            {
+                if (txa.Textures[i].DestTexture == txa.DestTextures[destTextureIndex].Name)
+                {
+                    largerCanvas.Mutate<Rgb24>(ctx => ctx.DrawImage(
+                        CTT.Deswizzle(txa.Textures[i].Data, group.DestWidth, group.DestHeight, group.Format),
+                        new Point(0, y), 1f)
+                        );
+                    y += group.DestHeight;
+                }
+            }
+            return largerCanvas;
+        }
+        
+        public static TXAFile ImportAtlas(TXAFile txa, string atlasfile, int destTextureIndex)
+        {
+            Image imgsharpimg = Image.Load(atlasfile);
+            int groupIndex = -1;
+            int y = 0;
+            for (int i = 0; i < txa.Groups.Count; i++)
+            {
+                if (txa.Groups[i].DestTexture == txa.DestTextures[destTextureIndex].Name)
+                {
+                    groupIndex = i;
+                    break;
+                }
+            }
+            if (groupIndex == -1)
+            {
+                return txa;
+            }
+            for (int i = 0; i < txa.Textures.Count; i++)
+            {
+                if (txa.Textures[i].DestTexture != txa.DestTextures[destTextureIndex].Name)
+                    continue;
+                
+                using (var memoryStream = new MemoryStream())
+                {
+                    byte[] image = System.IO.File.ReadAllBytes(atlasfile);
+                    Image imageSlice = imgsharpimg.Clone(ipc => ipc.Crop(new Rectangle(0, y, txa.Groups[groupIndex].DestWidth, txa.Groups[groupIndex].DestHeight)));
+                    imageSlice.SaveAsPng(memoryStream);
+                    byte[] rawImageSlice = memoryStream.ToArray();
+                    memoryStream.Seek(0, SeekOrigin.Begin);
+                    
+                    y += txa.Groups[groupIndex].DestHeight;
+                    
+                    byte[] textwheader = CTT.Swizzle(rawImageSlice, txa.DestTextures[destTextureIndex].Texture[0x1C]);
+                    byte[] text = new byte[textwheader.Length - 0x80];
+                    for (int k = 0; k < text.Length; k++)
+                    {
+                        text[k] = textwheader[k + 0x80];
+                    }
+                    txa.Textures[i].Data = text;
+                    txa.DecodedTextures[i] = SixLabors.ImageSharp.Image.Load(rawImageSlice);
+                }
+            }
+            return txa;
         }
     }
 }

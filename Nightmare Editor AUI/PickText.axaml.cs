@@ -31,8 +31,13 @@ namespace Nightmare_Editor
                 Drop.Items.Add(text.Name);
             }
         }
+        
+        public PickText()
+        {
+            InitializeComponent();
+        }
 
-        private void Accept_Click(object sender, PointerReleasedEventArgs e)
+        private void Accept_Click(object sender, RoutedEventArgs e)
         {
             if (Drop.SelectedIndex < 0)
             {

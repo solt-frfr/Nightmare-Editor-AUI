@@ -12,9 +12,10 @@ using Avalonia.Platform.Storage;
 using Avalonia.Styling;
 using Nightmare_Editor;
 using Nightmare_Editor.NewTools;
+using SixLabors.ImageSharp;
 
 string[] AllPaths = File.ReadAllLines(Path.Combine(AppContext.BaseDirectory, "filelist.txt")).Distinct().ToArray();
-args = new string[1]{"/home/solt/Documents/GitHub/Nightmare-Editor-AUI/Nightmare Editor AUI/bin/Debug/net8.0/Work/menu/288-bc01_00.l2d"};
+args = new string[1]{"/home/solt/Documents/GitHub/Nightmare-Editor-AUI/Nightmare Editor AUI/bin/Debug/net8.0/Work/chara_pc/72-p_ex010.txa"};
 
 Console.ForegroundColor = ConsoleColor.Green;
 Console.WriteLine("________________________________________________________________________________");
@@ -39,11 +40,12 @@ if (args.Length != 0)
 7) Parse BCFNT Files            // Not Implemented
 8) Repack BCFNT Files           // Not Implemented
 9) Deswizzle CTT Files          // Input: .ctt
-10) Swizzle CTT Files           // Input: .png (Broken ETC1 Encoder)
+10) Swizzle CTT Files           // Input: .png
 11) Extract Container* Files    // Input: Container File
 12) Repack Container* Files     // Input: Container File
-13) Exit
-14) Test RBIN Hash Algorithm
+13) Create TXA Atlas            // Input: .txa, required textures must be in the same directory
+14) Exit
+15) Test RBIN Hash Algorithm
 
 *Container files include .l2d, .fep, .pmo, .pmp, and the operations affect the textures inside.
 
@@ -124,6 +126,28 @@ Make your choice : ");
             if (Containers.IsArc(filename))
             {
                 Containers.Generic.Pack(args[0]);
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+    
+    if (option == 13)
+    {
+        try
+        {
+            string filename = Path.GetFileName(args[0]);
+            TXA.TXAFile txa = TXA.Load(args[0], Path.GetDirectoryName(args[0]));
+            for (int i = 0; i < txa.DestTextures.Count; i++)
+            {
+                using (var img = TXA.Atlas(txa, i))
+                {
+                    img.SaveAsPng(Path.Combine(Path.GetDirectoryName(args[0]),
+                        Path.GetFileNameWithoutExtension(args[0]) + i.ToString() + "a.png"));
+                }
             }
         }
         catch (Exception e)

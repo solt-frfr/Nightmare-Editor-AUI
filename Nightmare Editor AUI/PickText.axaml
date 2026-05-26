@@ -22,12 +22,18 @@
             </Rectangle>
             <Image Name="Texture" Source="Images/plus.png" RenderOptions.BitmapInterpolationMode="HighQuality"/>
         </Grid>
-        <TextBlock FontSize="35" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Top" TextAlignment="Center"><Run Text="Pick a Destination"/><LineBreak/><Run Text="Texture"/></TextBlock>
-        <TextBlock Name="Error" FontSize="15" FontWeight="Bold" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" Margin="0,0,0,50"><Run Text="Please select a texture."/></TextBlock>
-        <ComboBox Height="25" Width="200" Name="Drop" SelectionChanged="Drop_SelectionChanged">
-        </ComboBox>
-        <Button Height="25" Width="200" FontWeight="Black" FontSize="15" VerticalAlignment="Bottom" Margin="0,0,0,30" PointerReleased="Accept_Click">
-            Use Selected
+        <StackPanel>
+            <TextBlock FontSize="35" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Top" TextAlignment="Center"><Run Text="Pick a Destination"/><LineBreak/><Run Text="Texture"/></TextBlock>
+            <TextBlock Name="Error" FontSize="15" FontWeight="Bold" Foreground="Black" HorizontalAlignment="Center" TextAlignment="Center"><Run Text="Please select a texture."/></TextBlock>
+            <ComboBox Height="25" Width="200" Name="Drop" SelectionChanged="Drop_SelectionChanged">
+            </ComboBox>
+        </StackPanel>
+        <Button Width="200" FontWeight="Black" Background="White" FontSize="15" VerticalAlignment="Bottom" Margin="0,0,0,30" Click="Accept_Click">
+            <Button.Content>
+                <Grid Background="White">
+                    <TextBlock>Use Selected</TextBlock>
+                </Grid>
+            </Button.Content>
         </Button>
     </Grid>
 </Window>

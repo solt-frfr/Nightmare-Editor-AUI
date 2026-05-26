@@ -69,7 +69,7 @@
                     </StackPanel>
                 </Grid>
             </ScrollViewer>
-            <TextBox Text="Add Texture" PointerReleased="AddText_Click" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Row="2" Grid.Column="0" IsReadOnly="True" Focusable="False" Cursor="Hand"/>
+            <TextBox Text="Add Texture" PointerReleased="BadApple" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Row="2" Grid.Column="0" IsReadOnly="True" Focusable="False" Cursor="Hand"/>
         </Grid>
         <Grid Grid.Row="1" Grid.Column="1" Grid.RowSpan="2">
             <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="1">

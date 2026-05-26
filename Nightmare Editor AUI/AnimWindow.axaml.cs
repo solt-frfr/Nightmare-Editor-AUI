@@ -398,8 +398,8 @@ namespace Nightmare_Editor
                 {
                     if (main.Groups[i].DestTexture == main.DestTextures[j].Name)
                     {
-                        height = main.Groups[i].DestWidth;
-                        width = main.Groups[i].DestHeight;
+                        height = main.Groups[i].DestHeight;
+                        width = main.Groups[i].DestWidth;
                     }
                 }
                 TexSize.Text = $@"{width}x{height}";
@@ -438,7 +438,7 @@ namespace Nightmare_Editor
                                                     {
                                                         source[j] = main.DestTextures[i].Texture[j + 0x80];
                                                     }
-                                                    Texture.Source = ConvertToImageSource(CTT.Deswizzle(source, group.DestHeight, group.DestWidth, main.DestTextures[i].Texture[0x1C]));
+                                                    Texture.Source = ConvertToImageSource(CTT.Deswizzle(source, group.DestWidth, group.DestHeight, main.DestTextures[i].Texture[0x1C]));
                                                     FileName.SelectedIndex = 0;
                                                     break;
                                                 }
@@ -929,15 +929,15 @@ namespace Nightmare_Editor
                     DestTexture = main.DestTextures[i].Name,
                     Data = text
                 };
-                string[] files2 = Directory.GetFiles($@"C:\Users\solom\Downloads\frames\downscaled", $"*.png", SearchOption.AllDirectories);
+                string[] files2 = Directory.GetFiles($@"/home/solt/Downloads/frames/downscaled/", $"*.png", SearchOption.AllDirectories);
                 for (int k = 0; k < files2.Length; k++)
                 {
                     if (System.IO.File.Exists(files2[k]))
                     {
                         byte[] image = System.IO.File.ReadAllBytes(files2[k]);
                         byte[] textwheader = CTT.Swizzle(image, dest[0x1C]);
-                        byte[] text2 = new byte[dest.Length - 0x80];
-                        for (int l = 0; l < text.Length; l++)
+                        byte[] text2 = new byte[textwheader.Length - 0x80];
+                        for (int l = 0; l < text2.Length; l++)
                         {
                             text2[l] = textwheader[l + 0x80];
                         }
@@ -957,11 +957,11 @@ namespace Nightmare_Editor
                 if (Textures.Children[Textures.Children.Count - 1] is TextBox tb)
                 {
                     selectedTextBox4 = tb;
-                    tb.Background = (SolidColorBrush)new BrushConverter().ConvertFromString("#F04080");
+                    tb.Background = new SolidColorBrush(Avalonia.Media.Color.Parse("#F04080"));
                     foreach (TextBox textbox in Textures.Children)
                     {
                         if (textbox != selectedTextBox4)
-                            textbox.Background = (SolidColorBrush)new BrushConverter().ConvertFromString("#202020");
+                            textbox.Background = new SolidColorBrush(Avalonia.Media.Color.Parse("#202020"));
                     }
                     TextBox4_Click(null, null);
                 }
