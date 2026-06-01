@@ -1,0 +1,120 @@
+using System;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Markup.Xaml;
+using Avalonia.Media;
+using Avalonia.Reactive;
+
+namespace Nightmare_Editor_AUI.Controls;
+
+public partial class InfoButton : UserControl
+{
+    public static readonly StyledProperty<string> TextProperty =
+        AvaloniaProperty.Register<MenuButton, string>(nameof(Text), defaultValue: "");
+    public static readonly StyledProperty<string> DescriptionProperty =
+        AvaloniaProperty.Register<MenuButton, string>(nameof(Description), defaultValue: "");
+    public static readonly StyledProperty<FontChoices> FontProperty =
+        AvaloniaProperty.Register<MenuButton, FontChoices>(nameof(Font), defaultValue: FontChoices.Accurate);
+    public static readonly StyledProperty<double> ScaleProperty =
+        AvaloniaProperty.Register<MenuButton, double>(nameof(Scale), defaultValue: 1);
+    public event EventHandler? Click;
+    
+    private bool IsPressed = false;
+    
+    public string Text
+    {
+        get => GetValue(TextProperty);
+        set => SetValue(TextProperty, value);
+    }
+    
+    public string Description
+    {
+        get => GetValue(DescriptionProperty);
+        set => SetValue(DescriptionProperty, value);
+    }
+
+    public enum FontChoices
+    {
+        Accurate,
+        Appeal,
+        Cutscene,
+        SmallAccurate,
+        SmallAppeal,
+    }
+    
+    public FontChoices Font
+    {
+        get => GetValue(FontProperty);
+        set => SetValue(FontProperty, value);
+    }
+
+    public double Scale
+    {
+        get => GetValue(ScaleProperty);
+        set => SetValue(ScaleProperty, value);
+    }
+    
+    public InfoButton()
+    {
+        InitializeComponent();
+        
+        this.GetObservable(TextProperty)
+            .Subscribe(new AnonymousObserver<string?>(e => Update()));
+        this.GetObservable(FontProperty)
+            .Subscribe(new AnonymousObserver<InfoButton.FontChoices>(e => Update()));
+        this.GetObservable(DescriptionProperty)
+            .Subscribe(new AnonymousObserver<string?>(e => Update()));
+        this.GetObservable(ScaleProperty)
+            .Subscribe(new AnonymousObserver<double>(e => Update()));
+    }
+    
+    private void Update()
+    {
+        InternalLayoutTransformControl.LayoutTransform = new ScaleTransform(Scale, Scale);
+        InternalKH3DText.Font = (KH3DText.FontChoices)(int)Font;
+        InternalKH3DText.Text = Text;
+    }
+    
+    private void MenuButton_Hover(object? sender, PointerEventArgs e)
+    {
+        EffectAmplifier.Effect = new DropShadowEffect
+        {
+            Color = Color.Parse("#58adad"),
+            OffsetX = 0,
+            OffsetY = 0,
+            Opacity = 1,
+            BlurRadius = 2
+        };
+
+        InternalImage.Effect = new DropShadowEffect
+        {
+            Color = Color.Parse("#58adad"),
+            OffsetX = 0,
+            OffsetY = 0,
+            Opacity = 1,
+            BlurRadius = 2
+        };
+    }
+
+    private void MenuButton_EndHover(object? sender, PointerEventArgs e)
+    {
+        EffectAmplifier.Effect = null;
+
+        InternalImage.Effect = null;
+        IsPressed = false;
+    }
+
+    private void MenuButton_Press(object? sender, PointerPressedEventArgs e)
+    {
+        IsPressed = true;
+    }
+
+    private void MenuButton_Release(object? sender, PointerReleasedEventArgs e)
+    {
+        if (IsPressed)
+        {
+            Click?.Invoke(this, EventArgs.Empty);
+        }
+    }
+}

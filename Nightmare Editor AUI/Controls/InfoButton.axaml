@@ -1,0 +1,18 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:Nightmare_Editor"
+             xmlns:rewrite="clr-namespace:Nightmare_Editor_AUI"
+             xmlns:controls="clr-namespace:Nightmare_Editor_AUI.Controls"
+             xmlns:skia="clr-namespace:Avalonia.Svg.Skia;assembly=Svg.Controls.Skia.Avalonia"
+             x:Class="Nightmare_Editor_AUI.Controls.InfoButton">
+    <LayoutTransformControl Name="InternalLayoutTransformControl" ClipToBounds="False">
+        <Grid Name="InternalGrid" Width="107" Height="23" PointerEntered="MenuButton_Hover" PointerExited="MenuButton_EndHover" PointerPressed="MenuButton_Press" PointerReleased="MenuButton_Release">
+            <Grid Grid.Column="2" Name="EffectAmplifier">
+                <Image Name="InternalImage" Source="{skia:SvgImage /Images/info_button.svg}" Height="18" Margin="0,2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Grid>
+            <controls:KH3DText Grid.Column="2" Name="InternalKH3DText" Color="White" Font="Accurate" Text="Browse" Margin="0,0,0,2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Grid>
+    </LayoutTransformControl>
+</UserControl>

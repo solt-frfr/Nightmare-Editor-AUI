@@ -4,11 +4,9 @@ using System.IO;
 using System.Reflection;
 using System.Diagnostics;
 using Nightmare_Editor.NewTools;
-using Newtonsoft;
 using System.Text.Json;
 using System.Collections.Generic;
 using System.ComponentModel;
-using Pulsar;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using Avalonia.Controls;
@@ -27,6 +25,7 @@ using Avalonia.Platform;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Input.Platform;
+using Nightmare_Editor_AUI;
 
 
 namespace Nightmare_Editor
@@ -997,15 +996,15 @@ namespace Nightmare_Editor
                     {
                         if (Path.GetExtension(file[0].Path.LocalPath) == ".ctt")
                         {
-                            File.Copy(file[0].Path.LocalPath, Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), selectedTextBox2.Name), true);
-                            File.Copy(file[0].Path.LocalPath, Path.Combine(Misc.Paths.toolkit, selectedTextBox2.Name), true);
-                            CTT.Decode(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), Path.GetFileName(selectedTextBox2.Name)));
+                            string path = Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), selectedTextBox2.Name);
+                            File.Copy(file[0].Path.LocalPath, path, true);
+                            CTT.Decode(path);
                         }
                         else if (Containers.IsArc(file[0].Path.LocalPath))
                         {
-                            File.Copy(file[0].Path.LocalPath, Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), selectedTextBox2.Name), true);
-                            File.Copy(file[0].Path.LocalPath, Path.Combine(Misc.Paths.toolkit, selectedTextBox2.Name), true);
-                            Containers.Generic.Unpack(Path.Combine(Misc.Paths.toolkit, selectedTextBox2.Name));
+                            string path = Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), selectedTextBox2.Name);
+                            File.Copy(file[0].Path.LocalPath, path, true);
+                            Containers.Generic.Unpack(path);
                             
                         }
                         else
@@ -1303,7 +1302,7 @@ namespace Nightmare_Editor
         private async void ExpMod_Click(object sender, RoutedEventArgs e)
         {
             MakePack finish = new MakePack(new Meta());
-            //finish.ShowDialog();
+            await finish.ShowDialog(this);
 
             var jsonoptions = new JsonSerializerOptions
             {
@@ -1659,9 +1658,18 @@ namespace Nightmare_Editor
 
         private void Reverse_Rebirth(object sender, RoutedEventArgs e)
         {
-            Manager mw = new Manager();
-            mw.Show();
-            Close();
+            if (Nightmare_Editor_AUI.Managers.Standard.MainSettings.UI == 0)
+            {
+                Manager mw = new Manager();
+                mw.Show();
+                Close();
+            }
+            else
+            {
+                NewManager nmw = new NewManager();
+                nmw.Show();
+                Close();
+            }
         }
 
         private async void ZipMod(Meta meta)

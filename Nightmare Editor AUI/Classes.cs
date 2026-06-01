@@ -42,6 +42,7 @@ namespace Nightmare_Editor
         [JsonIgnore]
         public bool ArchiveImage { get; set; }
         public string Prefix { get; set; }
+        public string Color { get; set; }
     }
     public class Settings
     {

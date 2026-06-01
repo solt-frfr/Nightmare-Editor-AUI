@@ -1,11 +1,11 @@
-﻿<Window x:Class="Pulsar.MakePack"
+﻿<Window x:Class="Nightmare_Editor.MakePack"
         xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Pulsar"
+        xmlns:local="clr-namespace:Nightmare_Editor"
         mc:Ignorable="d"
-        Title="Create Mod" Width="300" CanResize="False" Background="#e43079">
+        Title="Create Mod" Width="300" CanResize="False" Height="300" Background="#e43079">
     <Grid ColumnDefinitions="*,2*" RowDefinitions="30,90,30,30,30,30,40">
         <TextBlock Text="Name" Foreground="#ffd9da" Grid.Row="0" FontWeight="ExtraBold" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         <TextBlock Text="Description" Foreground="#ffd9da" Grid.Row="1" FontWeight="ExtraBold" FontSize="15" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Top"/>

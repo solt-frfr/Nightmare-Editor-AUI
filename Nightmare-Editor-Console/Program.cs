@@ -15,7 +15,6 @@ using Nightmare_Editor.NewTools;
 using SixLabors.ImageSharp;
 
 string[] AllPaths = File.ReadAllLines(Path.Combine(AppContext.BaseDirectory, "filelist.txt")).Distinct().ToArray();
-args = new string[1]{"/home/solt/Documents/GitHub/Nightmare-Editor-AUI/Nightmare Editor AUI/bin/Debug/net8.0/Work/chara_pc/72-p_ex010.txa"};
 
 Console.ForegroundColor = ConsoleColor.Green;
 Console.WriteLine("________________________________________________________________________________");

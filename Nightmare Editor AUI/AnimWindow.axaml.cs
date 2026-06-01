@@ -610,6 +610,8 @@ namespace Nightmare_Editor
                     }
                 }
             });
+            if (file == null)
+                return;
             if (!string.IsNullOrWhiteSpace(file.Path.LocalPath))
             {
                 var jsonoptions = new JsonSerializerOptions
@@ -1091,5 +1093,42 @@ namespace Nightmare_Editor
                 e.Handled = true;
             }
         }
+
+        private async void MakeAtlas_Click(object sender, RoutedEventArgs e)
+        {
+            PickText aw = new PickText(main);
+            int index = -1;
+            aw.OnPicked = (int i) =>
+            {
+                index = i;
+            };
+            await aw.ShowDialog(this);
+            if (index == -1)
+                return;
+            var file = await this.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+            {
+                Title = "Save Atlas...",
+                FileTypeChoices = new List<FilePickerFileType>
+                {
+                    new FilePickerFileType("TXA Texture Atlas")
+                    {
+                        Patterns = new List<string> { "*.png" }
+                    }
+                }
+            });
+            if (file == null)
+                return;
+            if (!string.IsNullOrWhiteSpace(file.Path.LocalPath))
+            {
+                TXA.Atlas(main, index).SaveAsPng(file.Path.LocalPath);
+            }   
+        }
+
+
+        private async void ImportAtlas_Click(object sender, RoutedEventArgs e)
+        {
+            
+        }
+        
     }
 }

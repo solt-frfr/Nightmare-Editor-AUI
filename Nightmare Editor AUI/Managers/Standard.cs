@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -48,6 +49,29 @@ public static class Standard
         System.IO.File.WriteAllText(Misc.Jsons.settings, jsonString);
     }
     
+    public static List<string> EnabledMods
+    {
+        get => GetEnabledMods();
+        set => SetEnabledMods(value);
+    }
+    
+    public static List<string> GetEnabledMods()
+    {
+        if (!File.Exists(Misc.Jsons.enabled))
+        {
+            List<string> list = new List<string>();
+            string jsonString = JsonSerializer.Serialize<List<string>>(list, WriteIndented);
+            System.IO.File.WriteAllText(Misc.Jsons.enabled, jsonString);
+        }
+        return JsonSerializer.Deserialize<List<string>>(File.ReadAllText(Misc.Jsons.enabled), WriteIndented);
+    }
+    
+    public static void SetEnabledMods(List<string> newEnabledMods)
+    {
+        string jsonString = JsonSerializer.Serialize<List<string>>(newEnabledMods, WriteIndented);
+        System.IO.File.WriteAllText(Misc.Jsons.enabled, jsonString);
+    }
+    
     public static readonly string UStitleID = "000400000008D300";
     public static readonly string EUtitleID = "0004000000095500";
     public static readonly string JPtitleID = "000400000004EE00";
@@ -75,6 +99,13 @@ public static class Standard
         {
             return UStitleID;
         }
+    }
+
+    public enum ErrorCode
+    {
+        Success = 0,
+        MissingRbin = 1,
+        Cancelled = 2,
     }
 
     public static string GetModFolder(string ID)
@@ -186,5 +217,122 @@ public static class Standard
                 SetSettings(settings);
             }
         }
+    }
+    
+    public static (ErrorCode errorCode, string errorMessage) DeployMods(string deploypath)
+    {
+        Settings settings = MainSettings;
+
+        if (settings.Emulator)
+        {
+            Directory.CreateDirectory(Path.Combine(deploypath, "mods", GetTitleIDFromRegion(settings.Region), "romfs"));
+            Directory.Delete(Path.Combine(deploypath, "mods", GetTitleIDFromRegion(settings.Region), "romfs"), true);
+            Directory.CreateDirectory(Path.Combine(deploypath, "mods", GetTitleIDFromRegion(settings.Region), "romfs"));
+            Directory.CreateDirectory(Path.Combine(deploypath, "textures", GetTitleIDFromRegion(settings.Region), "NightmareEditor"));
+            Directory.Delete(Path.Combine(deploypath, "textures", GetTitleIDFromRegion(settings.Region), "NightmareEditor"), true);
+            Directory.CreateDirectory(Path.Combine(deploypath, "textures", GetTitleIDFromRegion(settings.Region), "NightmareEditor"));
+        }
+        else
+        {
+            Directory.CreateDirectory(deploypath);
+            Directory.Delete(deploypath, true);
+            Directory.CreateDirectory(deploypath);
+        }
+        List<string> rbins = new List<string>();
+        List<string> modFolders = new List<string>();
+        List<string> toRemove = new List<string>();
+
+        foreach (string ID in EnabledMods)
+        {
+            string folder = GetModFolder(ID);
+            if (string.IsNullOrWhiteSpace(folder))
+            {
+                toRemove.Add(ID);
+                continue;
+            }
+            Meta meta = JsonSerializer.Deserialize<Meta>(File.ReadAllText(Path.Combine(folder, "meta.json")), WriteIndented);
+            if (!string.IsNullOrWhiteSpace(meta.Prefix))
+            {
+                folder = Path.Combine(folder, meta.Prefix);
+            }
+            modFolders.Add(folder);
+            string[] subdirectories = Directory.GetDirectories(folder);
+            foreach (string subdir in subdirectories)
+            {
+                DirectoryInfo dir = new DirectoryInfo(subdir);
+                string rbin = dir.Name;
+                if (rbin == "~emulator-textures" && settings.Emulator)
+                {
+                    Directory.CreateDirectory(Path.Combine(deploypath, "textures",
+                        Path.GetFileName(folder)));
+                    Editor.BetterDirCopy(Path.Combine(folder, "~emulator-textures"),
+                        Path.Combine(deploypath, "textures", GetTitleIDFromRegion(settings.Region),
+                            "NightmareEditor", Path.GetFileName(folder)), false);
+                }
+                else if (!rbins.Contains(rbin) && Misc.accepted_rbins.Contains(rbin))
+                {
+                    rbins.Add(rbin);
+                }
+                else if (Misc.accepted_folders.Contains(rbin))
+                {
+                    Directory.CreateDirectory(Path.Combine(deploypath, rbin));
+                    Editor.BetterDirCopy(subdir, Path.Combine(deploypath, rbin), false);
+                }
+            }
+        }
+
+        List<string> em = EnabledMods;
+        foreach (string ID in toRemove)
+        {
+            em.Remove(ID);
+        }
+        SetEnabledMods(em);
+        
+        bool stop = false;
+        string failed_rbins = "";
+        foreach (string rbin in rbins)
+        {
+            if (!File.Exists(Path.Combine(Misc.Paths.current, $"{rbin}.rbin")) || !Directory.Exists(Path.Combine(Misc.Paths.basePath, rbin)))
+            {
+                stop = true;
+                if (string.IsNullOrWhiteSpace(failed_rbins))
+                {
+                    failed_rbins = rbin + ".rbin";
+                }
+                else
+                {
+                    failed_rbins += ", " + rbin + ".rbin";
+                }
+            }
+        }
+        if (stop)
+        {
+            return (ErrorCode.MissingRbin, failed_rbins);
+        }
+
+        Directory.CreateDirectory(Misc.Paths.pack);
+        Directory.Delete(Misc.Paths.pack, true);
+        Directory.CreateDirectory(Misc.Paths.pack);
+        foreach (string folder in modFolders)
+        {
+            Editor.BetterDirCopy(folder, Misc.Paths.pack, false);
+        }
+        foreach (string rbin in rbins)
+        {
+            string file = rbin + ".rbin";
+            Editor.BetterDirCopy(Path.Combine(Misc.Paths.basePath, rbin), Path.Combine(Misc.Paths.pack, rbin), false, false);
+            RBIN.Pack(Path.Combine(Misc.Paths.pack, file), true);
+        }
+        string musicpath = Path.Combine(deploypath, "sound", "en", "output", "stream");
+        if (settings.Emulator)
+        {
+            musicpath = Path.Combine(deploypath, "mods", GetTitleIDFromRegion(settings.Region), "romfs", "sound", "en", "output", "stream");
+        }
+        Directory.CreateDirectory(musicpath);
+        //foreach (string[] track in music)
+        //{
+        //    File.Copy(Path.Combine(Misc.Paths.program, track[0]), Path.Combine(musicpath, track[1]));
+        //}
+        return (ErrorCode.Success, "");
     }
 }

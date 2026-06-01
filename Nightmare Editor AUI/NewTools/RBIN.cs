@@ -177,12 +177,17 @@ public class RBIN
                 {
                     Containers.Generic.Unpack(file);
                 }
+
+                if (Path.GetExtension(file) == ".ctt")
+                {
+                    CTT.Decode(file);
+                }
             }
         }
         return rbin;
     }
     
-    public async static void Pack(string filename, bool tooutput, Window parent, string output = null)
+    public async static void Pack(string filename, bool tooutput, Window parent = null, string output = null)
     {
         List<int> offsets_values = new List<int>();
         List<int> offsets = new List<int>();

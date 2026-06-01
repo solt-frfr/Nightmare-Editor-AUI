@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="102.9999mm"
+   height="18.999868mm"
+   viewBox="0 0 102.9999 18.999869"
+   version="1.1"
+   id="svg1"
+   xml:space="preserve"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><defs
+     id="defs1"><linearGradient
+       id="linearGradient3"><stop
+         style="stop-color:#d98366;stop-opacity:1;"
+         offset="0"
+         id="stop3" /><stop
+         style="stop-color:#a42a00;stop-opacity:1;"
+         offset="0.25398231"
+         id="stop5" /><stop
+         style="stop-color:#170600;stop-opacity:1;"
+         offset="1"
+         id="stop4" /></linearGradient><linearGradient
+       id="linearGradient1"><stop
+         style="stop-color:#b82e00;stop-opacity:1;"
+         offset="0"
+         id="stop1" /><stop
+         style="stop-color:#421000;stop-opacity:1;"
+         offset="1"
+         id="stop2" /></linearGradient><linearGradient
+       xlink:href="#linearGradient1"
+       id="linearGradient2"
+       x1="63.435093"
+       y1="155.92957"
+       x2="63.435093"
+       y2="172.92957"
+       gradientUnits="userSpaceOnUse" /><linearGradient
+       xlink:href="#linearGradient3"
+       id="linearGradient4"
+       x1="63.091087"
+       y1="154.92957"
+       x2="63.091087"
+       y2="173.92944"
+       gradientUnits="userSpaceOnUse" /></defs><g
+     id="layer1"
+     transform="translate(-20.6406,-154.92957)"><path
+       id="path1"
+       style="fill:url(#linearGradient4);fill-opacity:1;stroke-width:1.43088"
+       d="m 30.140795,154.92957 a 9.5,9.5 0 0 0 -9.500195,9.5002 9.5,9.5 0 0 0 9.500195,9.49967 h 84.000045 a 9.5,9.5 0 0 0 9.49967,-9.49967 9.5,9.5 0 0 0 -9.49967,-9.5002 z" /><path
+       id="path1-6"
+       style="fill:url(#linearGradient2);fill-opacity:1;stroke-width:1.34028"
+       d="m 30.956334,155.92957 a 9.3155423,8.5000582 0 0 0 -9.315732,8.50025 9.3155423,8.5000582 0 0 0 9.315732,8.49975 h 82.369046 a 9.3155423,8.5000582 0 0 0 9.31522,-8.49975 9.3155423,8.5000582 0 0 0 -9.31522,-8.50025 z" /></g></svg>

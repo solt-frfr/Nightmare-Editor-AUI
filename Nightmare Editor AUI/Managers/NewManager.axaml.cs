@@ -1,19 +1,36 @@
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Text.Json;
+using System.Threading;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Shapes;
 using Avalonia.Data;
 using Avalonia.Data.Converters;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Layout;
+using Avalonia.LogicalTree;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using Avalonia.Platform.Storage;
 using Avalonia.Svg.Skia;
+using Avalonia.Threading;
+using Avalonia.VisualTree;
+using MsBox.Avalonia;
+using MsBox.Avalonia.Enums;
 using Nightmare_Editor;
 using Nightmare_Editor_AUI;
 using Nightmare_Editor_AUI.Managers;
 using static Nightmare_Editor_AUI.Managers.Standard;
 using Nightmare_Editor_AUI.Controls;
+using Nightmare_Editor.NewTools;
+using SharpCompress.Archives;
+using Path = SixLabors.ImageSharp.Drawing.Path;
 
 namespace Nightmare_Editor_AUI;
 
@@ -30,16 +47,57 @@ public partial class NewManager : Window
         MenuButtonsPanel.IsVisible = false;
         ModsWindow.IsVisible = true;
         MainText.Text = "Installed";
-        MainTextShadow.Text = "Installed";
+        BottomLeftTextLower.Text = "Return";
+        BottomLeftTextLower2.Text = "Back";
     }
-
-
+    
     private void MenuButton_Hover(object? sender, PointerEventArgs e)
     {
         if (sender is Nightmare_Editor_AUI.Controls.MenuButton mb)
             BottomRightText.Text = mb.Description;
         if (sender is Nightmare_Editor_AUI.Controls.ConfigSlot cs)
             BottomRightText.Text = cs.Description;
+        if (sender is Nightmare_Editor_AUI.Controls.ModSlot ms)
+        {
+            BottomRightText.Text = ms.ModMeta.Description;
+            AuthorKH3DText.Text = ms.ModMeta.Authors;
+            IDKH3DText.Text = ms.ModMeta.ID;
+            string modpath = GetModFolder(ms.ModMeta.ID);
+            if (System.IO.File.Exists(System.IO.Path.Combine(modpath, "preview.webp")))
+            {
+                string imagePath = System.IO.Path.Combine(modpath, "preview.webp");
+
+                if (File.Exists(imagePath))
+                {
+                    using var stream = File.OpenRead(imagePath);
+                    ModPreview.Source = new Bitmap(stream);
+                }
+            }
+            else if (System.IO.File.Exists(System.IO.Path.Combine(modpath, "preview.png")))
+            {
+                string imagePath = System.IO.Path.Combine(modpath, "preview.png");
+
+                if (File.Exists(imagePath))
+                {
+                    using var stream = File.OpenRead(imagePath);
+                    ModPreview.Source = new Bitmap(stream);
+                }
+            }
+            else if (System.IO.File.Exists(System.IO.Path.Combine(modpath, "preview.jpg")))
+            {
+                string imagePath = System.IO.Path.Combine(modpath, "preview.jpg");
+
+                if (File.Exists(imagePath))
+                {
+                    using var stream = File.OpenRead(imagePath);
+                    ModPreview.Source = new Bitmap(stream);
+                }
+            }
+            else
+            {
+                ModPreview.Source = null;
+            }
+        }
     }
     
     private void Menu_Settings_OnClick(object? sender, EventArgs e)
@@ -47,7 +105,14 @@ public partial class NewManager : Window
         MenuButtonsPanel.IsVisible = false;
         SettingsWindow.IsVisible = true;
         MainText.Text = "Settings";
-        MainTextShadow.Text = "Settings";
+        BottomLeftTextLower.Text = "Return";
+        BottomLeftTextLower2.Text = "Back";
+    }
+    
+    private void Menu_About_OnClick(object? sender, EventArgs e)
+    {
+        MesgWindow mw = new MesgWindow("ABOUT EXAM EDITOR Open Beta 2", "Exam Editor is a mod manager made by Solt11 specifically for the 3DS version of Kingdom Hearts Dream Drop Distance.\nPlease use OpenKH for the PC version, any mods I make will likely have an equivalent PC version.\n\nNightmare Editor is the real program, and I go more in-depth on my explanations about what and why I made this in the FAQ section of Nightmare Editor's Help Window.\n\nQ: AUI?\nA: Avalonia UI. This is a port from the WPF version and has become the only supported version.", MesgWindow.MsgBoxType.Info);
+        mw.Show(this);
     }
 
     private void Menu_NE_OnClick(object? sender, EventArgs e)
@@ -107,8 +172,170 @@ public partial class NewManager : Window
                 ETCConfig.RightText = "Unknown";
                 break;
         }
+        
+        ModsPanel.Children.Clear();
+        string[] griditems = Directory.GetDirectories(Misc.Paths.mods);
+        foreach (string modpath in griditems)
+        {
+            Meta mod = new Meta();
+            string filepath = System.IO.Path.Combine(modpath, "meta.json");
+            if (!System.IO.File.Exists(filepath))
+            {
+                string genid = modpath.Replace(Misc.Paths.mods, "");
+                mod.Name = mod.ID = genid = genid.TrimStart(System.IO.Path.DirectorySeparatorChar);
+                mod.Description = mod.Authors = "";
+                string jsonString = JsonSerializer.Serialize(mod, WriteIndented);
+                System.IO.File.WriteAllText(filepath, jsonString);
+            }
+            if (System.IO.File.Exists(filepath))
+            {
+                string jsonString = System.IO.File.ReadAllText(filepath);
+                mod = JsonSerializer.Deserialize<Meta>(jsonString, WriteIndented);
+                if (EnabledMods.Contains(mod.ID))
+                    mod.IsChecked = true;
+                else
+                    mod.IsChecked = false;
+            }
+            var slot = new ModSlot
+            {
+                ModMeta = mod,
+                Font = ModSlot.FontChoices.SmallAccurate,
+                Margin = new Thickness(-1)
+            };
+            var context = ModContext(slot);
+            slot.ContextMenu = context; 
+            slot.PointerEntered += MenuButton_Hover;
+            slot.Click += ModSlot_OnClick;
+            ModsPanel.Children.Add(slot);
+        }
+
+        BottomLeftTextUpper2.Text = griditems.Length.ToString();
+    }
+
+    private ContextMenu ModContext(ModSlot slot)
+    {
+        var contextMenu = new ContextMenu();
+        var open = new MenuItem
+        {
+            Header = "Open Folder",
+            CommandParameter = slot,
+        };
+        open.Click += OpenFolder_Click;
+        contextMenu.Items.Add(open);
+        var edit = new MenuItem
+        {
+            Header = "Edit Metadata",
+            CommandParameter = slot,
+        };
+        edit.Click += Edit_Click;
+        contextMenu.Items.Add(edit);
+        var zip = new MenuItem
+        {
+            Header = "Zip Mod",
+            CommandParameter = slot,
+        };
+        zip.Click += Zip_Click;
+        contextMenu.Items.Add(zip);
+        var delete = new MenuItem
+        {
+            Header = "Delete Mod",
+            CommandParameter = slot,
+        };
+        delete.Click += Delete_Click;
+        contextMenu.Items.Add(delete);
+        return contextMenu;
+    }
+
+    private void OpenFolder_Click(object? sender, EventArgs e)
+    {
+        OpenModsFolder();
+    }
+
+    private void Edit_Click(object? sender, EventArgs e)
+    {
+        if (sender is MenuItem mi &&
+            mi.CommandParameter is ModSlot ms)
+        {
+            MakePack edit = new MakePack(ms.ModMeta);
+            try
+            {
+                edit.ShowDialog(this);
+            }
+            catch
+            {
+            }
+            Refresh();
+        }
+    }
+
+    private async void Zip_Click(object? sender, EventArgs e)
+    {
+        if (sender is MenuItem mi &&
+            mi.CommandParameter is ModSlot ms)
+        {
+            if (Directory.Exists(GetModFolder(ms.ModMeta.ID)))
+            {
+                try
+                {
+                    Misc.CopyDirectory(GetModFolder(ms.ModMeta.ID), System.IO.Path.Combine(Misc.Paths.temp, ms.ModMeta.ID, ms.ModMeta.Name), true);
+
+                    var jsonoptions = new JsonSerializerOptions
+                    {
+                        WriteIndented = true
+                    };
+                    string jsonString = JsonSerializer.Serialize(ms.ModMeta, jsonoptions);
+                    string filepath = System.IO.Path.Combine(Misc.Paths.temp, ms.ModMeta.ID, ms.ModMeta.Name, "meta.json");
+                    System.IO.File.WriteAllText(filepath, jsonString);
+
+                    var file = await this.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+                    {
+                        Title = "Select Mod Archive",
+                        FileTypeChoices = new List<FilePickerFileType>
+                        {
+                            new FilePickerFileType("Mod Archive")
+                            {
+                                Patterns = new List<string> { "*.zip" }
+                            }
+                        }
+                    });
+
+                    if (file == null)
+                    {
+                        Console.WriteLine("Save file operation canceled.");
+                        return;
+                    }
+
+                    using var archive = SharpCompress.Archives.Zip.ZipArchive.CreateArchive();
+                    archive.AddAllFromDirectory(System.IO.Path.Combine(Misc.Paths.temp, ms.ModMeta.ID));
+                    archive.SaveTo(file.Path.LocalPath, SharpCompress.Common.CompressionType.Deflate);
+                }
+                catch
+                {
+                }
+            }
+
+            Refresh();
+        }
     }
     
+    private async void Delete_Click(object? sender, EventArgs e)
+    {
+        if (sender is MenuItem mi &&
+            mi.CommandParameter is ModSlot ms)
+        {
+            MesgWindow mw = new MesgWindow("WARNING", "Are you sure you want to delete " + ms.ModMeta.Name + "?", MesgWindow.MsgBoxType.YesNo);
+
+            await mw.ShowDialog(this);
+
+            if (mw.Result == ErrorCode.Success)
+            {
+                Directory.Delete(GetModFolder(ms.ModMeta.ID), true);
+            }
+
+            Refresh();
+        }
+    }
+
     private void Window_OnKeyDown(object? sender, KeyEventArgs e)
     {
         if (e.Key == Key.Escape)
@@ -119,7 +346,8 @@ public partial class NewManager : Window
                 SettingsWindow.IsVisible = false;
                 ModsWindow.IsVisible = false;
                 MainText.Text = "Exam Editor";
-                MainTextShadow.Text = "Exam Editor";
+                BottomLeftTextLower.Text = "Made By";
+                BottomLeftTextLower2.Text = "Solt11";
             }
         }
     }
@@ -155,6 +383,181 @@ public partial class NewManager : Window
         Settings settings = MainSettings;
         settings.ETC1Encoder = (settings.ETC1Encoder + 1) % 3;
         SetSettings(settings);
+        Refresh();
+    }
+
+    private async void UnpackRBINConfig_OnClick(object? sender, EventArgs e)
+    {
+        Directory.CreateDirectory(Misc.Paths.current);
+        IStorageFolder? startFolder = null;
+        if (Directory.Exists(MainSettings.DeployPath))
+        {
+            startFolder = await StorageProvider.TryGetFolderFromPathAsync(
+                MainSettings.DeployPath
+            );
+        }
+        
+        var files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title = "Select an RBIN to unpack",
+            AllowMultiple = false,
+            SuggestedStartLocation = startFolder,
+            FileTypeFilter = Misc.FileFilters.rbin
+        });
+        if (files == null || files.Count == 0)
+        {
+            return;
+        }
+        if (!string.IsNullOrWhiteSpace(files[0].Path.LocalPath))
+        {
+            if (System.IO.Path.GetExtension(files[0].Path.LocalPath) == ".rbin")
+            {
+                try
+                {
+                    File.Copy(files[0].Path.LocalPath, System.IO.Path.Combine(Misc.Paths.current, System.IO.Path.GetFileName(files[0].Path.LocalPath)));
+                }
+                catch
+                {
+                    MesgWindow mw = new MesgWindow("INFORMATION", "You attempted to unpack an already unpacked file.", MesgWindow.MsgBoxType.Info);
+
+                    await mw.ShowDialog(this);
+                }
+                RBIN.Load(files[0].Path.LocalPath);
+            }
+            else
+            {
+                string[] files2 = Directory.GetFiles(System.IO.Path.Combine(Misc.Paths.work, "User-Added"), "*.*", SearchOption.AllDirectories);
+                File.Copy(files[0].Path.LocalPath, System.IO.Path.Combine(Misc.Paths.work, "User-Added", $"{files2.Length}-{System.IO.Path.GetFileName(files[0].Path.LocalPath)}"), true);
+            }
+        }
+    }
+
+    private void Mod_BG_Stack_AttatchedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+    {
+        if (sender is StackPanel sp)
+        {
+            sp.Children.Clear();
+            for (int i = 0; i < 8; i++)
+            {
+                Grid grid = new Grid();
+                grid.Clip = new PathGeometry
+                {
+                    Figures = PathFigures.Parse("M 136,0 A 2,2 0 0 1 138,2 L 138,12 A 2,2 0 0 1 136,14 L 2,14 A 2,2 0 0 1 0,12 L 0,2 A 2,2 0 0 1 2,0 Z")
+                };
+                grid.Width = 138;
+                grid.Height = 14;
+                grid.Margin = new Thickness(1);
+                grid.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(13)));
+                grid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Star));
+                Grid grid2 = new Grid();
+                Grid.SetColumn(grid2, 0);
+                grid2.Background = new SolidColorBrush(Color.Parse("#424242"));
+                grid2.Children.Add(new Rectangle
+                {
+                    VerticalAlignment  = VerticalAlignment.Top,
+                    Height = 1,
+                    Fill = new SolidColorBrush(Avalonia.Media.Color.Parse("#434343"))
+                });
+                Grid grid3 = new Grid();
+                Grid.SetColumn(grid3, 1);
+                grid3.Background = new SolidColorBrush(Color.Parse("#393939"));
+                grid3.Children.Add(new Rectangle
+                {
+                    VerticalAlignment  = VerticalAlignment.Top,
+                    Height = 1,
+                    Fill = new SolidColorBrush(Avalonia.Media.Color.Parse("#353535"))
+                });
+                grid3.Children.Add(new Rectangle
+                {
+                    VerticalAlignment  = VerticalAlignment.Bottom,
+                    Height = 1,
+                    Fill = new SolidColorBrush(Avalonia.Media.Color.Parse("#353535"))
+                });
+                grid.Children.Add(grid2);
+                grid.Children.Add(grid3);
+                sp.Children.Add(grid);
+            }
+        }
+    }
+
+    private void ModSlot_OnClick(object? sender, EventArgs e)
+    {
+        if (sender is ModSlot ms)
+        {
+            var em = EnabledMods;
+            if (em.Contains(ms.ModMeta.ID))
+            {
+                em.Remove(ms.ModMeta.ID);
+                ms.EquipE.IsVisible = false;
+            }
+            else
+            {
+                em.Add(ms.ModMeta.ID);
+                ms.EquipE.IsVisible = true;
+            }
+            SetEnabledMods(em);
+        }
+    }
+
+    private async void Deploy_OnClick(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            Settings settings = MainSettings;
+            
+            if (!string.IsNullOrWhiteSpace(settings.DeployPath) && settings != null)
+            {
+                string text = $@"This will delete all files inside {settings.DeployPath}. Is this okay?";
+                if (settings.Emulator)
+                {
+                    text = $"This will delete all files inside the following directories:\n\n{System.IO.Path.Combine(settings.DeployPath, "mods", GetTitleIDFromRegion(settings.Region), "romfs")}\n\n{System.IO.Path.Combine(settings.DeployPath, "textures", GetTitleIDFromRegion(settings.Region), "NightmareEditor")}\n\nIs this okay?";
+                }
+                
+                MesgWindow mw = new MesgWindow("WARNING", text, MesgWindow.MsgBoxType.YesNo);
+
+                await mw.ShowDialog(this);
+
+                if (mw.Result == ErrorCode.Success)
+                {
+                    var returnValue = DeployMods(settings.DeployPath);
+                    if (returnValue.errorCode == ErrorCode.Success)
+                    {
+                        MesgWindow mw2 = new MesgWindow("INFORMATION", $@"Succesfully deployed mods to {settings.DeployPath}!", MesgWindow.MsgBoxType.Info);
+
+                        await mw2.ShowDialog(this);
+                    }
+
+                    if (returnValue.errorCode == ErrorCode.MissingRbin)
+                    {
+                        MesgWindow mw2 = new MesgWindow("INFORMATION", $@"Missing rbin(s) {returnValue.errorMessage}. Unpack them using the unpack button in the settings tab.", MesgWindow.MsgBoxType.Info);
+
+                        await mw2.ShowDialog(this);
+                    }
+                }
+            }
+            else
+            {
+                MesgWindow mw2 = new MesgWindow("INFORMATION", "No output directory. Set one in the Settings tab.", MesgWindow.MsgBoxType.Info);
+
+                await mw2.ShowDialog(this);
+            }
+        }
+        catch (Exception ex)
+        {
+            throw;
+        }
+    }
+
+    private void BottomLeftText2_OnClick(object? sender, PointerReleasedEventArgs e)
+    {
+        Window_OnKeyDown(sender, new KeyEventArgs
+        {
+            Key = Key.Escape
+        });
+    }
+
+    private void Refresh_OnClick(object? sender, PointerReleasedEventArgs e)
+    {
         Refresh();
     }
 }

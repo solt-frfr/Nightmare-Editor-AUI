@@ -98,6 +98,11 @@ namespace Nightmare_Editor.NewTools
                 if (searchDir != "defaultDir/puttingstuffheretomakesurenooneusesthisexactstringofcharacters/hiitsmesolt11/balls")
                     search = searchDir;
                 string[] files2 = Directory.GetFiles(search, $"*{group.DestTexture}.ctt", SearchOption.AllDirectories);
+                if (files2.Length == 0 && search == Path.Combine(Misc.Paths.work, Path.GetFileName(Path.GetDirectoryName(file))))
+                {
+                    search = Misc.Paths.work;
+                    files2 = Directory.GetFiles(search, $"*{group.DestTexture}.ctt", SearchOption.AllDirectories);
+                }
                 string file2 = files2[0];
                 byte[] data2 = File.ReadAllBytes(file2);
                 bool found = false;

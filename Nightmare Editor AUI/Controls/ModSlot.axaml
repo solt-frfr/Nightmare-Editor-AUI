@@ -1,0 +1,55 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:Nightmare_Editor"
+             xmlns:rewrite="clr-namespace:Nightmare_Editor_AUI"
+             xmlns:controls="clr-namespace:Nightmare_Editor_AUI.Controls"
+             xmlns:skia="clr-namespace:Avalonia.Svg.Skia;assembly=Svg.Controls.Skia.Avalonia"
+             x:Class="Nightmare_Editor_AUI.Controls.ModSlot">
+    <Grid>
+        <Grid Name="EffectAmp1">
+            <Grid Name="EffectAmp2">
+                <Grid Name="EffectAmp3">
+                    <Grid Name="EffectAmp4">
+                        <Grid Name="MainGrid" Width="138" Height="14" Margin="2" ColumnDefinitions="13,*" PointerPressed="ModSlot_Press" PointerReleased="ModSlot_Release" PointerEntered="ModSlot_Hover" PointerExited="ModSlot_EndHover">
+                            <Grid.Clip>
+                                <PathGeometry Figures="
+                                M 136,0 
+                                A 2,2 0 0 1 138,2 
+                                L 138,12 
+                                A 2,2 0 0 1 136,14 
+                                L 16,14 
+                                A 2,2 0 0 1 14,12 
+                                L 14,2 
+                                A 2,2 0 0 1 16,0 
+                                Z"/>
+                            </Grid.Clip>
+                            <controls:KH3DText Grid.Column="1" Name="InternalKH3DText" Color="White" Margin="4,0,0,0"/>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </Grid>
+        <Grid Grid.Column="1" Name="EquipE" Background="Black" Width="5" Height="7" VerticalAlignment="Bottom" HorizontalAlignment="Left" ClipToBounds="False" Margin="16,2">
+            <Grid Background="#fafa7c">
+                <Grid.Clip>
+                    <PathGeometry Figures="
+                                M 1,1
+                                L 4,1 
+                                L 4,2 
+                                L 2,2 
+                                L 2,3 
+                                L 4,3 
+                                L 4,4 
+                                L 2,4 
+                                L 2,5 
+                                L 4,5 
+                                L 4,6 
+                                L 1,6 
+                                Z"/>
+                </Grid.Clip>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

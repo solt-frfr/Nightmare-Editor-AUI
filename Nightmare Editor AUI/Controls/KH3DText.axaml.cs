@@ -23,7 +23,7 @@ public partial class KH3DText : UserControl
     public static readonly StyledProperty<FontChoices> FontProperty =
         AvaloniaProperty.Register<KH3DText, FontChoices>(nameof(Font), defaultValue: FontChoices.Accurate);
     public static readonly StyledProperty<ImmutableSolidColorBrush> ColorProperty =
-        AvaloniaProperty.Register<KH3DText, ImmutableSolidColorBrush>(nameof(Font), defaultValue: new ImmutableSolidColorBrush(Avalonia.Media.Colors.Black));
+        AvaloniaProperty.Register<KH3DText, ImmutableSolidColorBrush>(nameof(Color), defaultValue: new ImmutableSolidColorBrush(Avalonia.Media.Colors.Black));
     public static readonly StyledProperty<bool> DropShadowProperty =
         AvaloniaProperty.Register<KH3DText, bool>(nameof(DropShadowProperty), defaultValue: true);
     
@@ -88,93 +88,104 @@ public partial class KH3DText : UserControl
                 Color = Avalonia.Media.Colors.Black,
             };
         }
-        foreach (string word in Text.Split(' '))
+
+        foreach (string line in Text.Split('\n'))
         {
-            string[] splitwords = word.Split(System.IO.Path.DirectorySeparatorChar);
-            foreach (string splitword in splitwords)
+            WrapPanel linePanel = new WrapPanel();
+            linePanel.Orientation = Orientation.Horizontal;
+            foreach (string word in line.Split(' '))
             {
-                FontChoices fontToUse = Font;
-                if (word != splitword)
+                string[] splitwords = word.Split(System.IO.Path.DirectorySeparatorChar);
+                foreach (string splitword in splitwords)
                 {
+                    FontChoices fontToUse = Font;
+                    if (word != splitword)
+                    {
+                        if (Font == FontChoices.Accurate)
+                        {
+                            fontToUse = FontChoices.SmallAccurate;
+                        }
+                        if (Font == FontChoices.Appeal)
+                        {
+                            fontToUse = FontChoices.SmallAppeal;
+                        }
+                    }
+                    StackPanel tempPanel = new StackPanel();
+                    tempPanel.Orientation = Orientation.Horizontal;
                     if (Font == FontChoices.Accurate)
                     {
-                        fontToUse = FontChoices.SmallAccurate;
+                        tempPanel.Margin = new Thickness(0,0,3,0);
+                        tempPanel.Height = 16;
                     }
-                    if (Font == FontChoices.Appeal)
+                    if (Font == FontChoices.SmallAccurate)
                     {
-                        fontToUse = FontChoices.SmallAppeal;
+                        tempPanel.Margin = new Thickness(0,0,2,0);
+                        tempPanel.Height = 14;
                     }
-                }
-                StackPanel tempPanel = new StackPanel();
-                tempPanel.Orientation = Orientation.Horizontal;
-                if (Font == FontChoices.Accurate)
-                {
-                    tempPanel.Margin = new Thickness(0,0,3,0);
-                    tempPanel.Height = 16;
-                }
-                if (Font == FontChoices.SmallAccurate)
-                {
-                    tempPanel.Margin = new Thickness(0,0,2,0);
-                    tempPanel.Height = 14;
-                }
 
-                if (splitword != splitwords[splitwords.Length - 1])
-                {
-                    tempPanel.Margin = new Thickness(0,0,1,0);
-                }
-
-                if (splitword != splitwords[0])
-                {
-                    try
+                    if (splitword != splitwords[splitwords.Length - 1])
                     {
-                        Path tempPath = FontPath(fontToUse, '/');
-                        tempPath.Fill = Color;
-                        tempPanel.Children.Add(new Viewbox
+                        tempPanel.Margin = new Thickness(0,0,1,0);
+                    }
+
+                    if (splitword != splitwords[0])
+                    {
+                        try
                         {
-                            Child = tempPath,
-                            Margin = new Thickness(0, 0, 1, GetBottomThickness('/', fontToUse)),
-                            Height = tempPath.Height,
-                            Width = tempPath.Width,
-                            Stretch = Stretch.Fill,
-                            VerticalAlignment = VerticalAlignment.Bottom,
-                            HorizontalAlignment = HorizontalAlignment.Left,
-                            StretchDirection = StretchDirection.Both
-                            
-                        });
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e);
-                    }
-                }
-                foreach (char character in splitword)
-                {
-                    try
-                    {
-                        Path tempPath = FontPath(fontToUse, character);
-                        tempPath.Fill = Color;
-                        tempPanel.Children.Add(new Viewbox
+                            Path tempPath = FontPath(fontToUse, '/');
+                            tempPath.Fill = Color;
+                            tempPanel.Children.Add(new Viewbox
+                            {
+                                Child = tempPath,
+                                Margin = new Thickness(0, 0, 1, GetBottomThickness('/', fontToUse)),
+                                Height = tempPath.Height,
+                                Width = tempPath.Width,
+                                Stretch = Stretch.Fill,
+                                VerticalAlignment = VerticalAlignment.Bottom,
+                                HorizontalAlignment = HorizontalAlignment.Left,
+                                StretchDirection = StretchDirection.Both
+                                
+                            });
+                        }
+                        catch (Exception e)
                         {
-                            Child = tempPath,
-                            Margin = new Thickness(0, 0, 1, GetBottomThickness(character, fontToUse)),
-                            Height = tempPath.Height,
-                            Width = tempPath.Width,
-                            Stretch = Stretch.Fill,
-                            VerticalAlignment = VerticalAlignment.Bottom,
-                            HorizontalAlignment = HorizontalAlignment.Left,
-                            StretchDirection = StretchDirection.Both
-                            
-                        });
+                            Console.WriteLine(e);
+                        }
                     }
-                    catch (Exception e)
+                    foreach (char character in splitword)
                     {
-                        Console.WriteLine(e);
+                        if ((int)character == 13)
+                            continue;
+                        try
+                        {
+                            Path tempPath = FontPath(fontToUse, character);
+                            tempPath.Fill = Color;
+                            tempPanel.Children.Add(new Viewbox
+                            {
+                                Child = tempPath,
+                                Margin = new Thickness(0, 0, 1, GetBottomThickness(character, fontToUse)),
+                                Height = tempPath.Height,
+                                Width = tempPath.Width,
+                                Stretch = Stretch.Fill,
+                                VerticalAlignment = VerticalAlignment.Bottom,
+                                HorizontalAlignment = HorizontalAlignment.Left,
+                                StretchDirection = StretchDirection.Both
+                                
+                            });
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e);
+                        }
                     }
-                }
 
-            Panel.Children.Add(tempPanel);
+                    linePanel.Children.Add(tempPanel);
+                }
             }
+            
+            Panel.Children.Add(linePanel);
         }
+        
     }
 
     public double GetBottomThickness(char character, FontChoices font)

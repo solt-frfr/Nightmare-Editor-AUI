@@ -10,7 +10,6 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Pulsar;
 using Nightmare_Editor;
 using Nightmare_Editor.NewTools;
 using System.Collections.ObjectModel;
@@ -222,6 +221,7 @@ namespace Nightmare_Editor
                 {
                     string genid = modpath.Replace(Misc.Paths.mods, "");
                     mod.Name = mod.ID = genid = genid.TrimStart(Path.DirectorySeparatorChar);
+                    mod.Description = mod.Authors = "";
                     string jsonString = JsonSerializer.Serialize(mod, jsonoptions);
                     System.IO.File.WriteAllText(filepath, jsonString);
                 }
@@ -284,11 +284,11 @@ namespace Nightmare_Editor
                 Meta row = (Meta)item;
                 if (row != null)
                 {
-                    if (Directory.Exists(Path.Combine(Misc.Paths.mods, row.ID)))
+                    if (Directory.Exists(GetModFolder(row.ID)))
                     {
                         try
                         {
-                            Misc.CopyDirectory(Path.Combine(Misc.Paths.mods, row.ID), Path.Combine(Misc.Paths.temp, row.ID, row.Name), true);
+                            Misc.CopyDirectory(GetModFolder(row.ID), Path.Combine(Misc.Paths.temp, row.ID, row.Name), true);
 
                             var jsonoptions = new JsonSerializerOptions
                             {
@@ -451,115 +451,6 @@ namespace Nightmare_Editor
             Refresh();
         }
 
-        private async void Deploy_Click2(string deploypath)
-        {
-            Settings settings = MainSettings;
-
-            if (settings.Emulator)
-            {
-                Directory.CreateDirectory(Path.Combine(deploypath, "mods", GetTitleIDFromRegion(settings.Region), "romfs"));
-                Directory.Delete(Path.Combine(deploypath, "mods", GetTitleIDFromRegion(settings.Region), "romfs"), true);
-                Directory.CreateDirectory(Path.Combine(deploypath, "mods", GetTitleIDFromRegion(settings.Region), "romfs"));
-                Directory.CreateDirectory(Path.Combine(deploypath, "textures", GetTitleIDFromRegion(settings.Region), "NightmareEditor"));
-                Directory.Delete(Path.Combine(deploypath, "textures", GetTitleIDFromRegion(settings.Region), "NightmareEditor"), true);
-                Directory.CreateDirectory(Path.Combine(deploypath, "textures", GetTitleIDFromRegion(settings.Region), "NightmareEditor"));
-            }
-            else
-            {
-                Directory.CreateDirectory(deploypath);
-                Directory.Delete(deploypath, true);
-                Directory.CreateDirectory(deploypath);
-            }
-            List<string> rbins = new List<string>();
-            List<string> modFolders = new List<string>();
-
-            foreach (string ID in enabledmods)
-            {
-                string folder = GetModFolder(ID);
-                Meta meta = JsonSerializer.Deserialize<Meta>(File.ReadAllText(Path.Combine(folder, "meta.json")), WriteIndented);
-                if (!string.IsNullOrWhiteSpace(meta.Prefix))
-                {
-                    Path.Combine(folder, meta.Prefix);
-                }
-                modFolders.Add(folder);
-                string[] subdirectories = Directory.GetDirectories(folder);
-                foreach (string subdir in subdirectories)
-                {
-                    DirectoryInfo dir = new DirectoryInfo(subdir);
-                    string rbin = dir.Name;
-                    if (rbin == "~emulator-textures" && settings.Emulator)
-                    {
-                        Directory.CreateDirectory(Path.Combine(deploypath, "textures",
-                            Path.GetFileName(folder)));
-                        Editor.BetterDirCopy(Path.Combine(folder, "~emulator-textures"),
-                            Path.Combine(deploypath, "textures", GetTitleIDFromRegion(settings.Region),
-                                "NightmareEditor", Path.GetFileName(folder)), false);
-                    }
-                    else if (!rbins.Contains(rbin) && Misc.accepted_rbins.Contains(rbin))
-                    {
-                        rbins.Add(rbin);
-                    }
-                    else if (Misc.accepted_folders.Contains(rbin))
-                    {
-                        Directory.CreateDirectory(Path.Combine(deploypath, rbin));
-                        Editor.BetterDirCopy(subdir, Path.Combine(deploypath, rbin), false);
-                    }
-                }
-            }
-            
-            bool stop = false;
-            foreach (string rbin in rbins)
-            {
-                if (!File.Exists(Path.Combine(Misc.Paths.current, $"{rbin}.rbin")) || !Directory.Exists(Path.Combine(Misc.Paths.basePath, rbin)))
-                {
-                    stop = true;
-
-                    var box = MessageBoxManager.GetMessageBoxStandard(
-                        $"Missing {rbin}",
-                        $@"Missing {rbin}.rbin. Unpack it using the unpack button in the settings tab.",
-                        MsBox.Avalonia.Enums.ButtonEnum.Ok,
-                        MsBox.Avalonia.Enums.Icon.Info
-                    );
-                    await box.ShowAsPopupAsync(this);
-                }
-            }
-            if (stop)
-            {
-                return;
-            }
-
-            Directory.CreateDirectory(Misc.Paths.pack);
-            Directory.Delete(Misc.Paths.pack, true);
-            Directory.CreateDirectory(Misc.Paths.pack);
-            foreach (string folder in modFolders)
-            {
-                Editor.BetterDirCopy(folder, Misc.Paths.pack, false);
-            }
-            foreach (string rbin in rbins)
-            {
-                string file = rbin + ".rbin";
-                Editor.BetterDirCopy(Path.Combine(Misc.Paths.basePath, rbin), Path.Combine(Misc.Paths.pack, rbin), false, false);
-                RBIN.Pack(Path.Combine(Misc.Paths.pack, file), true, this);
-            }
-            string musicpath = Path.Combine(deploypath, "sound", "en", "output", "stream");
-            if (settings.Emulator)
-            {
-                musicpath = Path.Combine(deploypath, "mods", GetTitleIDFromRegion(settings.Region), "romfs", "sound", "en", "output", "stream");
-            }
-            Directory.CreateDirectory(musicpath);
-            foreach (string[] track in music)
-            {
-                File.Copy(Path.Combine(Misc.Paths.program, track[0]), Path.Combine(musicpath, track[1]));
-            }
-            var box3 = MessageBoxManager.GetMessageBoxStandard(
-                $"Get ready for a fun adventure!",
-                $@"Succesfully deployed mods to {deploypath}!",
-                MsBox.Avalonia.Enums.ButtonEnum.Ok,
-                MsBox.Avalonia.Enums.Icon.Info
-            );
-            await box3.ShowAsPopupAsync(this);
-        }
-
         private async void Deploy_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -584,7 +475,28 @@ namespace Nightmare_Editor
 
                     if (result == ButtonResult.Yes)
                     {
-                        Deploy_Click2(settings.DeployPath);
+                        var returnValue = DeployMods(settings.DeployPath);
+                        if (returnValue.errorCode == ErrorCode.Success)
+                        {
+                            var box2 = MessageBoxManager.GetMessageBoxStandard(
+                                $"Get ready for a fun adventure!",
+                                $@"Succesfully deployed mods to {settings.DeployPath}!",
+                                MsBox.Avalonia.Enums.ButtonEnum.Ok,
+                                MsBox.Avalonia.Enums.Icon.Info
+                            );
+                            await box2.ShowAsPopupAsync(this);
+                        }
+
+                        if (returnValue.errorCode == ErrorCode.MissingRbin)
+                        {
+                            var box2 = MessageBoxManager.GetMessageBoxStandard(
+                                $"Missing {returnValue.errorMessage}",
+                                $@"Missing rbin(s) {returnValue.errorMessage}. Unpack them using the unpack button in the settings tab.",
+                                MsBox.Avalonia.Enums.ButtonEnum.Ok,
+                                MsBox.Avalonia.Enums.Icon.Info
+                            );
+                            await box2.ShowAsPopupAsync(this);
+                        }
                     }
                 }
                 else

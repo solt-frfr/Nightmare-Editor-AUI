@@ -18,7 +18,7 @@ using Avalonia.Input;
 using Nightmare_Editor.NewTools;
 using Avalonia.Platform.Storage;
 
-namespace Pulsar
+namespace Nightmare_Editor
 {
     /// <summary>
     /// Interaction logic for MakePack.xaml
@@ -88,6 +88,16 @@ namespace Pulsar
 
         private void Confirm_Click(object sender, RoutedEventArgs e)
         {
+            string folder = Path.Combine(Misc.Paths.mods, IDBox.Text);
+            try
+            {
+                folder = Nightmare_Editor_AUI.Managers.Standard.GetModFolder(modmetadata.ID);
+            }
+            catch (Exception exception)
+            {
+                
+            }
+            
             modmetadata.Name = NameBox.Text;
             modmetadata.Description = DescBox.Text;
             modmetadata.Authors = AuthorBox.Text;
@@ -100,11 +110,11 @@ namespace Pulsar
                     WriteIndented = true
                 };
                 string jsonString = JsonSerializer.Serialize(modmetadata, jsonoptions);
-                string filepath = Path.Combine(Misc.Paths.mods, IDBox.Text, "meta.json");
-                Directory.CreateDirectory(Path.Combine(Misc.Paths.mods, IDBox.Text));
+                string filepath = Path.Combine(folder, "meta.json");
+                Directory.CreateDirectory(folder);
                 File.WriteAllText(filepath, jsonString);
                 File.WriteAllText(Misc.Jsons.temp, jsonString);
-                filepath = Path.Combine(Misc.Paths.mods, IDBox.Text, "preview.webp");
+                filepath = Path.Combine(folder, "preview.webp");
                 if (File.Exists(PreviewBox.Text))
                 {
                     using (SixLabors.ImageSharp.Image image = SixLabors.ImageSharp.Image.Load(PreviewBox.Text))

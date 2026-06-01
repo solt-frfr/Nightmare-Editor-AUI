@@ -5,13 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Nightmare_Editor"
         mc:Ignorable="d"
-        Title="Nightmare Animation Studio" Height="550" Width="800" Background="Black">
+        Title="Nightmare Animation Studio" Height="550" Width="950" Background="Black">
     
     <Grid Margin="5">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="125"/>
-            <ColumnDefinition Width="125"/>
-            <ColumnDefinition Width="125"/>
+            <ColumnDefinition Width="175"/>
+            <ColumnDefinition Width="175"/>
+            <ColumnDefinition Width="175"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -69,9 +69,13 @@
                     </StackPanel>
                 </Grid>
             </ScrollViewer>
-            <TextBox Text="Add Texture" PointerReleased="BadApple" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Row="2" Grid.Column="0" IsReadOnly="True" Focusable="False" Cursor="Hand"/>
+            <StackPanel Grid.Row="2" Grid.Column="0">
+                <TextBox Text="Add Texture" PointerReleased="AddText_Click" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" IsReadOnly="True" Focusable="False" Cursor="Hand"/>
+                <TextBox Text="Create Atlas" PointerReleased="MakeAtlas_Click" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" IsReadOnly="True" Focusable="False" Cursor="Hand"/>
+                <TextBox Text="Import Atlas" PointerReleased="ImportAtlas_Click" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" IsReadOnly="True" Focusable="False" Cursor="Hand"/>
+            </StackPanel>
         </Grid>
-        <Grid Grid.Row="1" Grid.Column="1" Grid.RowSpan="2">
+        <Grid Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" ColumnDefinitions="*, Auto">
             <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="1">
                 <Grid Grid.Row="1">
                     <StackPanel x:Name="Files" VerticalAlignment="Top">

@@ -69,13 +69,12 @@
     </PackageReference>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageReference Include="LibGit2Sharp" Version="0.31.0" />
-    <PackageReference Include="Markdown.Avalonia" Version="11.0.2" />
+    <PackageReference Include="Markdown.Avalonia" Version="12.0.0-a3" />
     <PackageReference Include="MessageBox.Avalonia" Version="12.0.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-    <PackageReference Include="SharpCompress" Version="0.47.4" />
+    <PackageReference Include="SharpCompress" Version="0.48.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
     <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.1.7" />
-    <PackageReference Include="Svg.Controls.Skia.Avalonia" Version="12.0.0.5" />
+    <PackageReference Include="Svg.Controls.Skia.Avalonia" Version="12.0.0.6" />
   </ItemGroup>
 
   <ItemGroup>

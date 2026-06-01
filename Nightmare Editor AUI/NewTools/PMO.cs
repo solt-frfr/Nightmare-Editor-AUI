@@ -113,7 +113,7 @@ namespace Nightmare_Editor.NewTools
             // Done with header, load rest
             for (int i = 0; i < pmo.Header.TexCount; i++)
             {
-                var tex = new PMOTexture();
+                var tex = new PMOTexture(); 
                 tex.Offset = (uint)(data[o++] + (data[o++] * 0x100) + (data[o++] * 0x10000) + (data[o++] * 0x1000000));
                 byte[] nameBytes2 =
                 {
