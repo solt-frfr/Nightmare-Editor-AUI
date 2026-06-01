@@ -234,8 +234,8 @@
             <Viewbox Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|7|0|0}" HorizontalAlignment="Left" VerticalAlignment="Top">
                 <Grid Height="20" Width="240">
                     <Ellipse Height="16" Width="16" Margin="214,2,0,0" Fill="Black" HorizontalAlignment="Left"></Ellipse>
-                    <Rectangle Height="16" Width="220" Fill="#990000" HorizontalAlignment="Left"></Rectangle>
-                    <Ellipse Height="16" Width="16" Margin="212,0,0,0" Fill="#990000" HorizontalAlignment="Left"></Ellipse>
+                    <Rectangle Height="17" Width="220" Margin="0,1,0,0" Fill="#990000" HorizontalAlignment="Left" VerticalAlignment="Top"></Rectangle>
+                    <Ellipse Height="17" Width="17" Margin="212,1,0,0" Fill="#990000" HorizontalAlignment="Left" VerticalAlignment="Top"></Ellipse>
                     <TextBlock FontFamily="{StaticResource 'KH2 Menu'}" Text="{Binding Text, ElementName=SubText}" VerticalAlignment="Bottom" FontSize="9" Margin="171,0,0,3" Foreground="Black"></TextBlock>
                     <TextBlock Name="SubText" FontFamily="{StaticResource 'KH2 Menu'}" Text="Mods" VerticalAlignment="Bottom" FontSize="9" Margin="170,0,0,4" Foreground="White"></TextBlock>
                     <Ellipse Height="20" Width="20" Margin="142,2,0,0" Fill="Black" HorizontalAlignment="Left"></Ellipse>
@@ -245,7 +245,16 @@
                     <TextBlock Name="MainText" FontFamily="{StaticResource 'KH2 Menu'}" Text="Exam Editor" FontSize="11" Margin="12,0,0,0" Foreground="White"></TextBlock>
                 </Grid>
             </Viewbox>
-            
+            <Rectangle Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" Width="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=155}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|0|5}" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                <Rectangle.Fill>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                        <GradientStop Color="#00ff740c" Offset="0"/>
+                        <GradientStop Color="#ff740c" Offset="0.5"/>
+                    </LinearGradientBrush>
+                </Rectangle.Fill>
+            </Rectangle>
+            <TextBox Name="GitRepoBox" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=16}" Width="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=100}" FontSize="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=8}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|0|6}" HorizontalAlignment="Right" VerticalAlignment="Bottom" PlaceholderText="user/repository" PlaceholderForeground="White" Foreground="White" Background="#8000"></TextBox>
+            <Image PointerReleased="Git_OnClick" Source="{skia:SvgImage /Images/gitdownload.svg}" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=16} " Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|102|6}" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
             <Rectangle Fill="#002eff" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=2}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"></Rectangle>
         </Grid>
         

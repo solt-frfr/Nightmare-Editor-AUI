@@ -60,15 +60,15 @@ namespace Nightmare_Editor.NewTools
         /// </summary>
         public static class Paths
         {
-            public static readonly string program = System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-            public static readonly string temp = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Temp");
-            public static readonly string work = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Work");
-            public static readonly string pack = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Pack");
-            public static readonly string mods = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Mods");
-            public static readonly string music = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Music");
-            public static readonly string basePath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Base"); // base didn't work
-            public static readonly string current = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Current");
-            public static readonly string toolkit = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "DDD-Toolkit");
+            public static readonly string program = AppContext.BaseDirectory;
+            public static readonly string temp = Path.Combine(program, "Temp");
+            public static readonly string work = Path.Combine(program, "Work");
+            public static readonly string pack = Path.Combine(program, "Pack");
+            public static readonly string mods = Path.Combine(program, "Mods");
+            public static readonly string music = Path.Combine(program, "Music");
+            public static readonly string basePath = Path.Combine(program, "Base");
+            public static readonly string current = Path.Combine(program, "Current");
+            public static readonly string toolkit = Path.Combine(program, "DDD-Toolkit");
         }
 
         /// <summary>
@@ -76,11 +76,11 @@ namespace Nightmare_Editor.NewTools
         /// </summary>
         public static class Jsons
         {
-            public static readonly string music = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "music.json");
-            public static readonly string settings = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "settings.json");
-            public static readonly string enabled = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "enabledmods.json");
-            public static readonly string textures = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "textures.json");
-            public static readonly string temp = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "temp.json");
+            public static readonly string music = Path.Combine(Paths.program, "music.json");
+            public static readonly string settings = Path.Combine(Paths.program, "settings.json");
+            public static readonly string enabled = Path.Combine(Paths.program, "enabledmods.json");
+            public static readonly string textures = Path.Combine(Paths.program, "textures.json");
+            public static readonly string temp = Path.Combine(Paths.program, "temp.json");
         }
 
         public enum FileTypes

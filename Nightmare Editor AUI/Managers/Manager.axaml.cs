@@ -539,7 +539,7 @@ namespace Nightmare_Editor
         private void PathBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (!isInitialized) return;
-            Settings settings = new Settings();
+            Settings settings = GetSettings();
             settings.DeployPath = PathBox.Text;
             settings.DefaultImage = DefPrevBox.SelectedIndex;
             settings.Region = RegionBox.SelectedIndex;

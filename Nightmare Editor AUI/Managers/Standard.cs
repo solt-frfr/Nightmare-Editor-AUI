@@ -264,10 +264,10 @@ public static class Standard
                 if (rbin == "~emulator-textures" && settings.Emulator)
                 {
                     Directory.CreateDirectory(Path.Combine(deploypath, "textures",
-                        Path.GetFileName(folder)));
+                        GetTitleIDFromRegion(settings.Region), "NightmareEditor"));
                     Editor.BetterDirCopy(Path.Combine(folder, "~emulator-textures"),
                         Path.Combine(deploypath, "textures", GetTitleIDFromRegion(settings.Region),
-                            "NightmareEditor", Path.GetFileName(folder)), false);
+                            "NightmareEditor", ID), false);
                 }
                 else if (!rbins.Contains(rbin) && Misc.accepted_rbins.Contains(rbin))
                 {

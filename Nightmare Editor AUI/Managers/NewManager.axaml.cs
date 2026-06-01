@@ -21,6 +21,7 @@ using Avalonia.Platform.Storage;
 using Avalonia.Svg.Skia;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
+using LibGit2Sharp;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
 using Nightmare_Editor;
@@ -39,6 +40,7 @@ public partial class NewManager : Window
     public NewManager()
     {
         InitializeComponent();
+        Directory.CreateDirectory(Misc.Paths.mods);
         Refresh();
     }
     
@@ -111,7 +113,7 @@ public partial class NewManager : Window
     
     private void Menu_About_OnClick(object? sender, EventArgs e)
     {
-        MesgWindow mw = new MesgWindow("ABOUT EXAM EDITOR Open Beta 2", "Exam Editor is a mod manager made by Solt11 specifically for the 3DS version of Kingdom Hearts Dream Drop Distance.\nPlease use OpenKH for the PC version, any mods I make will likely have an equivalent PC version.\n\nNightmare Editor is the real program, and I go more in-depth on my explanations about what and why I made this in the FAQ section of Nightmare Editor's Help Window.\n\nQ: AUI?\nA: Avalonia UI. This is a port from the WPF version and has become the only supported version.", MesgWindow.MsgBoxType.Info);
+        MesgWindow mw = new MesgWindow("ABOUT EXAM EDITOR v1.0.0", "Exam Editor is a mod manager made by Solt11 specifically for the 3DS version of Kingdom Hearts Dream Drop Distance.\nPlease use OpenKH for the PC version, any mods I make will likely have an equivalent PC version.\n\nNightmare Editor is the real program, and I go more in-depth on my explanations about what and why I made this in the FAQ section of Nightmare Editor's Help Window.\n\nQ: AUI?\nA: Avalonia UI. This is a port from the WPF version and has become the only supported version.", MesgWindow.MsgBoxType.Info);
         mw.Show(this);
     }
 
@@ -558,6 +560,12 @@ public partial class NewManager : Window
 
     private void Refresh_OnClick(object? sender, PointerReleasedEventArgs e)
     {
+        Refresh();
+    }
+
+    private void Git_OnClick(object? sender, PointerReleasedEventArgs e)
+    {
+        Repository.Clone("https://github.com/" + GitRepoBox.Text + ".git", System.IO.Path.Combine(Misc.Paths.mods, GitRepoBox.Text.Replace('/', '.').Replace('\\', '.')));
         Refresh();
     }
 }

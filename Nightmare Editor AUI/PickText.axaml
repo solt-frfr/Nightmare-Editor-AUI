@@ -31,7 +31,7 @@
         <Button Width="200" FontWeight="Black" Background="White" FontSize="15" VerticalAlignment="Bottom" Margin="0,0,0,30" Click="Accept_Click">
             <Button.Content>
                 <Grid Background="White">
-                    <TextBlock>Use Selected</TextBlock>
+                    <TextBlock Foreground="Black">Use Selected</TextBlock>
                 </Grid>
             </Button.Content>
         </Button>
