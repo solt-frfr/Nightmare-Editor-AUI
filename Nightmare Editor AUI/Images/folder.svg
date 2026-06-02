@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="11.999784mm"
+   height="9.9999065mm"
+   viewBox="0 0 11.999784 9.9999065"
+   version="1.1"
+   id="svg1"
+   xml:space="preserve"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><defs
+     id="defs1"><linearGradient
+       id="linearGradient47"><stop
+         style="stop-color:#5f0053;stop-opacity:1;"
+         offset="0"
+         id="stop47" /><stop
+         style="stop-color:#c932d2;stop-opacity:1;"
+         offset="1"
+         id="stop48" /></linearGradient><linearGradient
+       xlink:href="#linearGradient47"
+       id="linearGradient48"
+       x1="5.9998922"
+       y1="9.9999065"
+       x2="5.9998922"
+       y2="1.9998779"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.91668314,0,0,0.87500045,0,0.25010593)" /></defs><g
+     id="layer1"><path
+       id="path44-6"
+       style="display:inline;fill:#000000;fill-opacity:1;stroke-width:0.324687"
+       d="M 2.9998169,0 C 2.2219252,0 1.5262295,0.52306597 1.1988932,1.1901082 0.50328231,1.5263338 0,2.2620614 0,2.9998169 v 0.999939 H 0.99993896 V 4.9996948 H 0 v 3.0003337 c 0,1.116402 1.0127427,1.9998739 1.9998779,1.9998779 h 7.0000895 c 1.5998176,0 2.9998166,-1.4422657 2.9998166,-2.9998169 V 3.7496419 1.9998779 H 7.4998006 C 7.1942659,2.2916097 6.847549,2.6456832 6.5003784,2.9998169 H 6.4998617 C 6.1943272,3.2915487 5.8470933,3.6456222 5.4999227,3.9997559 H 3.9997559 C 4.833172,3.1662624 5.6669663,2.3331476 6.5003784,1.4996501 6.0000066,0.99991077 5.4998796,0.4999265 4.9996948,0 Z" /><path
+       id="path44"
+       style="fill:#c933d1;fill-opacity:1;stroke-width:0.324687"
+       d="M 2,0 C 0.92355227,0 0,0.99977217 0,2 V 2.9998169 H 3.9997559 C 4.5000794,2.4998569 5.0002977,1.9997918 5.5004395,1.4996501 5.0000677,0.99991081 4.4999407,0.49992646 3.9997559,0 Z" /><path
+       id="path47"
+       style="fill:url(#linearGradient48);fill-opacity:1;stroke-width:7.3566"
+       d="M 6.5,2 C 5.8889308,2.5834636 5.1113216,3.4167772 4.5,4 H 0 v 3 c 0,1.1164027 1.0128648,1.9999959 2,2 l 7,2.9e-5 C 10.058539,9.0000334 11,8.0115325 11,7 V 3.7498942 2 Z" /></g></svg>

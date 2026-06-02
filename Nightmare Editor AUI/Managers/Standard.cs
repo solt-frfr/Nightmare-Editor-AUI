@@ -152,9 +152,9 @@ public static class Standard
                 AllowMultiple = false,
                 FileTypeFilter = new List<FilePickerFileType>
                 {
-                    new FilePickerFileType("Mod Archive")
+                    new FilePickerFileType("Nightmare Editor Mod")
                     {
-                        Patterns = new List<string> { "*.zip" }
+                        Patterns = new List<string> { "*.nem" }
                     },
                     new FilePickerFileType("Legacy Mod Archive")
                     {

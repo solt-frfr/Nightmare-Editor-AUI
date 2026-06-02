@@ -250,7 +250,25 @@ public partial class NewManager : Window
 
     private void OpenFolder_Click(object? sender, EventArgs e)
     {
-        OpenModsFolder();
+        if (sender is MenuItem mi &&
+            mi.CommandParameter is ModSlot ms)
+        {
+            string folder = GetModFolder(ms.ModMeta.ID);
+            try
+            {
+                if (Directory.Exists(folder))
+                {
+                    ProcessStartInfo StartInformation = new ProcessStartInfo();
+                    StartInformation.FileName = folder;
+                    StartInformation.UseShellExecute = true;
+                    Process process = Process.Start(StartInformation);
+                }
+            }
+            catch
+            {
+            }
+            Refresh();
+        }
     }
 
     private void Edit_Click(object? sender, EventArgs e)
@@ -291,12 +309,12 @@ public partial class NewManager : Window
 
                     var file = await this.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
                     {
-                        Title = "Select Mod Archive",
+                        Title = "Save Nightmare Editor Mod",
                         FileTypeChoices = new List<FilePickerFileType>
                         {
-                            new FilePickerFileType("Mod Archive")
+                            new FilePickerFileType("Nightmare Editor Mod")
                             {
-                                Patterns = new List<string> { "*.zip" }
+                                Patterns = new List<string> { "*.nem" }
                             }
                         }
                     });
@@ -562,10 +580,57 @@ public partial class NewManager : Window
     {
         Refresh();
     }
+    
+    private void MainFolder_OnClick(object? sender, PointerReleasedEventArgs e)
+    {
+        OpenModsFolder();
+    }
+    
+    private void Install_OnClick(object? sender, PointerReleasedEventArgs e)
+    {
+        InstallArchive(this);
+    }
 
     private void Git_OnClick(object? sender, PointerReleasedEventArgs e)
     {
+        MesgWindow mw1 = new MesgWindow("INFORMATION", "Cloning git repo...", MesgWindow.MsgBoxType.Info);
+        mw1.Show();
         Repository.Clone("https://github.com/" + GitRepoBox.Text + ".git", System.IO.Path.Combine(Misc.Paths.mods, GitRepoBox.Text.Replace('/', '.').Replace('\\', '.')));
+        MesgWindow mw2 = new MesgWindow("INFORMATION", "Done cloning.", MesgWindow.MsgBoxType.Info);
+        mw2.Show();
+        Refresh();
+    }
+    
+    private void UpdateGit_OnClick(object? sender, PointerReleasedEventArgs e)
+    {
+        string[] folders = Directory.GetDirectories(Misc.Paths.mods);
+        string updated = "Updated the following mods:";
+        foreach (string folder in folders)
+        {
+            try
+            {
+                var jsonoptions = new JsonSerializerOptions
+                {
+                    WriteIndented = true
+                };
+                string jsonString = System.IO.File.ReadAllText(System.IO.Path.Combine(folder, "meta.json"));
+                Meta meta = JsonSerializer.Deserialize<Meta>(jsonString, jsonoptions);
+                using var repo = new Repository(folder);
+                Commands.Pull(
+                    repo,
+                    new Signature("NightmareEditor", "nightmare@editor", DateTimeOffset.Now),
+                    new PullOptions()
+                );
+                updated += "\n-   " + meta.Name;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+        MesgWindow mw = new MesgWindow("INFORMATION", updated, MesgWindow.MsgBoxType.Info);
+
+        mw.Show();
         Refresh();
     }
 }

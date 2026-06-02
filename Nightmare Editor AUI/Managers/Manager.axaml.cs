@@ -300,12 +300,12 @@ namespace Nightmare_Editor
 
                             var file = await this.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
                             {
-                                Title = "Select Mod Archive",
+                                Title = "Save Nightmare Editor Mod",
                                 FileTypeChoices = new List<FilePickerFileType>
                                 {
-                                    new FilePickerFileType("Mod Archive")
+                                    new FilePickerFileType("Nightmare Editor Mod")
                                     {
-                                        Patterns = new List<string> { "*.zip" }
+                                        Patterns = new List<string> { "*.nem" }
                                     }
                                 }
                             });
