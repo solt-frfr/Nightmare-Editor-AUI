@@ -276,7 +276,14 @@ public static class Standard
                 else if (Misc.accepted_folders.Contains(rbin))
                 {
                     Directory.CreateDirectory(Path.Combine(deploypath, rbin));
-                    Editor.BetterDirCopy(subdir, Path.Combine(deploypath, rbin), false);
+                    if (settings.Emulator)
+                    {
+                        Editor.BetterDirCopy(subdir, Path.Combine(deploypath, "mods", GetTitleIDFromRegion(settings.Region), "romfs", rbin), false);
+                    }
+                    else
+                    {
+                        Editor.BetterDirCopy(subdir, Path.Combine(deploypath, rbin), false);
+                    }
                 }
             }
         }

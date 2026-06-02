@@ -519,7 +519,7 @@ public partial class NewManager : Window
         }
     }
 
-    private async void Deploy_OnClick(object? sender, RoutedEventArgs e)
+    private async void Deploy_OnClick(object? sender, EventArgs e)
     {
         try
         {
@@ -576,22 +576,23 @@ public partial class NewManager : Window
         });
     }
 
-    private void Refresh_OnClick(object? sender, PointerReleasedEventArgs e)
+    private void Refresh_OnClick(object? sender, EventArgs e)
     {
         Refresh();
     }
     
-    private void MainFolder_OnClick(object? sender, PointerReleasedEventArgs e)
+    private void MainFolder_OnClick(object? sender, EventArgs e)
     {
         OpenModsFolder();
     }
     
-    private void Install_OnClick(object? sender, PointerReleasedEventArgs e)
+    private void Install_OnClick(object? sender, EventArgs e)
     {
         InstallArchive(this);
+        Refresh();
     }
 
-    private void Git_OnClick(object? sender, PointerReleasedEventArgs e)
+    private void Git_OnClick(object? sender, EventArgs e)
     {
         MesgWindow mw1 = new MesgWindow("INFORMATION", "Cloning git repo...", MesgWindow.MsgBoxType.Info);
         mw1.Show();
@@ -601,7 +602,7 @@ public partial class NewManager : Window
         Refresh();
     }
     
-    private void UpdateGit_OnClick(object? sender, PointerReleasedEventArgs e)
+    private void UpdateGit_OnClick(object? sender, EventArgs e)
     {
         string[] folders = Directory.GetDirectories(Misc.Paths.mods);
         string updated = "Updated the following mods:";
