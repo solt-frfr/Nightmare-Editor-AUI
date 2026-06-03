@@ -179,10 +179,10 @@
                                 </Rectangle>
                                 
                                 <Image Source="{skia:SvgImage /Images/keyblade.svg}" Width="11" Height="10" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="2,2,0,0"/>
-                                <controls:ImageButton Click="Deploy_OnClick" Source="{skia:SvgImage /Images/arrow.svg}" Width="10" Height="10" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,2,2,0"/>
-                                <controls:ImageButton Click="Refresh_OnClick" Source="{skia:SvgImage /Images/refresh.svg}" Width="10" Height="10" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,2,15,0"/>
-                                <controls:ImageButton Click="MainFolder_OnClick" Source="{skia:SvgImage /Images/folder.svg}" Width="12" Height="10" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,2,29,0"/>
-                                <controls:ImageButton Click="Install_OnClick" Source="{skia:SvgImage /Images/install.svg}" Width="12" Height="10" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,2,43,0"/>
+                                <controls:ImageButton Description="Deploy the enabled mods to the deploy path selected in the settings." Click="Deploy_OnClick" PointerEntered="MenuButton_Hover" Source="{skia:SvgImage /Images/arrow.svg}" Width="10" Height="10" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,2,2,0"/>
+                                <controls:ImageButton Description="Re-scan the mods folder." Click="Refresh_OnClick" PointerEntered="MenuButton_Hover" Source="{skia:SvgImage /Images/refresh.svg}" Width="10" Height="10" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,2,15,0"/>
+                                <controls:ImageButton Description="Open the mods folder." Click="MainFolder_OnClick" PointerEntered="MenuButton_Hover" Source="{skia:SvgImage /Images/folder.svg}" Width="12" Height="10" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,2,29,0"/>
+                                <controls:ImageButton Description="Select a .nem file to install." Click="Install_OnClick" PointerEntered="MenuButton_Hover" Source="{skia:SvgImage /Images/install.svg}" Width="12" Height="10" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,2,43,0"/>
                                 <controls:KH3DText Grid.RowSpan="2" Text="Mods" Color="White" Font="SmallAccurate" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="14,0,0,0"></controls:KH3DText>
                             </Grid>
                             
@@ -215,6 +215,46 @@
                                     </LinearGradientBrush>
                                 </Rectangle.Fill>
                             </Rectangle>
+                            <Grid Width="130" Height="14" Name="ModDisplay" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,9">
+                                <Grid Width="130" Height="14" Name="ModDisplay_AccentColor" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                    <Grid.Background>
+                                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                                            <GradientStop Color="#df9898" Offset="0"/>
+                                            <GradientStop Color="#740000" Offset="0.5"/>
+                                            <GradientStop Color="#300000" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Grid.Background>
+                                    <Grid.Clip>
+                                        <PathGeometry Figures="
+                                            M 0,7
+                                            L 7,0
+                                            L 123,0
+                                            L 130,7
+                                            L 123,14
+                                            L 7,14
+                                            Z"/>
+                                    </Grid.Clip>
+                                </Grid>
+                                <Grid Width="128" Height="12" Name="ModDisplay_MainColor" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                    <Grid.Background>
+                                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                                            <GradientStop Color="#a70000" Offset="0"/>
+                                            <GradientStop Color="#740000" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Grid.Background>
+                                    <Grid.Clip>
+                                        <PathGeometry Figures="
+                                            M 0.4,6
+                                            L 6.4,0
+                                            L 121.6,0
+                                            L 127.6,6
+                                            L 121.6,12
+                                            L 6.4,12
+                                            Z"/>
+                                    </Grid.Clip>
+                                </Grid>
+                                <controls:KH3DText Name="ModDisplay_Text" Text="Knockout Punch" Font="SmallAccurate" Color="White" Margin="9,0"/>
+                            </Grid>
                             <controls:KH3DText Text="Author(s)" Font="SmallAccurate" Color="#fcfc01" VerticalAlignment="Bottom" Margin="10,0,0,20"/>
                             <controls:KH3DText Grid.Column="1" Name="AuthorKH3DText" Text="" Font="SmallAccurate" Color="White" VerticalAlignment="Bottom" Margin="4,0,0,20"/>
                             <controls:KH3DText Text="ID" Font="SmallAccurate" Color="#fcfc01" VerticalAlignment="Bottom" Margin="10,0,0,2"/>
@@ -256,8 +296,8 @@
                 </Rectangle.Fill>
             </Rectangle>
             <TextBox Name="GitRepoBox" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=16}" Width="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=100}" FontSize="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=8}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|0|6}" HorizontalAlignment="Right" VerticalAlignment="Bottom" PlaceholderText="user/repository" PlaceholderForeground="White" Foreground="White" Background="#8000"></TextBox>
-            <controls:ImageButton Click="Git_OnClick" Source="{skia:SvgImage /Images/gitdownload.svg}" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=16} " Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|100|6}" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
-            <controls:ImageButton Click="UpdateGit_OnClick" Source="{skia:SvgImage /Images/gitupdate.svg}" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=16} " Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|122|6}" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+            <controls:ImageButton Description="Install the GitHub repository entered into the text box." Click="Git_OnClick" PointerEntered="MenuButton_Hover" Source="{skia:SvgImage /Images/gitdownload.svg}" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=16} " Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|100|6}" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+            <controls:ImageButton Description="Update all mods that contain a git repository." Click="UpdateGit_OnClick" PointerEntered="MenuButton_Hover" Source="{skia:SvgImage /Images/gitupdate.svg}" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=16} " Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|122|6}" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
             <Rectangle Fill="#002eff" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=2}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"></Rectangle>
         </Grid>
         

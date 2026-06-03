@@ -30,8 +30,8 @@
             <Grid Grid.Column="1" Name="EffectAmp">
                 <ReversibleStackPanel Grid.Column="1" Name="ButtonPanel" Orientation="Horizontal" ReverseOrder="True" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,8,14">
                     <controls:InfoButton Name="AcceptButton" Text="OK" Click="AcceptButton_OnClick" IsVisible="False"/>
-                    <controls:InfoButton Name="DeclineButton" Text="Cancel" Click="DeclineButton_OnClick" IsVisible="True"/>
                     <controls:InfoButton Name="ExtraButton" Text="IDK" Click="ExtraButton_OnClick" IsVisible="False"/>
+                    <controls:InfoButton Name="DeclineButton" Text="Cancel" Click="DeclineButton_OnClick" IsVisible="True"/>
                 </ReversibleStackPanel>
             </Grid>
         </Grid>

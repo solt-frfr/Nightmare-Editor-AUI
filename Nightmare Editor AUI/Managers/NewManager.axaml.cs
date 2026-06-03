@@ -59,12 +59,66 @@ public partial class NewManager : Window
             BottomRightText.Text = mb.Description;
         if (sender is Nightmare_Editor_AUI.Controls.ConfigSlot cs)
             BottomRightText.Text = cs.Description;
+        if (sender is Nightmare_Editor_AUI.Controls.ImageButton ib)
+            BottomRightText.Text = ib.Description;
         if (sender is Nightmare_Editor_AUI.Controls.ModSlot ms)
         {
             BottomRightText.Text = ms.ModMeta.Description;
             AuthorKH3DText.Text = ms.ModMeta.Authors;
             IDKH3DText.Text = ms.ModMeta.ID;
             string modpath = GetModFolder(ms.ModMeta.ID);
+
+            try
+            {
+                Color tempColor = Avalonia.Media.Color.Parse("#a80000");
+                if (Avalonia.Media.Color.TryParse(ms.ModMeta.Color, out var color))
+                {
+                    tempColor = color;
+                }
+                HsvColor tempHSVColor = tempColor.ToHsv();
+                HsvColor borderLightColor = new HsvColor
+                (
+                    tempHSVColor.A,
+                    tempHSVColor.H,
+                    Math.Clamp(tempHSVColor.S * (318d / 1000), 0, 1),
+                    Math.Clamp(tempHSVColor.V * (875d / 659), 0, 1)
+                );
+                HsvColor borderDarkColor = new HsvColor
+                (
+                    tempHSVColor.A,
+                    tempHSVColor.H,
+                    Math.Clamp(tempHSVColor.S, 0, 1),
+                    Math.Clamp(tempHSVColor.V * (184d / 659), 0, 1)
+                );
+                Color darkColor = new Color(tempColor.A, (byte)Math.Clamp(tempColor.R - 40, 0, tempColor.R), (byte)Math.Clamp(tempColor.G - 40, 0, tempColor.G), (byte)Math.Clamp(tempColor.B - 40, 0, tempColor.B));
+                ModDisplay_Text.Text = ms.ModMeta.Name;
+                ModDisplay_MainColor.Background = new LinearGradientBrush
+                {
+                    StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative),
+                    EndPoint = new RelativePoint(0, 1, RelativeUnit.Relative),
+                    GradientStops = new GradientStops
+                    {
+                        new GradientStop(tempColor, 0),
+                        new GradientStop(darkColor, 1),
+                    }
+                };
+                ModDisplay_AccentColor.Background = new LinearGradientBrush
+                {
+                    StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative),
+                    EndPoint = new RelativePoint(0, 1, RelativeUnit.Relative),
+                    GradientStops = new GradientStops
+                    {
+                        new GradientStop(borderLightColor.ToRgb(), 0),
+                        new GradientStop(darkColor, 0.5),
+                        new GradientStop(borderDarkColor.ToRgb(), 1),
+                    }
+                };
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+            }
+            
             if (System.IO.File.Exists(System.IO.Path.Combine(modpath, "preview.webp")))
             {
                 string imagePath = System.IO.Path.Combine(modpath, "preview.webp");
@@ -602,7 +656,7 @@ public partial class NewManager : Window
         Refresh();
     }
     
-    private void UpdateGit_OnClick(object? sender, EventArgs e)
+    private async void UpdateGit_OnClick(object? sender, EventArgs e)
     {
         string[] folders = Directory.GetDirectories(Misc.Paths.mods);
         string updated = "Updated the following mods:";
@@ -610,12 +664,8 @@ public partial class NewManager : Window
         {
             try
             {
-                var jsonoptions = new JsonSerializerOptions
-                {
-                    WriteIndented = true
-                };
                 string jsonString = System.IO.File.ReadAllText(System.IO.Path.Combine(folder, "meta.json"));
-                Meta meta = JsonSerializer.Deserialize<Meta>(jsonString, jsonoptions);
+                Meta meta = JsonSerializer.Deserialize<Meta>(jsonString, WriteIndented);
                 using var repo = new Repository(folder);
                 Commands.Pull(
                     repo,
@@ -627,6 +677,45 @@ public partial class NewManager : Window
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                if (ex.Message.Contains("conflicts prevent checkout"))
+                {
+                    string jsonString = System.IO.File.ReadAllText(System.IO.Path.Combine(folder, "meta.json"));
+                    Meta meta = JsonSerializer.Deserialize<Meta>(jsonString, WriteIndented);
+                    MesgWindow mw2 = new MesgWindow("WARNING", meta.Name + "\n" + ex.Message + "\nWould you like to update? This will delete any local changes to the mod.", MesgWindow.MsgBoxType.YesNo);
+
+                    await mw2.ShowDialog(this);
+                    
+                    if (mw2.Result == ErrorCode.Success)
+                    {
+                        try
+                        {
+                            using (var repo = new Repository(folder))
+                            {
+                                foreach (var item in repo.RetrieveStatus())
+                                {
+                                    if (item.State == FileStatus.NewInWorkdir)
+                                    {
+                                        var path = System.IO.Path.Combine(repo.Info.WorkingDirectory, item.FilePath);
+                                        if (File.Exists(path))
+                                            File.Delete(path);
+                                    }
+                                }
+                            
+                                Commands.Pull(
+                                repo,
+                                new Signature("NightmareEditor", "nightmare@editor", DateTimeOffset.Now),
+                                new PullOptions()
+                                );
+                            }
+                                
+                            updated += "\n-   " + meta.Name;
+                        }
+                        catch (Exception exception)
+                        {
+                            Console.WriteLine(exception);
+                        }
+                    }
+                }
             }
         }
         MesgWindow mw = new MesgWindow("INFORMATION", updated, MesgWindow.MsgBoxType.Info);

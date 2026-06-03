@@ -212,5 +212,8 @@
     <Compile Update="Controls\ConfigSlot.axaml.cs">
       <DependentUpon>ConfigSlot.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Controls\ImageButton.axaml.cs">
+      <DependentUpon>ImageButton.axaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 </Project>

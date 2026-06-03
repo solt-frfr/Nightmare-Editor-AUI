@@ -88,6 +88,11 @@ public partial class KH3DText : UserControl
                 Color = Avalonia.Media.Colors.Black,
             };
         }
+        
+        if (string.IsNullOrWhiteSpace(Text))
+        {
+            return;
+        }
 
         foreach (string line in Text.Split('\n'))
         {
