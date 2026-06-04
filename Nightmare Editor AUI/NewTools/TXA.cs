@@ -71,7 +71,7 @@ namespace Nightmare_Editor.NewTools
         /// <summary>
         /// Create a TXAFile class from a TXA file.
         /// </summary>
-        public static TXAFile Load(string file, string searchDir = "defaultDir/puttingstuffheretomakesurenooneusesthisexactstringofcharacters/hiitsmesolt11/balls")
+        public static (TXAFile TXAFile, Misc.ErrorCode ErrorCode, string ErrorValue) Load(string file, string searchDir = "defaultDir/puttingstuffheretomakesurenooneusesthisexactstringofcharacters/hiitsmesolt11/balls")
         {
             TXAFile txa = new TXAFile();
             txa.Groups = new List<AnimGroup>();
@@ -102,6 +102,10 @@ namespace Nightmare_Editor.NewTools
                 {
                     search = Misc.Paths.work;
                     files2 = Directory.GetFiles(search, $"*{group.DestTexture}.ctt", SearchOption.AllDirectories);
+                }
+                if (files2.Length == 0)
+                {
+                    return (null, Misc.ErrorCode.FailedFileFind, "Could not find Destination Texture: " + group.DestTexture);
                 }
                 string file2 = files2[0];
                 byte[] data2 = File.ReadAllBytes(file2);
@@ -205,7 +209,7 @@ namespace Nightmare_Editor.NewTools
                 }
                 txa.Groups.Add(group);
             }
-            return txa;
+            return (txa, Misc.ErrorCode.Success, "");
         }
 
         private static readonly byte[] paddingx4 = { 0x00, 0x00, 0x00, 0x00 };

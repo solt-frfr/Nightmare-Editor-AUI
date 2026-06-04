@@ -67,7 +67,21 @@ namespace Nightmare_Editor
             }
             else
             {
-                TXA.TXAFile txa = TXA.Load(openedFile);
+                var result = TXA.Load(openedFile);
+                TXAFile txa = result.TXAFile;
+                if (result.ErrorCode == Misc.ErrorCode.FailedFileFind)
+                {
+                    Console.WriteLine(result.ErrorValue);
+                    var box2 = MessageBoxManager.GetMessageBoxStandard(
+                        $"Error",
+                        result.ErrorValue,
+                        ButtonEnum.Ok,
+                        MsBox.Avalonia.Enums.Icon.Question
+                    );
+                    await box2.ShowAsPopupAsync(this);
+                    Close();
+                    return;
+                }
                 main = txa;
             }
             Import();
@@ -589,8 +603,23 @@ namespace Nightmare_Editor
                     }
                     else
                     {
-                        TXA.TXAFile txa = TXA.Load(open[0].Path.LocalPath);
-                        main = txa;
+                        var txaresult = TXA.Load(open[0].Path.LocalPath);
+                        TXA.TXAFile txa = txaresult.TXAFile;
+                        if (txaresult.ErrorCode == Misc.ErrorCode.FailedFileFind)
+                        {
+                            Console.WriteLine(txaresult.ErrorValue);
+                            var box2 = MessageBoxManager.GetMessageBoxStandard(
+                                $"Error",
+                                txaresult.ErrorValue,
+                                ButtonEnum.Ok,
+                                MsBox.Avalonia.Enums.Icon.Question
+                            );
+                            await box2.ShowAsPopupAsync(this);
+                        }
+                        else
+                        {
+                            main = txa;
+                        }
                     }
                     Import();
                 }

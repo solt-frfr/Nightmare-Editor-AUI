@@ -17,7 +17,7 @@ public partial class MesgWindow : Window
 
     private MsgBoxType _msgBoxType = MsgBoxType.Info;
     
-    public ErrorCode Result { get; private set; }
+    public Nightmare_Editor.NewTools.Misc.ErrorCode Result { get; private set; }
     
     public MesgWindow() // Designer Only. Give it paramaters.
     {
@@ -57,7 +57,7 @@ public partial class MesgWindow : Window
         }
         else if (_msgBoxType == MsgBoxType.YesNo || _msgBoxType == MsgBoxType.Git)
         {
-            Result = ErrorCode.Success;
+            Result = Nightmare_Editor.NewTools.Misc.ErrorCode.Success;
             Close();
         }
     }
@@ -66,7 +66,7 @@ public partial class MesgWindow : Window
     {
         if (_msgBoxType == MsgBoxType.YesNo || _msgBoxType == MsgBoxType.Git)
         {
-            Result = ErrorCode.Cancelled;
+            Result = Nightmare_Editor.NewTools.Misc.ErrorCode.Cancelled;
             Close();
         }
     }

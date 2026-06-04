@@ -476,7 +476,7 @@ namespace Nightmare_Editor
                     if (result == ButtonResult.Yes)
                     {
                         var returnValue = DeployMods(settings.DeployPath);
-                        if (returnValue.errorCode == ErrorCode.Success)
+                        if (returnValue.errorCode == Misc.ErrorCode.Success)
                         {
                             var box2 = MessageBoxManager.GetMessageBoxStandard(
                                 $"Get ready for a fun adventure!",
@@ -487,7 +487,7 @@ namespace Nightmare_Editor
                             await box2.ShowAsPopupAsync(this);
                         }
 
-                        if (returnValue.errorCode == ErrorCode.MissingRbin)
+                        if (returnValue.errorCode == Misc.ErrorCode.MissingRbin)
                         {
                             var box2 = MessageBoxManager.GetMessageBoxStandard(
                                 $"Missing {returnValue.errorMessage}",

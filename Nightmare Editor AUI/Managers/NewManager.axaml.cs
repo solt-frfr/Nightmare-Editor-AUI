@@ -325,7 +325,7 @@ public partial class NewManager : Window
         }
     }
 
-    private void Edit_Click(object? sender, EventArgs e)
+    private async void Edit_Click(object? sender, EventArgs e)
     {
         if (sender is MenuItem mi &&
             mi.CommandParameter is ModSlot ms)
@@ -333,7 +333,7 @@ public partial class NewManager : Window
             MakePack edit = new MakePack(ms.ModMeta);
             try
             {
-                edit.ShowDialog(this);
+                await edit.ShowDialog(this);
             }
             catch
             {
@@ -401,7 +401,7 @@ public partial class NewManager : Window
 
             await mw.ShowDialog(this);
 
-            if (mw.Result == ErrorCode.Success)
+            if (mw.Result == Misc.ErrorCode.Success)
             {
                 Directory.Delete(GetModFolder(ms.ModMeta.ID), true);
             }
@@ -591,17 +591,17 @@ public partial class NewManager : Window
 
                 await mw.ShowDialog(this);
 
-                if (mw.Result == ErrorCode.Success)
+                if (mw.Result == Misc.ErrorCode.Success)
                 {
                     var returnValue = DeployMods(settings.DeployPath);
-                    if (returnValue.errorCode == ErrorCode.Success)
+                    if (returnValue.errorCode == Misc.ErrorCode.Success)
                     {
                         MesgWindow mw2 = new MesgWindow("INFORMATION", $@"Succesfully deployed mods to {settings.DeployPath}!", MesgWindow.MsgBoxType.Info);
 
                         await mw2.ShowDialog(this);
                     }
 
-                    if (returnValue.errorCode == ErrorCode.MissingRbin)
+                    if (returnValue.errorCode == Misc.ErrorCode.MissingRbin)
                     {
                         MesgWindow mw2 = new MesgWindow("INFORMATION", $@"Missing rbin(s) {returnValue.errorMessage}. Unpack them using the unpack button in the settings tab.", MesgWindow.MsgBoxType.Info);
 
@@ -685,7 +685,7 @@ public partial class NewManager : Window
 
                     await mw2.ShowDialog(this);
                     
-                    if (mw2.Result == ErrorCode.Success)
+                    if (mw2.Result == Misc.ErrorCode.Success)
                     {
                         try
                         {

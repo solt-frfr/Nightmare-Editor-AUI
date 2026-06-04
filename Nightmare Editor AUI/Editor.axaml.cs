@@ -1241,7 +1241,7 @@ namespace Nightmare_Editor
         }
         private async void PackAll_Click(object sender, RoutedEventArgs e)
         {
-            foreach(string file in allfiles)
+            foreach (string file in allfiles)
             {
                 if (file.EndsWith(".ctt"))
                 {
@@ -1356,9 +1356,13 @@ namespace Nightmare_Editor
                 }
                 if (file.Length - file.Replace(Path.DirectorySeparatorChar.ToString(), "").Length == 1)
                 {
-                    
-                    Directory.CreateDirectory(Path.Combine(Misc.Paths.mods, mod.ID, Path.GetDirectoryName(file)));
-                    File.Copy(Path.Combine(Misc.Paths.work, file), Path.Combine(Misc.Paths.mods, mod.ID, file), true);
+                    string endpath = Nightmare_Editor_AUI.Managers.Standard.GetModFolder(mod.ID);
+                    if (!string.IsNullOrWhiteSpace(mod.Prefix))
+                    {
+                        endpath = Path.Combine(endpath, mod.Prefix);
+                    }
+                    Directory.CreateDirectory(Path.Combine(endpath, Path.GetDirectoryName(file)));
+                    File.Copy(Path.Combine(Misc.Paths.work, file), Path.Combine(endpath, file), true);
                 }
             }
             File.Delete(Misc.Jsons.temp);
@@ -1674,11 +1678,12 @@ namespace Nightmare_Editor
 
         private async void ZipMod(Meta meta)
         {
-            if (Directory.Exists(Path.Combine(Misc.Paths.mods, meta.ID)))
+            string folderpath = Nightmare_Editor_AUI.Managers.Standard.GetModFolder(meta.ID);
+            if (Directory.Exists(folderpath))
             {
                 try
                 {
-                    Misc.CopyDirectory(Path.Combine(Misc.Paths.mods, meta.ID), Path.Combine(Misc.Paths.temp, meta.ID, meta.Name), true);
+                    Misc.CopyDirectory(folderpath, Path.Combine(Misc.Paths.temp, meta.ID, meta.Name), true);
 
                     var jsonoptions = new JsonSerializerOptions
                     {

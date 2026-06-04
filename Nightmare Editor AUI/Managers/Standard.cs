@@ -101,13 +101,6 @@ public static class Standard
         }
     }
 
-    public enum ErrorCode
-    {
-        Success = 0,
-        MissingRbin = 1,
-        Cancelled = 2,
-    }
-
     public static string GetModFolder(string ID)
     {
         string[] folders = Directory.GetDirectories(Misc.Paths.mods);
@@ -219,7 +212,7 @@ public static class Standard
         }
     }
     
-    public static (ErrorCode errorCode, string errorMessage) DeployMods(string deploypath)
+    public static (Misc.ErrorCode errorCode, string errorMessage) DeployMods(string deploypath)
     {
         Settings settings = MainSettings;
 
@@ -314,7 +307,7 @@ public static class Standard
         }
         if (stop)
         {
-            return (ErrorCode.MissingRbin, failed_rbins);
+            return (Misc.ErrorCode.MissingRbin, failed_rbins);
         }
 
         Directory.CreateDirectory(Misc.Paths.pack);
@@ -340,6 +333,6 @@ public static class Standard
         //{
         //    File.Copy(Path.Combine(Misc.Paths.program, track[0]), Path.Combine(musicpath, track[1]));
         //}
-        return (ErrorCode.Success, "");
+        return (Misc.ErrorCode.Success, "");
     }
 }

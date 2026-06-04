@@ -48,6 +48,11 @@ namespace Nightmare_Editor
                     AuthorBox.Text = sender.Authors;
                     LinkBox.Text = sender.Link;
                     IDBox.Text = sender.ID;
+                    PrefixBox.Text = sender.Prefix;
+                    if (Avalonia.Media.Color.TryParse(sender.Color, out Avalonia.Media.Color color))
+                    {
+                        ColorPick.Color = color;
+                    }
                     if (!string.IsNullOrWhiteSpace(sender.ID))
                     {
                         IDBox.IsEnabled = false;
@@ -95,14 +100,21 @@ namespace Nightmare_Editor
             }
             catch (Exception exception)
             {
-                
+                folder = Path.Combine(Misc.Paths.mods, IDBox.Text);
             }
-            
+
+            if (string.IsNullOrWhiteSpace(folder))
+            {
+                folder = Path.Combine(Misc.Paths.mods, IDBox.Text);
+            }
             modmetadata.Name = NameBox.Text;
             modmetadata.Description = DescBox.Text;
             modmetadata.Authors = AuthorBox.Text;
             modmetadata.Link = LinkBox.Text;
             modmetadata.ID = IDBox.Text;
+            modmetadata.Prefix = PrefixBox.Text;
+            Avalonia.Media.Color color = ColorPick.HsvColor.ToRgb();
+            modmetadata.Color = $"#{color.R:X2}{color.G:X2}{color.B:X2}";
             if (!string.IsNullOrWhiteSpace(modmetadata.ID))
             {
                 var jsonoptions = new JsonSerializerOptions

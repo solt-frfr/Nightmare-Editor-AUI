@@ -92,6 +92,14 @@ namespace Nightmare_Editor.NewTools
             pmo = 4,
             pmp = 5,
         }
+        
+        public enum ErrorCode
+        {
+            Success = 0,
+            MissingRbin = 1,
+            Cancelled = 2,
+            FailedFileFind = 3,
+        }
 
         public static class FileFilters
         {

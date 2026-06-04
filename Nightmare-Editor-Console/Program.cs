@@ -139,13 +139,21 @@ Make your choice : ");
         try
         {
             string filename = Path.GetFileName(args[0]);
-            TXA.TXAFile txa = TXA.Load(args[0], Path.GetDirectoryName(args[0]));
-            for (int i = 0; i < txa.DestTextures.Count; i++)
+            var result = TXA.Load(args[0], Path.GetDirectoryName(args[0]));
+            TXA.TXAFile txa = result.TXAFile;
+            if (result.ErrorCode == Misc.ErrorCode.FailedFileFind)
             {
-                using (var img = TXA.Atlas(txa, i))
+                Console.WriteLine(result.ErrorValue);
+            }
+            else
+            {
+                for (int i = 0; i < txa.DestTextures.Count; i++)
                 {
-                    img.SaveAsPng(Path.Combine(Path.GetDirectoryName(args[0]),
-                        Path.GetFileNameWithoutExtension(args[0]) + i.ToString() + "a.png"));
+                    using (var img = TXA.Atlas(txa, i))
+                    {
+                        img.SaveAsPng(Path.Combine(Path.GetDirectoryName(args[0]),
+                            Path.GetFileNameWithoutExtension(args[0]) + i.ToString() + "a.png"));
+                    }
                 }
             }
         }
