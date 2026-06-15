@@ -486,7 +486,6 @@ namespace Nightmare_Editor
                 Log.Text = "Loading...";
                 if (child is TextBox textBox && textBox == selectedTextBox)
                 {
-                    Log.Text = "pass 1";
                     if (Directory.Exists(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(textBox.Text))))
                     {
                         Log.Text = $"Files in {textBox.Text}";

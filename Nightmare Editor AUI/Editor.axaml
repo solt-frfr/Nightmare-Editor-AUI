@@ -47,7 +47,7 @@
             <TextBox Name="Search" KeyDown="Search_KeyDown" Grid.Row="1"/>
             <ScrollViewer Name="Files2_Scroll" VerticalScrollBarVisibility="Auto" Grid.Row="2">
 				<StackPanel x:Name="Files2" VerticalAlignment="Top">
-				</StackPanel>
+                </StackPanel>
             </ScrollViewer>
         </Grid>
         <Grid RowDefinitions="3*,16*" ColumnDefinitions="*,*" Name="QueueWindow" Grid.RowSpan="3" Grid.Column="2" IsVisible="False" Background="Black" Panel.ZIndex="3">

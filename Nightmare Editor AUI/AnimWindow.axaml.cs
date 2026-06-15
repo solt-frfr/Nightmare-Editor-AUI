@@ -222,9 +222,9 @@ namespace Nightmare_Editor
             }
             catch { }
             InfoWindow.IsVisible = false;
+            Files2.Children.Clear();
             foreach (var child in Files.Children)
             {
-                Files2.Children.Clear();
                 if (child is TextBox textBox && textBox == selectedTextBox)
                 {
                     foreach (AnimGroup group in main.Groups)
@@ -235,6 +235,13 @@ namespace Nightmare_Editor
                             {
                                 AddFile2(anim.Name);
                             }
+
+                            GroupInfoPanel.IsVisible = true;
+                            Group_TextureBox.Text = group.DestTexture;
+                            Group_WidthBox.Text = group.DestWidth.ToString();
+                            Group_HeightBox.Text = group.DestHeight.ToString();
+                            Group_AnimCountBox.Text = group.Anims.Count.ToString();
+                            break;
                         }
                     }
                     break;
@@ -366,6 +373,7 @@ namespace Nightmare_Editor
                 if (Textures.Children[i] is TextBox textBox && textBox == selectedTextBox4)
                 {
                     AssignImage(i, 2);
+                    GroupInfoPanel.IsVisible = false;
                     break;
                 }
             }
