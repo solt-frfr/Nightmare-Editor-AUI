@@ -186,29 +186,12 @@ namespace Nightmare_Editor.NewTools
                     if (tex.CTT != null)
                     {
                         File.WriteAllBytes(Path.Combine(path, tex.Name + ".ctt"), tex.CTT);
-                        int j = 0;
-                        int k = 0;
-                        byte[] header = new byte[0x80];
-                        byte[] data = new byte[tex.CTT.Length - 0x80];
-                
-                        for (int i = 0; i < tex.CTT.Length; i++)
+                        var split = CTT.SplitHeader(tex.CTT);
+                        var attrib = CTT.GetAttributesFromHeader(split.header);
+                        
+                        using (var image = CTT.Deswizzle(split.data, attrib.width, attrib.height, (int)attrib.format))
                         {
-                            if (i < 0x80)
-                            {
-                                header[j++] = tex.CTT[i];
-                            }
-                            else
-                            {
-                                data[k++] = tex.CTT[i];
-                            }
-                        }
-                        int height = header[0x22] + (header[0x23] * 0x100);
-                        int width = header[0x20] + (header[0x21] * 0x100);
-                        CTT.Format format1 = (CTT.Format)header[0x1C];
-                        string format = format1.ToString();
-                        using (var image = CTT.Deswizzle(data, width, height, (int)format1))
-                        {
-                            image.SaveAsPng(Path.Combine(path, tex.Name + "." + format + ".png"));
+                            image.SaveAsPng(Path.Combine(path, tex.Name + "." + attrib.format.ToString() + ".png"));
                         }
                     }
                 }

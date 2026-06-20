@@ -9,6 +9,7 @@ using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.PixelFormats;
 using System.Reflection;
 using System.Text.Json;
+using Nightmare_Editor_AUI.Controls;
 using SixLabors.ImageSharp.ColorSpaces;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Processing.Processors;
@@ -45,7 +46,7 @@ namespace Nightmare_Editor.NewTools
             ETC1A4 = 13,
         }
 
-        public static int GetFormat(string file)
+        public static (int width, int height, Format format) GetAttributesFromFile(string file)
         {
             byte[] header;
             using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read))
@@ -55,7 +56,102 @@ namespace Nightmare_Editor.NewTools
                 fs.Read(header, 0, 0x80);
             }
 
-            return header[0x1C];
+            return GetAttributesFromHeader(header);
+        }
+
+        public static (byte[] header, byte[] data) SplitHeader(byte[] ctt)
+        {
+            if (ctt[0] == 0x43 && ctt[1] == 0x54 && ctt[2] == 0x52 &&
+                ctt[3] == 0x54) // Check it has a header by checking if the first four bytes are CTRT
+            {
+                byte[] header = new byte[0x80];
+                byte[] data = new byte[ctt.Length - 0x80];
+                for (int j = 0; j < header.Length; j++)
+                {
+                    header[j] = ctt[j];
+                }
+                for (int j = 0; j < data.Length; j++)
+                {
+                    data[j] = ctt[j + 0x80];
+                }
+                return (header, data);
+            }
+            else
+            {
+                return (null, ctt);
+            }
+        }
+        
+        /// <summary>
+        /// Add a new header onto a CTT file.
+        /// </summary>
+        /// <param name="ctt">Data from CTT without a header.</param>
+        /// <returns>Returns a byte array containing complete CTT data with a CTT Header.</returns>
+        public static byte[] AddHeader(byte[] ctt, int width, int height, Format format)
+        {
+            if (ctt[0] == 0x43 && ctt[1] == 0x54 && ctt[2] == 0x52 &&
+                ctt[3] == 0x54) // Check it has a header by checking if the first four bytes are CTRT
+            {
+                return ctt;
+            }
+            else
+            {
+                byte[] header = CTTHeader(width, height, (int)format);
+                byte[] new_ctt = new byte[ctt.Length + 0x80];
+                for (int j = 0; j < new_ctt.Length; j++)
+                {
+                    if (j < 0x80)
+                    {
+                        new_ctt[j] = header[j];
+                    }
+                    else
+                    {
+                        new_ctt[j] = ctt[j - 0x80];
+                    }
+                }
+
+                return new_ctt;
+            }
+        }
+        
+        /// <summary>
+        /// Add an existing header onto a CTT file.
+        /// </summary>
+        /// <param name="header">Header from CTT.</param>
+        /// <param name="ctt">Data from CTT without a header.</param>
+        /// <returns>Returns a byte array containing complete CTT data with a CTT Header.</returns>
+        public static byte[] MeldHeader(byte[] header, byte[] ctt)
+        {
+            if (ctt[0] == 0x43 && ctt[1] == 0x54 && ctt[2] == 0x52 &&
+                ctt[3] == 0x54) // Check it has a header by checking if the first four bytes are CTRT
+            {
+                return ctt;
+            }
+            else
+            {
+                byte[] new_ctt = new byte[ctt.Length + 0x80];
+                for (int j = 0; j < new_ctt.Length; j++)
+                {
+                    if (j < 0x80)
+                    {
+                        new_ctt[j] = header[j];
+                    }
+                    else
+                    {
+                        new_ctt[j] = ctt[j - 0x80];
+                    }
+                }
+
+                return new_ctt;
+            }
+        }
+
+        public static (int width, int height, Format format) GetAttributesFromHeader(byte[] header)
+        {
+            int height = header[0x22] + (header[0x23] * 0x100);
+            int width = header[0x20] + (header[0x21] * 0x100);
+            Format format = (Format)header[0x1C];
+            return (width, height, format);
         }
 
         public static int[] ETC1OffTable(int index)
@@ -106,27 +202,13 @@ namespace Nightmare_Editor.NewTools
         /// <param name="file">Filepath containing a CTT file.</param>
         public static Image Decode(string file, bool output = true)
         {
-            byte[] header;
-            byte[] data;
+            var split = SplitHeader(File.ReadAllBytes(file));
+            var attrib = GetAttributesFromHeader(split.header);
 
-            using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read))
-            {
-                fs.Seek(0, SeekOrigin.Begin);
-                header = new byte[0x80];
-                fs.Read(header, 0, 0x80);
-                fs.Seek(0x80, SeekOrigin.Begin);
-                data = new byte[fs.Length - 0x80];
-                fs.Read(data, 0, data.Length);
-            }
-
-            int height = header[0x22] + (header[0x23] * 0x100);
-            int width = header[0x20] + (header[0x21] * 0x100);
-            Format format1 = (Format)header[0x1C];
-            string format = format1.ToString();
-            var image = Deswizzle(data, width, height, (int)format1);
+            var image = Deswizzle(split.data, attrib.width, attrib.height, (int)attrib.format);
             if (output)
             {
-                image.SaveAsPng(file + "." + format + ".png");
+                image.SaveAsPng(file + "." + attrib.format + ".png");
             }
 
             return image;
@@ -142,7 +224,7 @@ namespace Nightmare_Editor.NewTools
             Settings settings = MainSettings;
             
             byte[] data = File.ReadAllBytes(texture);
-            int formatByte = GetFormat(file);
+            int formatByte = (int)GetAttributesFromFile(file).format;
             Format formatenum = (Format)formatByte;
             if (formatByte >= 12 && (settings.ETC1Encoder == 0 || settings.ETC1Encoder == 1))
             {
@@ -505,13 +587,7 @@ namespace Nightmare_Editor.NewTools
             int tilesPerRow = (width + tileSize - 1) / tileSize;
             int tilesPerCol = (height + tileSize - 1) / tileSize;
 
-            byte[] newData = new byte[bytes + 0x80];
-            byte[] header = CTTHeader(width, height, (int)Format.RGBA8888);
-
-            for (int i = 0; i < 0x80; i++)
-            {
-                newData[i] = header[i];
-            }
+            byte[] newData = AddHeader(new byte[bytes], width, height, (int)Format.RGBA8888);
 
             int count = 0x80;
             int tileSizeInPixels = tileSize * tileSize;

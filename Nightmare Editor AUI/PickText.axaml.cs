@@ -68,12 +68,7 @@ namespace Nightmare_Editor
             int width = textures[Drop.SelectedIndex].Texture[0x20] + (textures[Drop.SelectedIndex].Texture[0x21] * 0x100);
             int format = textures[Drop.SelectedIndex].Texture[0x1C];
 
-            byte[] textwheader = textures[Drop.SelectedIndex].Texture;
-            byte[] text = new byte[textwheader.Length - 0x80];
-            for (int j = 0; j < text.Length; j++)
-            {
-                text[j] = textwheader[j + 0x80];
-            }
+            byte[] text = CTT.SplitHeader(textures[Drop.SelectedIndex].Texture).data;
 
             Texture.Source = ConvertToImageSource(CTT.Deswizzle(text, width, height, format));
         }

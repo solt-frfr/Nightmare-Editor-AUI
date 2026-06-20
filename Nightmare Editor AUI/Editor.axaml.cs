@@ -586,6 +586,7 @@ namespace Nightmare_Editor
                     {
                         AnimWindow anim = new AnimWindow(filepath);
                         anim.Show();
+                        Log.Text = $"Opened {textBox.Text} in Nightmare Animation Studio";
                     }
                     else if (Directory.Exists(Path.Combine(Path.GetDirectoryName(filepath), Path.GetFileNameWithoutExtension(filepath))))
                     {

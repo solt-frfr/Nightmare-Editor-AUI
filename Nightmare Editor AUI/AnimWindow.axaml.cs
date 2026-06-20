@@ -18,6 +18,7 @@ using Avalonia.Platform.Storage;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
 using Nightmare_Editor.NewTools;
+using Nightmare_Editor.NewTools.L2D;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Webp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -342,6 +343,7 @@ namespace Nightmare_Editor
                 if (Files3.Children[i] is TextBox textBox && textBox == selectedTextBox3)
                 {
                     AssignImage(i, 3);
+                    GroupInfoPanel.IsVisible = true;
                     break;
                 }
             }
@@ -455,11 +457,8 @@ namespace Nightmare_Editor
                                                 if (group.DestTexture == main.DestTextures[i].Name)
                                                 {
                                                     foundimage = true;
-                                                    byte[] source = new byte[main.DestTextures[i].Texture.Length - 0x80];
-                                                    for (int j = 0; j < source.Length; j++)
-                                                    {
-                                                        source[j] = main.DestTextures[i].Texture[j + 0x80];
-                                                    }
+                                                    byte[] source = CTT.SplitHeader(main.DestTextures[i].Texture).data;
+                                                    
                                                     Texture.Source = ConvertToImageSource(CTT.Deswizzle(source, group.DestWidth, group.DestHeight, main.DestTextures[i].Texture[0x1C]));
                                                     FileName.SelectedIndex = 0;
                                                     break;
@@ -823,11 +822,7 @@ namespace Nightmare_Editor
                     {
                         byte[] image = System.IO.File.ReadAllBytes(open[0].Path.LocalPath);
                         byte[] textwheader = CTT.Swizzle(image, main.DestTextures[j].Texture[0x1C]);
-                        byte[] text = new byte[textwheader.Length - 0x80];
-                        for (int k = 0; k < text.Length; k++)
-                        {
-                            text[k] = textwheader[k + 0x80];
-                        }
+                        byte[] text = CTT.SplitHeader(textwheader).data;
                         main.Textures[i].Data = text;
                         main.DecodedTextures[i] = SixLabors.ImageSharp.Image.Load(image);
                     }
@@ -912,20 +907,15 @@ namespace Nightmare_Editor
             aw.OnPicked = (int i) =>
             {
                 byte[] dest = main.DestTextures[i].Texture;
-                byte[] text = new byte[dest.Length - 0x80];
-                for (int j = 0; j < text.Length; j++)
-                {
-                    text[j] = dest[j + 0x80];
-                }
-                int height = dest[0x22] + (dest[0x23] * 0x100);
-                int width = dest[0x20] + (dest[0x21] * 0x100);
+                var split = CTT.SplitHeader(dest);
+                var attrib = CTT.GetAttributesFromHeader(split.header);
                 TXA.Texture texture = new TXA.Texture
                 {
                     DestTexture = main.DestTextures[i].Name,
-                    Data = text
+                    Data = split.data
                 };
                 main.Textures.Add(texture);
-                main.DecodedTextures.Add(CTT.Deswizzle(text, width, height, dest[0x1C]));
+                main.DecodedTextures.Add(CTT.Deswizzle(split.data, attrib.width, attrib.height, (int)attrib.format));
                 AddFile4();
                 for (int j = 1; j < 0x3FFFFFFF; j++)
                 {
@@ -943,64 +933,6 @@ namespace Nightmare_Editor
                     {
                         if (textbox != selectedTextBox4)
                             textbox.Background = (SolidColorBrush)new BrushConverter().ConvertFromString("#202020");
-                    }
-                    TextBox4_Click(null, null);
-                }
-            };
-            aw.ShowDialog(this);
-        }
-
-        private void BadApple(object sender, PointerReleasedEventArgs e)
-        {
-            PickText aw = new PickText(main);
-            aw.OnPicked = (int i) =>
-            {
-                byte[] dest = main.DestTextures[i].Texture;
-                byte[] text = new byte[dest.Length - 0x80];
-                for (int j = 0; j < text.Length; j++)
-                {
-                    text[j] = dest[j + 0x80];
-                }
-                int height = dest[0x22] + (dest[0x23] * 0x100);
-                int width = dest[0x20] + (dest[0x21] * 0x100);
-                TXA.Texture texture = new TXA.Texture
-                {
-                    DestTexture = main.DestTextures[i].Name,
-                    Data = text
-                };
-                string[] files2 = Directory.GetFiles($@"/home/solt/Downloads/frames/downscaled/", $"*.png", SearchOption.AllDirectories);
-                for (int k = 0; k < files2.Length; k++)
-                {
-                    if (System.IO.File.Exists(files2[k]))
-                    {
-                        byte[] image = System.IO.File.ReadAllBytes(files2[k]);
-                        byte[] textwheader = CTT.Swizzle(image, dest[0x1C]);
-                        byte[] text2 = new byte[textwheader.Length - 0x80];
-                        for (int l = 0; l < text2.Length; l++)
-                        {
-                            text2[l] = textwheader[l + 0x80];
-                        }
-                        main.Textures.Add(new Texture { Data = text2, DestTexture = main.DestTextures[i].Name });
-                        main.DecodedTextures.Add(SixLabors.ImageSharp.Image.Load(image));
-                        AddFile4();
-                        for (int j = 1; j < 0x3FFFFFFF; j++)
-                        {
-                            if (!main.Adresses.Contains(j))
-                            {
-                                main.Adresses.Add(j);
-                                break;
-                            }
-                        }
-                    }
-                }
-                if (Textures.Children[Textures.Children.Count - 1] is TextBox tb)
-                {
-                    selectedTextBox4 = tb;
-                    tb.Background = new SolidColorBrush(Avalonia.Media.Color.Parse("#F04080"));
-                    foreach (TextBox textbox in Textures.Children)
-                    {
-                        if (textbox != selectedTextBox4)
-                            textbox.Background = new SolidColorBrush(Avalonia.Media.Color.Parse("#202020"));
                     }
                     TextBox4_Click(null, null);
                 }
@@ -1166,6 +1098,94 @@ namespace Nightmare_Editor
         {
             
         }
-        
+
+        private async void Group_TextureBox_OnKeyDown(object? sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                int i = Files.Children.IndexOf(selectedTextBox);
+                var box = MessageBoxManager.GetMessageBoxStandard(
+                    $"Change Destination Texture",
+                    $"Do you want to change this group's Destination Texture from {main.Groups[i].DestTexture} to {Group_TextureBox.Text}?",
+                    MsBox.Avalonia.Enums.ButtonEnum.YesNo,
+                    MsBox.Avalonia.Enums.Icon.Info
+                );
+                var result = await box.ShowAsPopupAsync(this);
+
+                if (result == ButtonResult.Yes)
+                {
+                    string[] files2 = Directory.GetFiles(Misc.Paths.work, $"*{Group_TextureBox.Text}.ctt", SearchOption.AllDirectories);
+                    if (files2.Length == 0)
+                    {
+                        var box2 = MessageBoxManager.GetMessageBoxStandard(
+                            $"Missing texture",
+                            $"{Group_TextureBox.Text} could not be found.",
+                            MsBox.Avalonia.Enums.ButtonEnum.Ok,
+                            MsBox.Avalonia.Enums.Icon.Info
+                        );
+                        await box2.ShowAsPopupAsync(this);
+                        return;
+                    }
+                    string file2 = files2[0];
+                    
+                    Group_TextureBox.Text = main.Groups[i].DestTexture;
+                    bool found = false;
+                    bool add = false;
+                    int dest_text_index = -1;
+                    for (int j = 0; j < main.DestTextures.Count; j++)
+                    {
+                        if (main.Groups[i].DestTexture == main.DestTextures[j].Name)
+                        {
+                            dest_text_index = j;
+                        }
+                    }
+                    if (dest_text_index == -1)
+                    {
+                        var box2 = MessageBoxManager.GetMessageBoxStandard(
+                            $"Index out of bounds",
+                            $"Somehow, the original destination texture was not found inside the TXA.",
+                            MsBox.Avalonia.Enums.ButtonEnum.Ok,
+                            MsBox.Avalonia.Enums.Icon.Info
+                        );
+                        await box2.ShowAsPopupAsync(this);
+                        return;
+                    }
+                    for (int j = 0; j < main.DestTextures.Count; j++)
+                    {
+                        if (main.Groups[j].DestTexture == main.DestTextures[dest_text_index].Name)
+                        {
+                            if (found)
+                            {
+                                add = true;
+                                break;
+                            }
+                            found = true;
+                        }
+                    }
+                    if (main.Groups[i].DestTexture == main.DestTextures[dest_text_index].Name)
+                    {
+                        if (add)
+                        {
+                            main.DestTextures.Add(new DestTexture
+                            {
+                                Name = Path.GetFileNameWithoutExtension(file2),
+                                Texture = System.IO.File.ReadAllBytes(file2)
+                            });
+                        }
+                        else
+                        {
+                            main.DestTextures[dest_text_index] = new DestTexture
+                            {
+                                Name = Path.GetFileNameWithoutExtension(file2),
+                                Texture = System.IO.File.ReadAllBytes(file2)
+                            };
+                        }
+                        main.Groups[i].DestTexture = Path.GetFileNameWithoutExtension(file2);
+                        Group_TextureBox.Text = Path.GetFileNameWithoutExtension(file2);
+                    }
+                    InfoWindow.IsVisible = false;
+                }
+            }
+        }
     }
 }

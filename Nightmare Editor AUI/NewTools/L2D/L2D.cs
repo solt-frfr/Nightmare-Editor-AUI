@@ -98,9 +98,11 @@ namespace Nightmare_Editor.NewTools.L2D
                 {
                     ctt_header[p] = data[j++];
                 }
-                int height = ctt_header[0x22] + (ctt_header[0x23] * 0x100);
-                int width = ctt_header[0x20] + (ctt_header[0x21] * 0x100);
-                int format = ctt_header[0x1C];
+
+                var attrib = CTT.GetAttributesFromHeader(ctt_header);
+                int width = attrib.width;
+                int height = attrib.height;
+                int format = (int)attrib.format;
                 int total = 0;
                 if (format == 0)
                 {
@@ -132,18 +134,12 @@ namespace Nightmare_Editor.NewTools.L2D
                 }
 
                 int l = 0;
-                byte[] ctt = new byte[total + 0x80];
+                byte[] ctt = new byte[total];
                 for (int p = 0; p < ctt.Length; p++)
                 {
-                    if (p < 0x80)
-                    {
-                        ctt[p] = ctt_header[l++];
-                    }
-                    else
-                    {
-                        ctt[p] = data[j++];
-                    }
+                    ctt[p] = data[0x80 + j++];
                 }
+                ctt = CTT.MeldHeader(ctt_header, ctt);
                 textures.Add(ctt);
             }
 
@@ -164,32 +160,12 @@ namespace Nightmare_Editor.NewTools.L2D
             {
                 if (file.textures[i] != null)
                     System.IO.File.WriteAllBytes(Path.Combine(path, i + ".ctt"), file.textures[i]);
-                
-                int j = 0;
-                int k = 0;
-                byte[] header = new byte[0x80];
-                byte[] data = new byte[file.textures[i].Length - 0x80];
-                
-                for (int o = 0; o < file.textures[i].Length; o++)
-                {
 
-                    if (o < 0x80)
-                    {
-                        header[j++] = file.textures[i][o];
-                    }
-                    else
-                    {
-                        data[k++] = file.textures[i][o];
-                    }
-                    
-                }
-                int height = header[0x22] + (header[0x23] * 0x100);
-                int width = header[0x20] + (header[0x21] * 0x100);
-                CTT.Format format1 = (CTT.Format)header[0x1C];
-                string format = format1.ToString();
-                using (var image = CTT.Deswizzle(data, width, height, (int)format1))
+                var split = CTT.SplitHeader(file.textures[i]);
+                var attrib = CTT.GetAttributesFromHeader(split.header);
+                using (var image = CTT.Deswizzle(split.data, attrib.width, attrib.height, (int)attrib.format))
                 {
-                    image.SaveAsPng(Path.Combine(path, i + "." + format + ".png"));
+                    image.SaveAsPng(Path.Combine(path, i + "." + attrib.format.ToString() + ".png"));
                 }
             }
         }

@@ -436,12 +436,8 @@ namespace Nightmare_Editor.NewTools
                     y += txa.Groups[groupIndex].DestHeight;
                     
                     byte[] textwheader = CTT.Swizzle(rawImageSlice, txa.DestTextures[destTextureIndex].Texture[0x1C]);
-                    byte[] text = new byte[textwheader.Length - 0x80];
-                    for (int k = 0; k < text.Length; k++)
-                    {
-                        text[k] = textwheader[k + 0x80];
-                    }
-                    txa.Textures[i].Data = text;
+
+                    txa.Textures[i].Data = CTT.SplitHeader(textwheader).data;;
                     txa.DecodedTextures[i] = SixLabors.ImageSharp.Image.Load(rawImageSlice);
                 }
             }

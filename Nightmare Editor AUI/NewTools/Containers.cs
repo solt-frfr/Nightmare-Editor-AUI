@@ -89,11 +89,8 @@ public class Containers
                     {
                         header[k] = data[i + k];
                     }
-                    int height = header[0x22] + (header[0x23] * 0x100);
-                    int width = header[0x20] + (header[0x21] * 0x100);
-                    CTT.Format format1 = (CTT.Format)header[0x1C];
-                    string format = format1.ToString();
 
+                    var attrib = CTT.GetAttributesFromHeader(header);
                     int total = header[0x14] + (header[0x15] << 8) + (header[0x16] << 16) + (header[0x17] << 24);
                     byte[] newData = new byte[total];
 
@@ -120,9 +117,9 @@ public class Containers
                     
                     File.WriteAllBytes(Path.Combine(path, tex_idx + ".ctt"), saveData);
 
-                    using (var image = CTT.Deswizzle(newData, width, height, (int)format1))
+                    using (var image = CTT.Deswizzle(newData, attrib.width, attrib.height, (int)attrib.format))
                     {
-                        image.SaveAsPng(Path.Combine(path, tex_idx + "." + format + ".png"));
+                        image.SaveAsPng(Path.Combine(path, tex_idx + "." + attrib.format.ToString() + ".png"));
                     }
                     tex_idx++;
                 }

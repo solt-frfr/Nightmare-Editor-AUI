@@ -105,6 +105,10 @@ namespace Nightmare_Editor.NewTools
         {
             public static readonly List<FilePickerFileType> all = new List<FilePickerFileType>()
             {
+                new FilePickerFileType("All accepted files")
+                {
+                    Patterns = new List<string> { "*.rbin", "*.ctt", "*.l2d", "*.fep", "*.pmo", "*.pmp", "*.txa" }
+                },
                 new FilePickerFileType("Game Archive files")
                 {
                     Patterns = new List<string> { "*.rbin" }
@@ -128,6 +132,10 @@ namespace Nightmare_Editor.NewTools
                 new FilePickerFileType("Map files")
                 {
                     Patterns = new List<string> { "*.pmp" }
+                },
+                new FilePickerFileType("Texture Animation files")
+                {
+                    Patterns = new List<string> { "*.txa" }
                 },
                 new FilePickerFileType("All files")
                 {
@@ -174,6 +182,13 @@ namespace Nightmare_Editor.NewTools
                 new FilePickerFileType("Map files")
                 {
                     Patterns = new List<string> { "*.pmp" }
+                }
+            };
+            public static readonly List<FilePickerFileType> txa = new List<FilePickerFileType>()
+            {
+                new FilePickerFileType("Texture Animation files")
+                {
+                    Patterns = new List<string> { "*.txa" }
                 }
             };
             public static readonly List<FilePickerFileType> bcstm = new List<FilePickerFileType>()

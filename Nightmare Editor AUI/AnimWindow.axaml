@@ -73,7 +73,7 @@
             <TextBox Text="Group Info" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" IsReadOnly="True" Focusable="False" Cursor="Hand"/>
             <Grid ColumnDefinitions="*,*">
                 <TextBox Text="Texture:" Foreground="#323b4a" FontWeight='Black' BorderBrush="Gray" Background="White" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" IsReadOnly="True" Focusable="False" Cursor="Hand"/>
-                <TextBox Grid.Column="1" Name="Group_TextureBox" Text="p_ex020_M" Foreground="#323b4a" FontWeight='Black' BorderBrush="Gray" Background="White" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                <TextBox Grid.Column="1" Name="Group_TextureBox" KeyDown="Group_TextureBox_OnKeyDown" Text="p_ex020_M" Foreground="#323b4a" FontWeight='Black' BorderBrush="Gray" Background="White" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
             </Grid>
             <Grid ColumnDefinitions="*,*">
                 <TextBox Text="Width:" Foreground="#323b4a" FontWeight='Black' BorderBrush="Gray" Background="White" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" IsReadOnly="True" Focusable="False" Cursor="Hand"/>
