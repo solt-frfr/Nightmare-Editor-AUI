@@ -29,7 +29,20 @@ Console.WriteLine("_____________________________________________________________
 
 if (args.Length != 0)
 {
-    Console.Write(@"Choose what you want to do :
+    int option = -1;
+    bool silent = false;
+    if (args.Length >= 2)
+    {
+        option = int.Parse(args[1]);
+    }
+    if (args.Length >= 3)
+    {
+        silent = (args[2] == "-s" || args[2] == "-silent");
+    }
+
+    if (option == -1)
+    {
+        Console.Write(@"Choose what you want to do :
 1) Unpack Files                 // Input: .rbin
 2) Repack Files                 // Input: .rbin
 3) Parse CTD Files              // Not Implemented
@@ -44,12 +57,13 @@ if (args.Length != 0)
 12) Repack Container* Files     // Input: Container File
 13) Create TXA Atlas            // Input: .txa, required textures must be in the same directory
 14) Exit
-15) Test RBIN Hash Algorithm
 
 *Container files include .l2d, .fep, .pmo, .pmp, and the operations affect the textures inside.
 
 Make your choice : ");
-    int option = int.Parse(Console.ReadLine());
+        
+        option = int.Parse(Console.ReadLine());
+    }
     if (option == 1)
     {
         try
@@ -164,9 +178,15 @@ Make your choice : ");
         }
     }
 
-    Console.WriteLine("Done!");
-    Console.ReadLine();
-    Console.WriteLine("The program will now close.");
+    if (!silent)
+    {
+        if (option != 14)
+        {
+            Console.WriteLine("Done!");
+            Console.ReadLine();
+        }
+        Console.WriteLine("The program will now close.");    
+    }
 }
 else
 {

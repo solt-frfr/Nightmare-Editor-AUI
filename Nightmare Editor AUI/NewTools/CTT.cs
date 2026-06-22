@@ -9,6 +9,7 @@ using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.PixelFormats;
 using System.Reflection;
 using System.Text.Json;
+using Markdown.Avalonia;
 using Nightmare_Editor_AUI.Controls;
 using SixLabors.ImageSharp.ColorSpaces;
 using SixLabors.ImageSharp.Processing;
@@ -46,6 +47,19 @@ namespace Nightmare_Editor.NewTools
             ETC1A4 = 13,
         }
 
+        public static bool HeaderCheck(byte[] ctt)
+        {
+            if (ctt[0] == 0x43 && ctt[1] == 0x54 && ctt[2] == 0x52 &&
+                ctt[3] == 0x54) // Check it has a header by checking if the first four bytes are CTRT
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public static (int width, int height, Format format) GetAttributesFromFile(string file)
         {
             byte[] header;
@@ -61,8 +75,7 @@ namespace Nightmare_Editor.NewTools
 
         public static (byte[] header, byte[] data) SplitHeader(byte[] ctt)
         {
-            if (ctt[0] == 0x43 && ctt[1] == 0x54 && ctt[2] == 0x52 &&
-                ctt[3] == 0x54) // Check it has a header by checking if the first four bytes are CTRT
+            if (HeaderCheck(ctt))
             {
                 byte[] header = new byte[0x80];
                 byte[] data = new byte[ctt.Length - 0x80];
@@ -89,8 +102,7 @@ namespace Nightmare_Editor.NewTools
         /// <returns>Returns a byte array containing complete CTT data with a CTT Header.</returns>
         public static byte[] AddHeader(byte[] ctt, int width, int height, Format format)
         {
-            if (ctt[0] == 0x43 && ctt[1] == 0x54 && ctt[2] == 0x52 &&
-                ctt[3] == 0x54) // Check it has a header by checking if the first four bytes are CTRT
+            if (HeaderCheck(ctt))
             {
                 return ctt;
             }
@@ -122,8 +134,7 @@ namespace Nightmare_Editor.NewTools
         /// <returns>Returns a byte array containing complete CTT data with a CTT Header.</returns>
         public static byte[] MeldHeader(byte[] header, byte[] ctt)
         {
-            if (ctt[0] == 0x43 && ctt[1] == 0x54 && ctt[2] == 0x52 &&
-                ctt[3] == 0x54) // Check it has a header by checking if the first four bytes are CTRT
+            if (HeaderCheck(ctt))
             {
                 return ctt;
             }
@@ -152,6 +163,110 @@ namespace Nightmare_Editor.NewTools
             int width = header[0x20] + (header[0x21] * 0x100);
             Format format = (Format)header[0x1C];
             return (width, height, format);
+        }
+
+        public static byte[] CropCTT(byte[] ctt, int width, int height)
+        {
+            if (HeaderCheck(ctt))
+            {
+                if (width == 0 || height == 0)
+                {
+                    return ctt;
+                }
+                var split = SplitHeader(ctt);
+                var attrib = GetAttributesFromHeader(split.header);
+                double bpp = 0;
+                if ((int)attrib.format == 0)
+                {
+                    bpp = 4;
+                }
+                else if ((int)attrib.format == 1)
+                {
+                    bpp = 3;
+                }
+                else if ((int)attrib.format <= 6)
+                {
+                    bpp = 2;
+                }
+                else if ((int)attrib.format <= 9 || (int)attrib.format == 13)
+                {
+                    bpp = 1;
+                }
+                else
+                {
+                    bpp = 0.5;
+                }
+                int size = (int)(width * attrib.height * bpp);
+                byte[] ctt_changed_width = new byte[size];
+                int tile_size = 8;
+                
+                if (width % tile_size == 0 && width != attrib.width && width > 0)
+                {
+                    int width_change = width - attrib.width;
+                    int old_index = 0;
+                    int new_index = 0;
+                    if (width_change > 0)
+                    {
+                        for (int j = 0; j < attrib.height / tile_size; j++)
+                        for (int i = 0; i < width * tile_size * bpp; i++)
+                        {
+                            if (i < attrib.width * tile_size * bpp)
+                            {
+                                ctt_changed_width[new_index++] = split.data[old_index++];
+                            }
+                            else
+                            {
+                                ctt_changed_width[new_index++] = 0;
+                            }
+                        }
+                    }
+                    else if (width_change < 0)
+                    {
+                        for (int j = 0; j < attrib.height / tile_size; j++)
+                        for (int i = 0; i < attrib.width * tile_size * bpp; i++)
+                        {
+                            if (i < width * tile_size * bpp)
+                            {
+                                ctt_changed_width[new_index++] = split.data[old_index++];
+                            }
+                            else
+                            {
+                                old_index++;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        ctt_changed_width = ctt;
+                    }
+                }
+
+                size = (int)(width * height * bpp);
+                byte[] new_ctt = new byte[size];
+                if (height % tile_size == 0 && height != attrib.height && height > 0)
+                {
+                    int height_change = height - attrib.height;
+                    if (height_change > 0)
+                    {
+                        Array.Copy(ctt_changed_width, new_ctt, ctt_changed_width.Length);
+                    }
+                    else if (height_change < 0)
+                    {
+                        new_ctt = ctt_changed_width[0..(int)(width * height * bpp)];
+                    }
+                    else
+                    {
+                        new_ctt = ctt_changed_width;
+                    }
+                    
+                }
+                
+                return AddHeader(new_ctt, width, height, attrib.format);
+            }
+            else
+            {
+                return ctt;
+            }
         }
 
         public static int[] ETC1OffTable(int index)
