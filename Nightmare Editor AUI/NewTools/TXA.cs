@@ -443,5 +443,27 @@ namespace Nightmare_Editor.NewTools
             }
             return txa;
         }
+
+        public static TXAFile ReDecodeTextures(TXAFile txa)
+        {
+            for (int o = 0; o < txa.Textures.Count; o++)
+            {
+                int group_index = -1;
+                for (int j = 0; j < txa.DestTextures.Count; j++)
+                {
+                    if (txa.Textures[o].DestTexture == txa.Groups[j].DestTexture)
+                    {
+                        group_index = j;
+                    }
+                }
+                
+                if (txa.Textures[o].DestTexture == txa.Groups[group_index].DestTexture)
+                {
+                    txa.DecodedTextures[o] = CTT.Deswizzle(txa.Textures[o].Data, txa.Groups[group_index].DestWidth, txa.Groups[group_index].DestHeight, txa.Groups[group_index].Format);
+                }
+            }
+
+            return txa;
+        }
     }
 }

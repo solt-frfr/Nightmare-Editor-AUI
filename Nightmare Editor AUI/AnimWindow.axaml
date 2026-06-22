@@ -77,11 +77,11 @@
             </Grid>
             <Grid ColumnDefinitions="*,*">
                 <TextBox Text="Width:" Foreground="#323b4a" FontWeight='Black' BorderBrush="Gray" Background="White" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" IsReadOnly="True" Focusable="False" Cursor="Hand"/>
-                <TextBox Grid.Column="1" Name="Group_WidthBox" Text="p_ex020_M" Foreground="#323b4a" FontWeight='Black' BorderBrush="Gray" Background="White" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                <TextBox Grid.Column="1" Name="Group_WidthBox" KeyDown="Group_WidthBox_OnKeyDown" Text="p_ex020_M" Foreground="#323b4a" FontWeight='Black' BorderBrush="Gray" Background="White" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
             </Grid>
             <Grid ColumnDefinitions="*,*">
                 <TextBox Text="Height:" Foreground="#323b4a" FontWeight='Black' BorderBrush="Gray" Background="White" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" IsReadOnly="True" Focusable="False" Cursor="Hand"/>
-                <TextBox Grid.Column="1" Name="Group_HeightBox" Text="p_ex020_M" Foreground="#323b4a" FontWeight='Black' BorderBrush="Gray" Background="White" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                <TextBox Grid.Column="1" Name="Group_HeightBox" KeyDown="Group_HeightBox_OnKeyDown" Text="p_ex020_M" Foreground="#323b4a" FontWeight='Black' BorderBrush="Gray" Background="White" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
             </Grid>
             <Grid ColumnDefinitions="*,*">
                 <TextBox Text="Animation Count" Foreground="#323b4a" FontWeight='Black' BorderBrush="Gray" Background="White" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" IsReadOnly="True" Focusable="False" Cursor="Hand"/>

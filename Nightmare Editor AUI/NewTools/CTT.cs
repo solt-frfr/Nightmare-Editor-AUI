@@ -237,8 +237,12 @@ namespace Nightmare_Editor.NewTools
                     }
                     else
                     {
-                        ctt_changed_width = ctt;
+                        ctt_changed_width = split.data;
                     }
+                }
+                else
+                {
+                    ctt_changed_width = split.data;
                 }
 
                 size = (int)(width * height * bpp);

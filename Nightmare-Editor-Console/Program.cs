@@ -178,11 +178,15 @@ Make your choice : ");
         }
     }
 
+
+    if (option != 14)
+    {
+        Console.WriteLine("Done!");
+    }
     if (!silent)
     {
         if (option != 14)
         {
-            Console.WriteLine("Done!");
             Console.ReadLine();
         }
         Console.WriteLine("The program will now close.");    

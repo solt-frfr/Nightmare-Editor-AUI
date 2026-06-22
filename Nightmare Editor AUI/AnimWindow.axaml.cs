@@ -407,7 +407,7 @@ namespace Nightmare_Editor
                 AddFrame.IsVisible = false;
                 Texture.Source = ConvertToImageSource(main.DecodedTextures[(int)texture]);
                 int j = 0;
-                for (int k = 0; k < main.Textures.Count; k++)
+                for (int k = 0; k < main.DestTextures.Count; k++)
                 {
                     if (main.Textures[(int)texture].DestTexture == main.DestTextures[k].Name)
                     {
@@ -674,6 +674,8 @@ namespace Nightmare_Editor
                     }
                 }
             });
+            if (save == null)
+                return;
             if (!string.IsNullOrWhiteSpace(save.Path.LocalPath))
             {
                 System.IO.File.WriteAllBytes(save.Path.LocalPath, file);
@@ -1128,9 +1130,40 @@ namespace Nightmare_Editor
                     }
                     string file2 = files2[0];
                     
-                    Group_TextureBox.Text = main.Groups[i].DestTexture;
-                    bool found = false;
-                    bool add = false;
+                    var attrib = CTT.GetAttributesFromFile(file2);
+                    var resizebox = MessageBoxManager.GetMessageBoxStandard(
+                        $"Resize Texture",
+                        $"Do you want to resize this group's Textures to match? ({main.Groups[i].DestWidth}x{main.Groups[i].DestHeight} to {attrib.width}x{attrib.height})",
+                        MsBox.Avalonia.Enums.ButtonEnum.YesNo,
+                        MsBox.Avalonia.Enums.Icon.Info
+                    );
+                    var resizeresult = await resizebox.ShowAsPopupAsync(this);
+
+                    if (resizeresult == ButtonResult.Yes)
+                    {
+                        int dest_text_index_resize = -1;
+                        for (int j = 0; j < main.DestTextures.Count; j++)
+                        {
+                            if (main.Groups[i].DestTexture == main.DestTextures[j].Name)
+                            {
+                                dest_text_index_resize = j;
+                            }
+                        }
+                        for (int o = 0; o < main.Textures.Count; o++)
+                        {
+                            if (main.Textures[o].DestTexture == main.DestTextures[dest_text_index_resize].Name)
+                            {
+                                main.Textures[o].Data = CTT.SplitHeader(CTT.CropCTT(CTT.AddHeader(main.Textures[o].Data, main.Groups[i].DestWidth, main.Groups[i].DestHeight, (CTT.Format)main.Groups[i].Format), attrib.width, attrib.height)).data;
+                            }
+                        }
+                        main.Groups[i].DestWidth = attrib.width;
+                        main.Groups[i].DestHeight = attrib.height;
+                        Group_WidthBox.Text = attrib.width.ToString();
+                        Group_HeightBox.Text = attrib.height.ToString();
+                        InfoWindow.IsVisible = false;
+                        main = TXA.ReDecodeTextures(main);
+                    }
+                    
                     int dest_text_index = -1;
                     for (int j = 0; j < main.DestTextures.Count; j++)
                     {
@@ -1150,41 +1183,150 @@ namespace Nightmare_Editor
                         await box2.ShowAsPopupAsync(this);
                         return;
                     }
-                    for (int j = 0; j < main.DestTextures.Count; j++)
-                    {
-                        if (main.Groups[j].DestTexture == main.DestTextures[dest_text_index].Name)
-                        {
-                            if (found)
-                            {
-                                add = true;
-                                break;
-                            }
-                            found = true;
-                        }
-                    }
                     if (main.Groups[i].DestTexture == main.DestTextures[dest_text_index].Name)
                     {
-                        if (add)
+                        string tex_name = Path.GetFileNameWithoutExtension(file2);
+                        for (int o = 0; o < main.Textures.Count; o++)
                         {
-                            main.DestTextures.Add(new DestTexture
+                            if (main.Textures[o].DestTexture == main.DestTextures[dest_text_index].Name)
                             {
-                                Name = Path.GetFileNameWithoutExtension(file2),
-                                Texture = System.IO.File.ReadAllBytes(file2)
-                            });
+                                main.Textures[o].DestTexture = tex_name;
+                            }
                         }
-                        else
+                        main.DestTextures[dest_text_index] = new DestTexture
                         {
-                            main.DestTextures[dest_text_index] = new DestTexture
-                            {
-                                Name = Path.GetFileNameWithoutExtension(file2),
-                                Texture = System.IO.File.ReadAllBytes(file2)
-                            };
-                        }
-                        main.Groups[i].DestTexture = Path.GetFileNameWithoutExtension(file2);
-                        Group_TextureBox.Text = Path.GetFileNameWithoutExtension(file2);
+                            Name = tex_name,
+                            Texture = System.IO.File.ReadAllBytes(file2)
+                        };
+                        main.Groups[i].DestTexture = tex_name;
+                        Group_TextureBox.Text = tex_name;
                     }
                     InfoWindow.IsVisible = false;
                 }
+            }
+        }
+
+        private async void Group_WidthBox_OnKeyDown(object? sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                if (int.TryParse(Group_WidthBox.Text, out int new_width))
+                {
+                    if (new_width <= 0)
+                    {
+                        var invalidbox = MessageBoxManager.GetMessageBoxStandard(
+                            $"Cannot change to given width.",
+                            $"The new width must be greater than zero.",
+                            MsBox.Avalonia.Enums.ButtonEnum.Ok,
+                            MsBox.Avalonia.Enums.Icon.Error
+                        );
+                        await invalidbox.ShowAsPopupAsync(this);
+                        return;
+                    }
+                    if (new_width % 8 != 0)
+                    {
+                        var noteightbox = MessageBoxManager.GetMessageBoxStandard(
+                            $"Cannot change to given width.",
+                            $"The new width is not divisible by 8.",
+                            MsBox.Avalonia.Enums.ButtonEnum.Ok,
+                            MsBox.Avalonia.Enums.Icon.Error
+                        );
+                        await noteightbox.ShowAsPopupAsync(this);
+                        return;
+                    }
+                }
+                int i = Files.Children.IndexOf(selectedTextBox);
+                var box = MessageBoxManager.GetMessageBoxStandard(
+                    $"Resize Group",
+                    $"Do you want to change this group's width from {main.Groups[i].DestWidth} to {new_width}?",
+                    MsBox.Avalonia.Enums.ButtonEnum.YesNo,
+                    MsBox.Avalonia.Enums.Icon.Info
+                );
+                var result = await box.ShowAsPopupAsync(this);
+
+                if (result == ButtonResult.Yes)
+                {
+                    int dest_text_index = -1;
+                    for (int j = 0; j < main.DestTextures.Count; j++)
+                    {
+                        if (main.Groups[i].DestTexture == main.DestTextures[j].Name)
+                        {
+                            dest_text_index = j;
+                        }
+                    }
+                    for (int o = 0; o < main.Textures.Count; o++)
+                    {
+                        if (main.Textures[o].DestTexture == main.DestTextures[dest_text_index].Name)
+                        {
+                            main.Textures[o].Data = CTT.SplitHeader(CTT.CropCTT(CTT.AddHeader(main.Textures[o].Data, main.Groups[i].DestWidth, main.Groups[i].DestHeight, (CTT.Format)main.Groups[i].Format), main.Groups[i].DestWidth, new_width)).data;
+                        }
+                    }
+                    main.Groups[i].DestWidth = new_width;
+                    InfoWindow.IsVisible = false;
+                }
+                main = TXA.ReDecodeTextures(main);
+            }
+        }
+
+        private async void Group_HeightBox_OnKeyDown(object? sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                if (int.TryParse(Group_WidthBox.Text, out int new_height))
+                {
+                    if (new_height <= 0)
+                    {
+                        var invalidbox = MessageBoxManager.GetMessageBoxStandard(
+                            $"Cannot change to given height.",
+                            $"The new height must be greater than zero.",
+                            MsBox.Avalonia.Enums.ButtonEnum.Ok,
+                            MsBox.Avalonia.Enums.Icon.Error
+                        );
+                        await invalidbox.ShowAsPopupAsync(this);
+                        return;
+                    }
+                    if (new_height % 8 != 0)
+                    {
+                        var noteightbox = MessageBoxManager.GetMessageBoxStandard(
+                            $"Cannot change to given height.",
+                            $"The new height is not divisible by 8.",
+                            MsBox.Avalonia.Enums.ButtonEnum.Ok,
+                            MsBox.Avalonia.Enums.Icon.Error
+                        );
+                        await noteightbox.ShowAsPopupAsync(this);
+                        return;
+                    }
+                }
+                int i = Files.Children.IndexOf(selectedTextBox);
+                var box = MessageBoxManager.GetMessageBoxStandard(
+                    $"Resize Group",
+                    $"Do you want to change this group's height from {main.Groups[i].DestHeight} to {new_height}?",
+                    MsBox.Avalonia.Enums.ButtonEnum.YesNo,
+                    MsBox.Avalonia.Enums.Icon.Info
+                );
+                var result = await box.ShowAsPopupAsync(this);
+
+                if (result == ButtonResult.Yes)
+                {
+                    int dest_text_index = -1;
+                    for (int j = 0; j < main.DestTextures.Count; j++)
+                    {
+                        if (main.Groups[i].DestTexture == main.DestTextures[j].Name)
+                        {
+                            dest_text_index = j;
+                        }
+                    }
+                    for (int o = 0; o < main.Textures.Count; o++)
+                    {
+                        if (main.Textures[o].DestTexture == main.DestTextures[dest_text_index].Name)
+                        {
+                            main.Textures[o].Data = CTT.SplitHeader(CTT.CropCTT(CTT.AddHeader(main.Textures[o].Data, main.Groups[i].DestWidth, main.Groups[i].DestHeight, (CTT.Format)main.Groups[i].Format), main.Groups[i].DestWidth, new_height)).data;
+                        }
+                    }
+                    main.Groups[i].DestHeight = new_height;
+                    InfoWindow.IsVisible = false;
+                }
+                main = TXA.ReDecodeTextures(main);
             }
         }
     }
