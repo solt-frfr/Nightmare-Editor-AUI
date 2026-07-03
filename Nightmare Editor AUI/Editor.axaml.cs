@@ -931,7 +931,7 @@ namespace Nightmare_Editor
             {
                 if (sender.EndsWith(enumValues[i].ToString()))
                 {
-                    return Misc.FileFilters.all[i];
+                    return Misc.FileFilters.all[i + 1];
                 }
             }
             return null;

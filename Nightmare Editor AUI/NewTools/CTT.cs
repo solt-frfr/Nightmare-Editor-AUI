@@ -955,8 +955,8 @@ namespace Nightmare_Editor.NewTools
             int j = 0;
             for (int i = 0; i < ogData.Length; i++)
             {
-                int a4 = (ogData[i] >> 4) & 0xF;
-                int gray4 = ogData[i] & 0xF;
+                int a4 = (ogData[i]) & 0xF;
+                int gray4 = (ogData[i] >> 4) & 0xF;
 
                 byte a8 = (byte)(a4 << 4 | a4);
                 byte gray8 = (byte)(gray4 << 4 | gray4);
@@ -988,12 +988,12 @@ namespace Nightmare_Editor.NewTools
                 byte gray8_1 = (byte)(gray4_1 << 4 | gray4_1);
                 byte gray8_2 = (byte)(gray4_2 << 4 | gray4_2);
 
-                newData[j++] = gray8_1;
-                newData[j++] = gray8_1;
-                newData[j++] = gray8_1;
                 newData[j++] = gray8_2;
                 newData[j++] = gray8_2;
                 newData[j++] = gray8_2;
+                newData[j++] = gray8_1;
+                newData[j++] = gray8_1;
+                newData[j++] = gray8_1;
             }
 
             return newData;
@@ -1017,9 +1017,9 @@ namespace Nightmare_Editor.NewTools
                 byte a8_1 = (byte)(a4_1 << 4 | a4_1);
                 byte a8_2 = (byte)(a4_2 << 4 | a4_2);
 
-                newData[j++] = a8_1;
-                j += 3;
                 newData[j++] = a8_2;
+                j += 3;
+                newData[j++] = a8_1;
                 j += 3;
             }
 
@@ -1752,7 +1752,7 @@ namespace Nightmare_Editor.NewTools
                 int g = ogData[i + 2];
                 int b = ogData[i + 1];
                 int gray4 = (int)(0.299 * r + 0.587 * g + 0.114 * b) >> 4;
-                byte pixel = (byte)((a4 << 4) | gray4);
+                byte pixel = (byte)((gray4 << 4) | a4);
 
                 newData[j++] = pixel;
             }
@@ -1788,7 +1788,7 @@ namespace Nightmare_Editor.NewTools
                 int b_2 = ogData[i + 5];
                 byte gray4_1 = (byte)((int)(0.299 * r_1 + 0.587 * g_1 + 0.114 * b_1) >> 4);
                 byte gray4_2 = (byte)((int)(0.299 * r_2 + 0.587 * g_2 + 0.114 * b_2) >> 4);
-                byte pixels = (byte)((gray4_1 << 4) | gray4_2);
+                byte pixels = (byte)((gray4_2 << 4) | gray4_1);
 
                 newData[j++] = pixels;
             }
@@ -1818,7 +1818,7 @@ namespace Nightmare_Editor.NewTools
             {
                 int a4_1 = ogData[i] >> 4;
                 int a4_2 = ogData[i + 4] >> 4;
-                byte pixels = (byte)((a4_1 << 4) | a4_2);
+                byte pixels = (byte)((a4_2 << 4) | a4_1);
 
                 newData[j++] = pixels;
             }
