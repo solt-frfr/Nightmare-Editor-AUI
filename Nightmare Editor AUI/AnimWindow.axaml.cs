@@ -662,6 +662,9 @@ namespace Nightmare_Editor
         private async void Export_Click(object sender, PointerReleasedEventArgs e)
         {
             byte[] file = TXA.Create(main);
+            var startFolder = await this.StorageProvider.TryGetFolderFromPathAsync(
+                Misc.Paths.work
+            );
 
             var save = await this.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
             {
@@ -672,7 +675,9 @@ namespace Nightmare_Editor
                     {
                         Patterns = new List<string> { "*.txa" }
                     }
-                }
+                },
+                SuggestedStartLocation = startFolder,
+                SuggestedFileName = File.Text
             });
             if (save == null)
                 return;
@@ -1098,7 +1103,32 @@ namespace Nightmare_Editor
 
         private async void ImportAtlas_Click(object sender, RoutedEventArgs e)
         {
-            
+            PickText aw = new PickText(main);
+            int index = -1;
+            aw.OnPicked = (int i) =>
+            {
+                index = i;
+            };
+            await aw.ShowDialog(this);
+            if (index == -1)
+                return;
+            var file = await this.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+            {
+                Title = "Import Atlas...",
+                FileTypeFilter = new List<FilePickerFileType>
+                {
+                    new FilePickerFileType("TXA Texture Atlas")
+                    {
+                        Patterns = new List<string> { "*.png" }
+                    }
+                }
+            });
+            if (file == null || file.Count < 1)
+                return;
+            if (!string.IsNullOrWhiteSpace(file[0].Path.LocalPath))
+            {
+                main = TXA.ImportAtlas(main, file[0].Path.LocalPath, index);
+            }   
         }
 
         private async void Group_TextureBox_OnKeyDown(object? sender, KeyEventArgs e)
@@ -1133,7 +1163,7 @@ namespace Nightmare_Editor
                     var attrib = CTT.GetAttributesFromFile(file2);
                     var resizebox = MessageBoxManager.GetMessageBoxStandard(
                         $"Resize Texture",
-                        $"Do you want to resize this group's Textures to match? ({main.Groups[i].DestWidth}x{main.Groups[i].DestHeight} to {attrib.width}x{attrib.height})",
+                        $"Do you want to resize this group's Textures to match? ({main.Groups[i].DestWidth}x{main.Groups[i].DestHeight} to {attrib.width}x{attrib.height}) (It's recommended to do it.)",
                         MsBox.Avalonia.Enums.ButtonEnum.YesNo,
                         MsBox.Avalonia.Enums.Icon.Info
                     );
@@ -1199,8 +1229,44 @@ namespace Nightmare_Editor
                             Texture = System.IO.File.ReadAllBytes(file2)
                         };
                         main.Groups[i].DestTexture = tex_name;
+                        if (main.Groups[i].Format != (int)attrib.format)
+                        {
+                            var convertbox = MessageBoxManager.GetMessageBoxStandard(
+                                $"Convert Texture",
+                                $"Do you want to convert this group's Textures to match the new format? ({((CTT.Format)main.Groups[i].Format).ToString()} -> {attrib.format.ToString()}) (It's recommended to do it.)",
+                                MsBox.Avalonia.Enums.ButtonEnum.YesNo,
+                                MsBox.Avalonia.Enums.Icon.Info
+                            );
+                            var convertresult = await convertbox.ShowAsPopupAsync(this);
+                            if (convertresult == ButtonResult.Yes)
+                            {
+                                int dest_text_index_convert = -1;
+                                for (int j = 0; j < main.DestTextures.Count; j++)
+                                {
+                                    if (main.Groups[i].DestTexture == main.DestTextures[j].Name)
+                                    {
+                                        dest_text_index_convert = j;
+                                    }
+                                }
+                                for (int o = 0; o < main.Textures.Count; o++)
+                                {
+                                    if (main.Textures[o].DestTexture == main.DestTextures[dest_text_index_convert].Name)
+                                    {
+                                        MemoryStream ms = new MemoryStream();
+                                        CTT.Deswizzle(main.Textures[o].Data, main.Groups[i].DestWidth,
+                                            main.Groups[i].DestHeight, main.Groups[i].Format).SaveAsPng(ms);
+                                        byte[] data = ms.ToArray();
+                                        main.Textures[o].Data = CTT.SplitHeader(CTT.Swizzle(data, (int)attrib.format)).data;
+                                    }
+                                }
+                                InfoWindow.IsVisible = false;
+                                main = TXA.ReDecodeTextures(main);
+                            }
+                        }
+                        main.Groups[i].Format = (int)CTT.GetAttributesFromFile(file2).format;
                         Group_TextureBox.Text = tex_name;
                     }
+                    main = TXA.ReDecodeTextures(main);
                     InfoWindow.IsVisible = false;
                 }
             }
@@ -1210,8 +1276,13 @@ namespace Nightmare_Editor
         {
             if (e.Key == Key.Enter)
             {
+                int i = Files.Children.IndexOf(selectedTextBox);
                 if (int.TryParse(Group_WidthBox.Text, out int new_width))
                 {
+                    if (new_width == main.Groups[i].DestWidth)
+                    {
+                        return;
+                    }
                     if (new_width <= 0)
                     {
                         var invalidbox = MessageBoxManager.GetMessageBoxStandard(
@@ -1235,7 +1306,6 @@ namespace Nightmare_Editor
                         return;
                     }
                 }
-                int i = Files.Children.IndexOf(selectedTextBox);
                 var box = MessageBoxManager.GetMessageBoxStandard(
                     $"Resize Group",
                     $"Do you want to change this group's width from {main.Groups[i].DestWidth} to {new_width}?",
@@ -1272,8 +1342,13 @@ namespace Nightmare_Editor
         {
             if (e.Key == Key.Enter)
             {
-                if (int.TryParse(Group_WidthBox.Text, out int new_height))
+                int i = Files.Children.IndexOf(selectedTextBox);
+                if (int.TryParse(Group_HeightBox.Text, out int new_height))
                 {
+                    if (new_height == main.Groups[i].DestHeight)
+                    {
+                        return;
+                    }
                     if (new_height <= 0)
                     {
                         var invalidbox = MessageBoxManager.GetMessageBoxStandard(
@@ -1297,7 +1372,6 @@ namespace Nightmare_Editor
                         return;
                     }
                 }
-                int i = Files.Children.IndexOf(selectedTextBox);
                 var box = MessageBoxManager.GetMessageBoxStandard(
                     $"Resize Group",
                     $"Do you want to change this group's height from {main.Groups[i].DestHeight} to {new_height}?",
