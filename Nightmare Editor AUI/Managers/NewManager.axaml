@@ -8,6 +8,7 @@
         xmlns:skia="clr-namespace:Avalonia.Svg.Skia;assembly=Svg.Controls.Skia.Avalonia"
         x:Class="Nightmare_Editor_AUI.NewManager"
         Title="Exam Editor - Menu Edition" Height="480" Width="800" Icon="/Assets/dreameater.ico"
+        WindowDecorations="Full" Background="Transparent" TransparencyLevelHint="Transparent"
         KeyDown="Window_OnKeyDown">
     <Window.Resources>
         <controls:PixelWidth x:Key="PixelWidth"/>
@@ -15,15 +16,15 @@
         <FontFamily x:Key="JetBrains Mono">avares://Nightmare Editor AUI/Assets/fonts#JetBrains Mono</FontFamily>
         <FontFamily x:Key="KH2 Menu">avares://Nightmare Editor AUI/Assets/fonts#KH2 ALL MENU</FontFamily>
     </Window.Resources>
-    <Grid Background="#F04080" Grid.RowDefinitions="28*,160*,52*" IsVisible="True">
+    <Grid Background="#000F" Grid.RowDefinitions="28*,160*,52*" IsVisible="True">
         <!-- Background separator thingy -->
         <Grid Grid.RowSpan="3">
             <Grid.Background>
                 <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
-                    <GradientStop Color="#011446" Offset="0.075"/>
-                    <GradientStop Color="#000" Offset="0.175"/>
-                    <GradientStop Color="#000" Offset="0.825"/>
-                    <GradientStop Color="#011446" Offset="0.925"/>
+                    <GradientStop Color="#000" Offset="0.075"/>
+                    <GradientStop Color="#B000" Offset="0.175"/>
+                    <GradientStop Color="#B000" Offset="0.825"/>
+                    <GradientStop Color="#000" Offset="0.925"/>
                 </LinearGradientBrush>
             </Grid.Background>
         </Grid>
@@ -33,12 +34,13 @@
             <StackPanel Name="MenuButtonsPanel" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=10|8}">
                 <controls:MenuButton Name="Menu_Mods" Click="Menu_Mods_OnClick" PointerEntered="MenuButton_Hover" Text="Mods" Description="Explore the mods that you've downloaded." HorizontalAlignment="Left" VerticalAlignment="Top" Scale="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|0|-1}"/>
                 <controls:MenuButton Name="Menu_Music" PointerEntered="MenuButton_Hover" Text="Music" Description="Replace the game's music tracks with others or your own." HorizontalAlignment="Left" VerticalAlignment="Top" Scale="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|0|-1}"/>
-                <controls:MenuButton Name="Menu_Settings" Click="Menu_Settings_OnClick" PointerEntered="MenuButton_Hover" Text="Settings" Description="Change settings regarding your Deploy Path and more." HorizontalAlignment="Left" VerticalAlignment="Top" Scale="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|0|-1}"/>
-                <controls:MenuButton Name="Menu_About" Click="Menu_About_OnClick" PointerEntered="MenuButton_Hover" Text="About" Description="Learn about this tool's creation and supporters." HorizontalAlignment="Left" VerticalAlignment="Top" Scale="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|0|-1}"/>
                 <controls:MenuButton Name="Menu_NE" Click="Menu_NE_OnClick" PointerEntered="MenuButton_Hover" Text="Nightmare Editor" Description="Open Nightmare Editor, the tool for making new mods." HorizontalAlignment="Left" VerticalAlignment="Top" Scale="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|0|-1}"/>
+                <controls:MenuButton Name="Menu_Settings" Click="Menu_Settings_OnClick" PointerEntered="MenuButton_Hover" Text="Settings" Description="Change settings regarding your Deploy Path and more." HorizontalAlignment="Left" VerticalAlignment="Top" Scale="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|0|-1}"/>
+                <controls:MenuButton Name="Menu_Themes" Click="Menu_Themes_OnClick" PointerEntered="MenuButton_Hover" Text="Themes" Description="Change to one of the other themes or import your own." HorizontalAlignment="Left" VerticalAlignment="Top" Scale="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|0|-1}"/>
+                <controls:MenuButton Name="Menu_About" Click="Menu_About_OnClick" PointerEntered="MenuButton_Hover" Text="About" Description="Learn about this tool's creation and supporters." HorizontalAlignment="Left" VerticalAlignment="Top" Scale="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|0|-1}"/>
                 <controls:MenuButton Name="Menu_Download" Click="Menu_Download_OnClick" PointerEntered="MenuButton_Hover" Text="Open Gamebanana" Description="Open this game's Gamebanana page in your default browser." HorizontalAlignment="Left" VerticalAlignment="Top" Scale="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|0|-1}"/>
+                <controls:MenuButton Name="Menu_Quit" Click="Menu_Quit_OnClick" PointerEntered="MenuButton_Hover" Text="Quit" Description="Close the program." HorizontalAlignment="Left" VerticalAlignment="Top" Scale="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|0|-1}"/>
             </StackPanel>
-            
             <Viewbox Name="SettingsWindow" IsVisible="False" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=13|5}">
                 <Grid Width="374" Height="150">
                     <Grid.Background>
@@ -266,7 +268,7 @@
         </Grid>
         
         <!-- Upper Section -->
-        <Grid>
+        <Grid Name="BG_U">
             <Grid.Background>
                 <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
                     <GradientStop Color="#00001d" Offset="0"/>
@@ -276,18 +278,18 @@
             <Viewbox Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|7|0|0}" HorizontalAlignment="Left" VerticalAlignment="Top">
                 <Grid Height="20" Width="240">
                     <Ellipse Height="16" Width="16" Margin="214,2,0,0" Fill="Black" HorizontalAlignment="Left"></Ellipse>
-                    <Rectangle Height="17" Width="220" Margin="0,1,0,0" Fill="#990000" HorizontalAlignment="Left" VerticalAlignment="Top"></Rectangle>
-                    <Ellipse Height="17" Width="17" Margin="212,1,0,0" Fill="#990000" HorizontalAlignment="Left" VerticalAlignment="Top"></Ellipse>
+                    <Rectangle Name="BGHighlightAlt1_U" Height="17" Width="220" Margin="0,1,0,0" Fill="#990000" HorizontalAlignment="Left" VerticalAlignment="Top"></Rectangle>
+                    <Ellipse Name="BGHighlightAlt2_U" Height="17" Width="17" Margin="212,1,0,0" Fill="#990000" HorizontalAlignment="Left" VerticalAlignment="Top"></Ellipse>
                     <TextBlock FontFamily="{StaticResource 'KH2 Menu'}" Text="{Binding Text, ElementName=SubText}" VerticalAlignment="Bottom" FontSize="9" Margin="171,0,0,3" Foreground="Black"></TextBlock>
                     <TextBlock Name="SubText" FontFamily="{StaticResource 'KH2 Menu'}" Text="Mods" VerticalAlignment="Bottom" FontSize="9" Margin="170,0,0,4" Foreground="White"></TextBlock>
                     <Ellipse Height="20" Width="20" Margin="142,2,0,0" Fill="Black" HorizontalAlignment="Left"></Ellipse>
-                    <Rectangle Height="20" Width="150" Fill="#002eff" HorizontalAlignment="Left"></Rectangle>
-                    <Ellipse Height="20" Width="20" Margin="140,0,0,0" Fill="#002eff" HorizontalAlignment="Left"></Ellipse>
+                    <Rectangle Name="BGHighlight1_U" Height="20" Width="150" Fill="#002eff" HorizontalAlignment="Left"></Rectangle>
+                    <Ellipse Name="BGHighlight2_U" Height="20" Width="20" Margin="140,0,0,0" Fill="#002eff" HorizontalAlignment="Left"></Ellipse>
                     <TextBlock FontFamily="{StaticResource 'KH2 Menu'}" Text="{Binding Text, ElementName=MainText}" FontSize="11" Margin="13,1,0,0" Foreground="Black"></TextBlock>
                     <TextBlock Name="MainText" FontFamily="{StaticResource 'KH2 Menu'}" Text="Exam Editor" FontSize="11" Margin="12,0,0,0" Foreground="White"></TextBlock>
                 </Grid>
             </Viewbox>
-            <Rectangle Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" Width="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=155}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|0|5}" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+            <Rectangle Name="MenuBar" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" Width="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=155}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|0|5}" HorizontalAlignment="Right" VerticalAlignment="Bottom">
                 <Rectangle.Fill>
                     <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
                         <GradientStop Color="#00ff740c" Offset="0"/>
@@ -295,24 +297,24 @@
                     </LinearGradientBrush>
                 </Rectangle.Fill>
             </Rectangle>
-            <TextBox Name="GitRepoBox" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=16}" Width="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=100}" FontSize="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=8}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|0|6}" HorizontalAlignment="Right" VerticalAlignment="Bottom" PlaceholderText="user/repository" PlaceholderForeground="White" Foreground="White" Background="#8000"></TextBox>
+            <TextBox Name="GitRepoBox" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=16}" Width="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=100}" FontSize="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=8}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|0|6}" HorizontalAlignment="Right" VerticalAlignment="Bottom" PlaceholderText="user/repository" PlaceholderForeground="Gray" Foreground="Gray" Background="#8000"></TextBox>
             <controls:ImageButton Description="Install the GitHub repository entered into the text box." Click="Git_OnClick" PointerEntered="MenuButton_Hover" Source="{skia:SvgImage /Images/gitdownload.svg}" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=16} " Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|100|6}" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
             <controls:ImageButton Description="Update all mods that contain a git repository." Click="UpdateGit_OnClick" PointerEntered="MenuButton_Hover" Source="{skia:SvgImage /Images/gitupdate.svg}" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=16} " Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|122|6}" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
-            <Rectangle Fill="#002eff" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=2}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"></Rectangle>
+            <Rectangle Name="BGHighlight3_U" Fill="#002eff" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=2}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"></Rectangle>
         </Grid>
         
         <!-- Lower Section -->
         <Grid Grid.Row="2" Grid.ColumnDefinitions="90*,308*">
             <Grid Grid.Column="0" Grid.ColumnDefinitions="*,Auto" Grid.RowDefinitions="Auto,*" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|1|0}">
-                <Rectangle Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=2}" HorizontalAlignment="Stretch" Fill="#002eff"/>
-                <Rectangle Grid.Row="1" Grid.Column="1" Width="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=2}" VerticalAlignment="Stretch" Fill="#002eff"/>
+                <Rectangle Name="BGHighlight1_L" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=2}" HorizontalAlignment="Stretch" Fill="#002eff"/>
+                <Rectangle Grid.Row="1" Grid.Column="1" Name="BGHighlight2_L" Width="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=2}" VerticalAlignment="Stretch" Fill="#002eff"/>
                 <Viewbox Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=2}" Grid.Column="1" StretchDirection="Both" >
                     <Grid Width="25">
-                        <Ellipse Width="50" Height="50" Fill="#002eff" Margin="-25,0,0,-25"></Ellipse>
+                        <Ellipse Name="BGHighlight3_L" Width="50" Height="50" Fill="#002eff" Margin="-25,0,0,-25"></Ellipse>
                     </Grid>
                 </Viewbox>
                 <!-- Lower-Left Body -->
-                <Grid Grid.Row="1">
+                <Grid Grid.Row="1" Name="BG_L">
                     <Grid.Background>
                         <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
                             <GradientStop Color="#00006e" Offset="0"/>
@@ -347,22 +349,35 @@
                 </Grid>
             </Grid>
             <Grid Grid.Column="2" Grid.ColumnDefinitions="Auto,*" Grid.RowDefinitions="Auto,*" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=1|0|0|0}">
-                <Rectangle Grid.Column="1" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=2}" HorizontalAlignment="Stretch" Fill="#002eff"/>
-                <Rectangle Grid.Row="1" Width="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=2}" VerticalAlignment="Stretch" Fill="#002eff"/>
+                <Rectangle Grid.Column="1" Name="BGHighlight1_R" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=2}" HorizontalAlignment="Stretch" Fill="#002eff"/>
+                <Rectangle Grid.Row="1" Name="BGHighlight2_R" Width="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=2}" VerticalAlignment="Stretch" Fill="#002eff"/>
                 <Viewbox Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=2}" StretchDirection="Both" >
                     <Grid Width="25">
-                        <Ellipse Width="50" Height="50" Fill="#002eff" Margin="0,0,-25,-25"></Ellipse>
+                        <Ellipse Name="BGHighlight3_R" Width="50" Height="50" Fill="#002eff" Margin="0,0,-25,-25"></Ellipse>
                     </Grid>
                 </Viewbox>
                 <!-- Lower-Right Body -->
-                <Grid Grid.Row="1" Grid.Column="1">
+                <Grid Grid.Row="1" Grid.Column="1" Name="BG_R">
                     <Grid.Background>
                         <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
                             <GradientStop Color="#00006e" Offset="0"/>
                             <GradientStop Color="#00001d" Offset="1"/>
                         </LinearGradientBrush>
                     </Grid.Background>
-                    <Image Source="{skia:SvgImage /Images/menu_heart.svg}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|8|0}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=40}"/>
+                    <Grid Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|8|0}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=40}">
+                        <Viewbox>
+                            <Rectangle Name="Heart"  Fill="#004b9a" Height="5" Width="8">
+                                <Rectangle.OpacityMask>
+                                    <VisualBrush Stretch="Uniform">
+                                        <VisualBrush.Visual>
+                                            <Image Width="5" Height="8" Source="{skia:SvgImage /Images/menu_heart.svg}" />
+                                        </VisualBrush.Visual>
+                                    </VisualBrush>
+                                </Rectangle.OpacityMask>
+                            </Rectangle>
+                        </Viewbox>
+                    </Grid>
+                    
                     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                         <LayoutTransformControl Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=9|0|40|0}">
                             <LayoutTransformControl.LayoutTransform>

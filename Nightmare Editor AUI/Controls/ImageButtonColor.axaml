@@ -3,8 +3,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Nightmare_Editor_AUI.Controls.ImageButton">
+             x:Class="Nightmare_Editor_AUI.Controls.ImageButtonColor">
     <Button Name="InternalButton" Padding="0" Margin="0" BorderThickness="0" Background="Transparent" Click="InternalButton_OnClick" Cursor="Hand">
-        <Image Name="InternalImage" Margin="0"/>
+        <Viewbox Name="InternalViewbox" Stretch="Fill">
+            <Rectangle Name="InternalRectangle" Fill="Black" Margin="0" Height="1" Width="1"/>
+        </Viewbox>
     </Button>
 </UserControl>

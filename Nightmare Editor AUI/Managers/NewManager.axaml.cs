@@ -16,6 +16,7 @@ using Avalonia.LogicalTree;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
+using Avalonia.Media.Immutable;
 using Avalonia.Platform;
 using Avalonia.Platform.Storage;
 using Avalonia.Svg.Skia;
@@ -37,6 +38,7 @@ namespace Nightmare_Editor_AUI;
 
 public partial class NewManager : Window
 {
+    private Themes.MenuTheme theme = Themes.MenuDefault;
     public NewManager()
     {
         InitializeComponent();
@@ -424,6 +426,17 @@ public partial class NewManager : Window
                 BottomLeftTextLower2.Text = "Solt11";
             }
         }
+
+        if (e.Key == Key.D1)
+        {
+            this.Width = 400;
+            this.Height = 240;
+        }
+        if (e.Key == Key.D2)
+        {
+            this.Width = 800;
+            this.Height = 480;
+        }
     }
 
     private void SwitchUIConfig_OnClick(object? sender, EventArgs e)
@@ -722,5 +735,103 @@ public partial class NewManager : Window
 
         mw.Show();
         Refresh();
+    }
+
+    private void Menu_Quit_OnClick(object? sender, EventArgs e)
+    {
+        Close();
+    }
+    
+    private void SetTheme(int theme_index)
+    {
+        switch(theme_index) 
+        {
+            case 0:
+                theme = Themes.MenuDefault;
+                break;
+            case 1:
+                theme = Themes.MenuTopaz;
+                break;
+            default:
+                theme = Themes.MenuDefault;
+                break;
+        }
+        ThemeChange();
+    }
+
+    private void ThemeChange()
+    {
+        SolidColorBrush _bg_highlight_brush_u = new SolidColorBrush(Color.Parse(theme.BGHighlight_U));
+        SolidColorBrush _bg_highlight_brush_l = new SolidColorBrush(Color.Parse(theme.BGHighlight_L));
+        SolidColorBrush _bg_highlight_brush_r = new SolidColorBrush(Color.Parse(theme.BGHighlight_R));
+        SolidColorBrush _bg_highlight_brush_alt = new SolidColorBrush(Color.Parse(theme.BGHighlightAlt_U));
+        
+        BGHighlight1_U.Fill = _bg_highlight_brush_u;
+        BGHighlight2_U.Fill = _bg_highlight_brush_u;
+        BGHighlight3_U.Fill = _bg_highlight_brush_u;
+        BGHighlightAlt1_U.Fill = _bg_highlight_brush_alt;
+        BGHighlightAlt2_U.Fill = _bg_highlight_brush_alt;
+        
+        BGHighlight1_L.Fill = _bg_highlight_brush_l;
+        BGHighlight2_L.Fill = _bg_highlight_brush_l;
+        BGHighlight3_L.Fill = _bg_highlight_brush_l;
+        
+        BGHighlight1_R.Fill = _bg_highlight_brush_r;
+        BGHighlight2_R.Fill = _bg_highlight_brush_r;
+        BGHighlight3_R.Fill = _bg_highlight_brush_r;
+        
+        BG_U.Background = new LinearGradientBrush()
+        {
+            StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative),
+            EndPoint = new RelativePoint(0, 1, RelativeUnit.Relative),
+            GradientStops = new GradientStops
+            {
+                new GradientStop(Color.Parse(theme.BGColorUp_U), 0),
+                new GradientStop(Color.Parse(theme.BGColorLow_U), 1),
+            }
+        };
+        
+        BG_L.Background = new LinearGradientBrush()
+        {
+            StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative),
+            EndPoint = new RelativePoint(0, 1, RelativeUnit.Relative),
+            GradientStops = new GradientStops
+            {
+                new GradientStop(Color.Parse(theme.BGColorUp_L), 0),
+                new GradientStop(Color.Parse(theme.BGColorLow_L), 1),
+            }
+        };
+        
+        BG_R.Background = new LinearGradientBrush()
+        {
+            StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative),
+            EndPoint = new RelativePoint(0, 1, RelativeUnit.Relative),
+            GradientStops = new GradientStops
+            {
+                new GradientStop(Color.Parse(theme.BGColorUp_R), 0),
+                new GradientStop(Color.Parse(theme.BGColorLow_R), 1),
+            }
+        };
+
+        Color bar_color = Color.Parse(theme.TopBarColor);
+        MenuBar.Fill = new LinearGradientBrush()
+        {
+            StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative),
+            EndPoint = new RelativePoint(1, 0, RelativeUnit.Relative),
+            GradientStops = new GradientStops
+            {
+                new GradientStop(Color.FromArgb(0, bar_color.R, bar_color.B, bar_color.G), 0),
+                new GradientStop(bar_color, 0.5),
+            }
+        };
+
+        BottomRightText.Color = new ImmutableSolidColorBrush(Color.Parse(theme.TextColor));
+        Heart.Fill = new ImmutableSolidColorBrush(Color.Parse(theme.HeartColor));
+    }
+
+    private void Menu_Themes_OnClick(object? sender, EventArgs e)
+    {
+        SetTheme(int.Parse(Console.ReadLine()));
+        //throw new NotImplementedException();
     }
 }

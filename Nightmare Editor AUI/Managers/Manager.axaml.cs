@@ -13,14 +13,18 @@ using System.Threading.Tasks;
 using Nightmare_Editor;
 using Nightmare_Editor.NewTools;
 using System.Collections.ObjectModel;
+using Avalonia.Controls.Presenters;
 using Avalonia.Controls.Shapes;
+using Avalonia.Controls.Templates;
 using Avalonia.Input;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using Avalonia.Media.Immutable;
 using SharpCompress;
 using Avalonia.Platform.Storage;
+using Avalonia.Styling;
 using SharpCompress.Archives;
 using SharpCompress.Common;
 using MsBox.Avalonia.Enums;
@@ -28,6 +32,7 @@ using MsBox.Avalonia;
 using Nightmare_Editor_AUI.ViewModels;
 using LibGit2Sharp;
 using Nightmare_Editor_AUI;
+using Nightmare_Editor_AUI.Managers;
 using static Nightmare_Editor_AUI.Managers.Standard;
 using Path = System.IO.Path;
 
@@ -44,10 +49,12 @@ namespace Nightmare_Editor
         private bool isInitialized = false;
         private List<string[]> music = new List<string[]>();
         private MainWindowViewModel viewModel = new MainWindowViewModel();
+        private static Themes.Theme theme = Themes.Default;
 
         public Manager()
         {
             InitializeComponent();
+            SetTheme(0);
             ModsWindow(true);
             ModsButton.Content = MainButtonContent(true, "Mods");
             SettingsButton.Content = MainButtonContent(false, "Settings");
@@ -91,15 +98,15 @@ namespace Nightmare_Editor
             tb.Text = text;
             tb.Margin = new Thickness(5);
             tb.FontWeight = FontWeight.Black;
-            tb.Foreground = new SolidColorBrush(Color.Parse("#ADD8E6"));
+            tb.Foreground = new SolidColorBrush(Color.Parse(theme.TopButtonBorder));
 
-            rect1.Fill = new SolidColorBrush(Color.Parse("#ADD8E6"));
+            rect1.Fill = new SolidColorBrush(Color.Parse(theme.TopButtonBorder));
             if (on)
             {
-                tb.Foreground = Brushes.White;
-                rect1.Fill = Brushes.White;
+                tb.Foreground = new SolidColorBrush(Color.Parse(theme.TopButtonHighlight));
+                rect1.Fill = new SolidColorBrush(Color.Parse(theme.TopButtonHighlight));
             }
-            rect2.Fill = new SolidColorBrush(Color.Parse("#FFA580"));
+            rect2.Fill = new SolidColorBrush(Color.Parse(theme.TopButtonColor));
             rect1.Height = 10;
             rect2.Height = 10;
             rect1.Width = 10;
@@ -114,7 +121,7 @@ namespace Nightmare_Editor
                 tb2.Text = text;
                 tb2.FontWeight = FontWeight.Black;
                 tb2.Margin = new Thickness(6, 6, 4, 4);
-                tb2.Foreground = Brushes.Black;
+                tb2.Foreground = new SolidColorBrush(Color.Parse(theme.TopButtonShadow));
                 grid2.Children.Add(tb2);
                 grid2.Children.Add(tb);
                 vb3.Child = grid2;
@@ -248,7 +255,7 @@ namespace Nightmare_Editor
             }
             this.DataContext = viewModel;
         }
-        private void New_OnClick(object sender, RoutedEventArgs e)
+        private void New_OnClick(object sender, EventArgs e)
         {
             var ew = new Editor();
             ew.Show();
@@ -446,12 +453,12 @@ namespace Nightmare_Editor
         {
             OpenGamebanana();
         }
-        private void Refresh_Click(object sender, RoutedEventArgs e)
+        private void Refresh_Click(object sender, EventArgs e)
         {
             Refresh();
         }
 
-        private async void Deploy_Click(object sender, RoutedEventArgs e)
+        private async void Deploy_Click(object sender, EventArgs e)
         {
             try
             {
@@ -556,12 +563,12 @@ namespace Nightmare_Editor
             Refresh();
         }
 
-        private void OpenFolder_Click(object sender, RoutedEventArgs e)
+        private void OpenFolder_Click(object sender, EventArgs e)
         {
             OpenModsFolder();
         }
 
-        private async void InstallArchive_Click(object sender, RoutedEventArgs e)
+        private async void InstallArchive_Click(object sender, EventArgs e)
         {
             InstallArchive(this);
         }
@@ -601,18 +608,6 @@ namespace Nightmare_Editor
                     }
                     QuickJson(true, enabledmods, "enabledmods.json");
                     enabledmods = QuickJson(false, enabledmods, "enabledmods.json");
-                }
-            }
-        }
-
-        private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
-        {
-            if (sender is CheckBox checkBox)
-            {
-                var row = checkBox.DataContext as Meta;
-                if (row != null)
-                {
-                    
                 }
             }
         }
@@ -841,7 +836,8 @@ namespace Nightmare_Editor
 
         private void MusicReplaceButton_OnClick(object? sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            SetTheme(int.Parse(Console.ReadLine()));
+            //throw new NotImplementedException();
         }
 
         private void SwitchUI_OnClick(object? sender, RoutedEventArgs e)
@@ -852,6 +848,240 @@ namespace Nightmare_Editor
             var nmw = new NewManager();
             nmw.Show();
             Close();
+        }
+
+        private void SetTheme(int theme_index)
+        {
+            switch(theme_index) 
+            {
+                case 0:
+                    theme = Themes.Default;
+                    break;
+                case 1:
+                    theme = Themes.Topaz;
+                    break;
+                case 2:
+                    theme = Themes.Cagaroo;
+                    break;
+                default:
+                    theme = Themes.Default;
+                    break;
+            }
+            ThemeChange();
+        }
+        
+        private void SetTheme(string filepath)
+        {
+            string jsonString = System.IO.File.ReadAllText(filepath);
+            theme = JsonSerializer.Deserialize<Themes.Theme>(jsonString, WriteIndented);
+            ThemeChange();
+        }
+
+        private void ThemeChange()
+        {
+            this.Background = new LinearGradientBrush()
+            {
+                StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative),
+                EndPoint = new RelativePoint(0, 1, RelativeUnit.Relative),
+                GradientStops = new GradientStops
+                {
+                    new GradientStop(Color.Parse(theme.BGColorUp), 0),
+                    new GradientStop(Color.Parse(theme.BGColorLow), 1),
+                }
+            };
+            
+            ModDataGrid.Styles.Clear();
+            Color _desc_color = Color.Parse(theme.DescColor);
+            Color _settings_color = Color.Parse(theme.SettingsColor);
+            Color _grid_color = Color.Parse(theme.GridColor);
+            Color _grid_color_alt = Color.Parse(theme.GridColorAlt);
+            Color _top_button_highlight_color = Color.Parse(theme.TopButtonHighlight);
+            Color _bg_color_up = Color.Parse(theme.BGColorUp);
+            
+            byte _desc_gray = (byte)(0.299 * _desc_color.R + 0.587 * _desc_color.G + 0.114 * _desc_color.B);
+            byte _settings_gray = (byte)(0.299 * _settings_color.R + 0.587 * _settings_color.G + 0.114 * _settings_color.B);
+            byte _grid_gray = (byte)(0.299 * _grid_color.R + 0.587 * _grid_color.G + 0.114 * _grid_color.B);
+            byte _grid_gray_alt = (byte)(0.299 * _grid_color_alt.R + 0.587 * _grid_color_alt.G + 0.114 * _grid_color_alt.B);
+            byte _top_button_highlight_gray = (byte)(0.299 * _top_button_highlight_color.R + 0.587 * _top_button_highlight_color.G + 0.114 * _top_button_highlight_color.B);
+            byte _bg_gray_up = (byte)(0.299 * _bg_color_up.R + 0.587 * _bg_color_up.G + 0.114 * _bg_color_up.B);
+            
+            
+            var headerStyle = new Style(x => x.OfType<DataGridColumnHeader>())
+            {
+                Setters =
+                {
+                    new Setter(BackgroundProperty, new SolidColorBrush(_top_button_highlight_color)),
+                }
+            };
+            if (_top_button_highlight_gray <= 0x90)
+            {
+                headerStyle.Setters.Add(new Setter(ForegroundProperty, Brushes.White));
+            }
+            else
+            {
+                headerStyle.Setters.Add(new Setter(ForegroundProperty, Brushes.Black));
+            }
+            
+            var oddStyle = new Style(x => x.OfType<DataGridRow>())
+            {
+                Setters =
+                {
+                    new Setter(BackgroundProperty,
+                        new SolidColorBrush(_grid_color))
+                }
+            };
+            if (_grid_gray <= 0x90)
+            {
+                oddStyle.Setters.Add(new Setter(ForegroundProperty, Brushes.White));
+            }
+            else
+            {
+                oddStyle.Setters.Add(new Setter(ForegroundProperty, Brushes.Black));
+            }
+            
+            var evenStyle = new Style(x => x.OfType<DataGridRow>().NthChild(2, 0))
+            {
+                Setters =
+                {
+                    new Setter(BackgroundProperty,
+                        new SolidColorBrush(_grid_color_alt))
+                }
+            };
+            if (_grid_gray_alt <= 0x90)
+            {
+                evenStyle.Setters.Add(new Setter(ForegroundProperty, Brushes.White));
+            }
+            else
+            {
+                evenStyle.Setters.Add(new Setter(ForegroundProperty, Brushes.Black));
+            }
+            
+            ModDataGrid.Background = new SolidColorBrush(Color.Parse(theme.GridColorBG));
+
+            var settingsWindowTextBlockStyle = new Style(x => x.OfType<TextBlock>());
+            var settingsWindowTextBoxStyle = new Style(x => x.OfType<TextBox>());
+            var settingsWindowButtonStyle = new Style(x => x.OfType<Button>());
+            var settingsWindowButtonHoverStyle = new Style(x => x.OfType<Button>().Class(":pointerover"));
+
+            settingsWindowButtonHoverStyle.Setters.Add(RemoveButtonHover());
+            settingsWindowButtonHoverStyle.Setters.Add(new Setter(OpacityProperty, 0.75));
+            settingsWindowButtonHoverStyle.Setters.Add(new Setter(CursorProperty, new Cursor(StandardCursorType.Hand)));
+            
+            if (_settings_gray <= 0x90)
+            {
+                settingsWindowTextBlockStyle.Setters.Add(new Setter(ForegroundProperty, Brushes.White));
+                settingsWindowTextBoxStyle.Setters.Add(new Setter(ForegroundProperty, Brushes.White));
+                settingsWindowButtonStyle.Setters.Add(new Setter(ForegroundProperty, Brushes.White));
+                settingsWindowButtonStyle.Setters.Add(new Setter(BackgroundProperty, new SolidColorBrush(Color.Parse("#4FFF"))));
+            }
+            else
+            {
+                settingsWindowTextBlockStyle.Setters.Add(new Setter(ForegroundProperty, Brushes.Black));
+                settingsWindowTextBoxStyle.Setters.Add(new Setter(ForegroundProperty, Brushes.Black));
+                settingsWindowButtonStyle.Setters.Add(new Setter(ForegroundProperty, Brushes.Black));
+                settingsWindowButtonStyle.Setters.Add(new Setter(BackgroundProperty, new SolidColorBrush(Color.Parse("#4000"))));
+            }
+            settingsWindowTextBoxStyle.Setters.Add(new Setter(BackgroundProperty, new SolidColorBrush(_settings_color)));
+            
+            var gitButtonStyle = new Style(x => x.OfType<Button>());
+            var gitButtonHoverStyle = new Style(x => x.OfType<Button>().Class(":pointerover"));
+            
+            if (_bg_gray_up <= 0x90)
+            {
+                gitButtonStyle.Setters.Add(new Setter(ForegroundProperty, Brushes.White));
+                gitButtonStyle.Setters.Add(new Setter(BackgroundProperty, new SolidColorBrush(Color.Parse("#4FFF"))));
+            }
+            else
+            {
+                gitButtonStyle.Setters.Add(new Setter(ForegroundProperty, Brushes.Black));
+                gitButtonStyle.Setters.Add(new Setter(BackgroundProperty, new SolidColorBrush(Color.Parse("#4000"))));
+            }
+            gitButtonHoverStyle.Setters.Add(RemoveButtonHover());
+            gitButtonHoverStyle.Setters.Add(new Setter(OpacityProperty, 0.75));
+            gitButtonHoverStyle.Setters.Add(new Setter(CursorProperty, new Cursor(StandardCursorType.Hand)));
+            
+            if (_desc_gray <= 0x90)
+            {
+                DescBox.Foreground = Brushes.White;
+            }
+            else
+            {
+                DescBox.Foreground = Brushes.Black;
+            }
+
+            SettingsWindow.Background = new SolidColorBrush(_settings_color);
+            DescBox.Background = new SolidColorBrush(_desc_color);
+            
+            ModDataGrid.Styles.Add(headerStyle);
+            ModDataGrid.Styles.Add(oddStyle);
+            ModDataGrid.Styles.Add(evenStyle);
+            
+            SettingsWindow.Styles.Clear();
+            SettingsWindow.Styles.Add(settingsWindowTextBlockStyle);
+            SettingsWindow.Styles.Add(settingsWindowTextBoxStyle);
+            SettingsWindow.Styles.Add(settingsWindowButtonStyle);
+            SettingsWindow.Styles.Add(settingsWindowButtonHoverStyle);
+            
+            GitStackPanel.Styles.Add(gitButtonStyle);
+            GitStackPanel.Styles.Add(gitButtonHoverStyle);
+            
+            DeployButton.Color = new ImmutableSolidColorBrush(Color.Parse(theme.ButtonColor));
+            RefreshButton.Color = new ImmutableSolidColorBrush(Color.Parse(theme.ButtonColor));
+            OpenFolderButton.Color = new ImmutableSolidColorBrush(Color.Parse(theme.ButtonColor));
+            InstallArchiveButton.Color = new ImmutableSolidColorBrush(Color.Parse(theme.ButtonColor));
+            
+            DownloadButton.Content = MainButtonContent(false, "Download");
+            
+            Refresh();
+            Mods_Click(null, null);
+        }
+
+        private Setter RemoveButtonHover()
+        {
+            Setter output = new Setter(
+                Button.TemplateProperty,
+                new FuncControlTemplate<Button>((button, scope) =>
+                {
+                    var presenter = new ContentPresenter
+                    {
+                        Name = "PART_ContentPresenter"
+                    };
+
+                    presenter.Bind(ContentPresenter.BackgroundProperty,
+                        button.GetObservable(Button.BackgroundProperty).ToBinding());
+                    
+                    presenter.Bind(ContentPresenter.ForegroundProperty,
+                        button.GetObservable(Button.ForegroundProperty).ToBinding());
+
+                    presenter.Bind(ContentPresenter.BorderBrushProperty,
+                        button.GetObservable(Button.BorderBrushProperty).ToBinding());
+
+                    presenter.Bind(ContentPresenter.BorderThicknessProperty,
+                        button.GetObservable(Button.BorderThicknessProperty).ToBinding());
+
+                    presenter.Bind(ContentPresenter.CornerRadiusProperty,
+                        button.GetObservable(Button.CornerRadiusProperty).ToBinding());
+
+                    presenter.Bind(ContentPresenter.ContentProperty,
+                        button.GetObservable(ContentControl.ContentProperty).ToBinding());
+
+                    presenter.Bind(ContentPresenter.ContentTemplateProperty,
+                        button.GetObservable(ContentControl.ContentTemplateProperty).ToBinding());
+
+                    presenter.Bind(ContentPresenter.PaddingProperty,
+                        button.GetObservable(Button.PaddingProperty).ToBinding());
+
+                    presenter.Bind(ContentPresenter.HorizontalContentAlignmentProperty,
+                        button.GetObservable(ContentControl.HorizontalContentAlignmentProperty).ToBinding());
+
+                    presenter.Bind(ContentPresenter.VerticalContentAlignmentProperty,
+                        button.GetObservable(ContentControl.VerticalContentAlignmentProperty).ToBinding());
+
+                    presenter.RecognizesAccessKey = true;
+
+                    return presenter;
+                }));
+            return output;
         }
     }
 }
