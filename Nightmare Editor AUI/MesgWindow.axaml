@@ -7,16 +7,16 @@
         xmlns:controls="clr-namespace:Nightmare_Editor_AUI.Controls"
         xmlns:skia="clr-namespace:Avalonia.Svg.Skia;assembly=Svg.Controls.Skia.Avalonia"
         x:Class="Nightmare_Editor_AUI.MesgWindow"
-        Title="MesgWindow" WindowDecorations="BorderOnly" Height="480" Width="800" Background="Transparent" TransparencyLevelHint="Transparent">
+        Title="MesgWindow" WindowDecorations="None" Height="320" Width="684" Background="Transparent" TransparencyLevelHint="Transparent">
     <Window.Resources>
-        <controls:PixelWidth x:Key="PixelWidth"/>
-        <controls:PixelMargin x:Key="PixelMargin"/>
+        <controls:PixelWidthCustom x:Key="PixelWidth"/>
+        <controls:PixelMarginCustom x:Key="PixelMargin"/>
         <FontFamily x:Key="JetBrains Mono">avares://Nightmare Editor AUI/Assets/fonts#JetBrains Mono</FontFamily>
         <FontFamily x:Key="KH2 Menu">avares://Nightmare Editor AUI/Assets/fonts#KH2 ALL MENU</FontFamily>
     </Window.Resources>
-    <LayoutTransformControl Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=29|45|29|35}">
+    <LayoutTransformControl Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=160|0|0|0|0}">
         <LayoutTransformControl.LayoutTransform>
-            <ScaleTransform ScaleX="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" ScaleY="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}"/>
+            <ScaleTransform ScaleX="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=160|1}" ScaleY="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=160|1}"/>
         </LayoutTransformControl.LayoutTransform>
         <Grid ColumnDefinitions="10,*,10">
             <Image Grid.Column="0" Width="10" Stretch="Fill"  Source="{skia:SvgImage /Images/info_l.svg}" RenderOptions.BitmapInterpolationMode="None"/>
