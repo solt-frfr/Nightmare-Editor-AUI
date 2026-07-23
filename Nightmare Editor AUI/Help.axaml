@@ -6,36 +6,85 @@
         xmlns:local="clr-namespace:Nightmare_Editor"
         mc:Ignorable="d"
 		xmlns:md="clr-namespace:Markdown.Avalonia;assembly=Markdown.Avalonia"
-		xmlns:ctxt="clr-namespace:Markdown.Avalonia.Controls;assembly=Markdown.Avalonia"
-        Title="Help" Height="450" Width="800" Background="Black">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="3*"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="9*"/>
-        </Grid.RowDefinitions>
-        <TextBlock Text="Nightmare Editor Help" Foreground="White" FontWeight="Black" FontSize="30" Margin="5,0,0,0" VerticalAlignment="Center" Grid.ColumnSpan="3"/>
-        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Row="1">
-            <StackPanel Name="TextBoxPanel" VerticalAlignment="Top">
-                <TextBox Name="Int" Height="30" Foreground="White" Background="#F04080" BorderBrush="Gray" VerticalContentAlignment="Center" FontSize="18" FontWeight="Bold" PointerReleased="Click" IsReadOnly="True" Focusable="False" Cursor="Hand" Text="Introduction"/>
-                <TextBox Name="Add" Height="30" Foreground="White" Background="#F04080" BorderBrush="Gray" VerticalContentAlignment="Center" FontSize="18" FontWeight="Bold" PointerReleased="Click" IsReadOnly="True" Focusable="False" Cursor="Hand" Text="Add Files"/>
-                <TextBox Name="Usr" Height="30" Foreground="White" Background="#F04080" BorderBrush="Gray" VerticalContentAlignment="Center" FontSize="18" FontWeight="Bold" PointerReleased="Click" IsReadOnly="True" Focusable="False" Cursor="Hand" Text="User-Added.rbin"/>
-                <TextBox Name="Tkt" Height="30" Foreground="White" Background="#F04080" BorderBrush="Gray" VerticalContentAlignment="Center" FontSize="18" FontWeight="Bold" PointerReleased="Click" IsReadOnly="True" Focusable="False" Cursor="Hand" Text="Romhacking Suite"/>
-                <TextBox Name="Lnk" Height="30" Foreground="White" Background="#F04080" BorderBrush="Gray" VerticalContentAlignment="Center" FontSize="18" FontWeight="Bold" PointerReleased="Click" IsReadOnly="True" Focusable="False" Cursor="Hand" Text="Texture Linking"/>
-                <TextBox Name="For" Height="30" Foreground="White" Background="#F04080" BorderBrush="Gray" VerticalContentAlignment="Center" FontSize="18" FontWeight="Bold" PointerReleased="Click" IsReadOnly="True" Focusable="False" Cursor="Hand" Text="Texture Formats"/>
-                <TextBox Name="Txa" Height="30" Foreground="White" Background="#F04080" BorderBrush="Gray" VerticalContentAlignment="Center" FontSize="18" FontWeight="Bold" PointerReleased="Click" IsReadOnly="True" Focusable="False" Cursor="Hand" Text="TXA Files"/>
-                <TextBox Name="Pak" Height="30" Foreground="White" Background="#F04080" BorderBrush="Gray" VerticalContentAlignment="Center" FontSize="18" FontWeight="Bold" PointerReleased="Click" IsReadOnly="True" Focusable="False" Cursor="Hand" Text="Packing Files"/>
-                <TextBox Name="Mod" Height="30" Foreground="White" Background="#F04080" BorderBrush="Gray" VerticalContentAlignment="Center" FontSize="18" FontWeight="Bold" PointerReleased="Click" IsReadOnly="True" Focusable="False" Cursor="Hand" Text="Exporting Mods"/>
-                <TextBox Name="Qrk" Height="30" Foreground="White" Background="#F04080" BorderBrush="Gray" VerticalContentAlignment="Center" FontSize="18" FontWeight="Bold" PointerReleased="Click" IsReadOnly="True" Focusable="False" Cursor="Hand" Text="Quirks"/>
-                <TextBox Name="Faq" Height="30" Foreground="White" Background="#F04080" BorderBrush="Gray" VerticalContentAlignment="Center" FontSize="18" FontWeight="Bold" PointerReleased="Click" IsReadOnly="True" Focusable="False" Cursor="Hand" Text="FAQ / About"/>
-            </StackPanel>
-        </ScrollViewer>
-        <Grid Grid.Column="1" Grid.Row="1" Background="#F04080">
-			<md:MarkdownScrollViewer Name="MD" Grid.Column="1" Grid.Row="1" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" Markdown="Hello, World!">
-			</md:MarkdownScrollViewer>
+		xmlns:ctxt="clr-namespace:ColorTextBlock.Avalonia;assembly=ColorTextBlock.Avalonia"
+		Title="Help" Height="450" Width="800" Background="Black" KeyDown="Window_OnKeyDown">
+    <Window.Resources>
+        <FontFamily x:Key="JetBrains Mono">avares://Nightmare Editor AUI/Assets/fonts#JetBrains Mono</FontFamily>
+        <FontFamily x:Key="KH2 Menu">avares://Nightmare Editor AUI/Assets/fonts#KH2 ALL MENU</FontFamily>
+        <FontFamily x:Key="Ubuntu Sans">avares://Nightmare Editor AUI/Assets/fonts#Ubuntu Sans</FontFamily>
+    </Window.Resources>
+    <Viewbox>
+        <Grid Name="Main" RowDefinitions="*,9*" ColumnDefinitions="*,5,3*" Width="{Binding Width, RelativeSource={RelativeSource AncestorType=Window}}" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}}">
+            <Grid.Styles>
+                <Style Selector="TextBlock">
+                    <Setter Property="FontFamily" Value="{StaticResource 'Ubuntu Sans'}"/>
+                </Style>
+                <Style Selector="TextBox">
+                    <Setter Property="FontFamily" Value="{StaticResource 'Ubuntu Sans'}"/>
+                </Style>
+            </Grid.Styles>
+            <TextBlock Text="Nightmare Editor Help" Foreground="White" FontWeight="Black" FontSize="30" Margin="5,0,0,0" VerticalAlignment="Center" Grid.ColumnSpan="3"/>
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Row="1">
+                <StackPanel Name="TextBoxPanel" VerticalAlignment="Top">
+                    <StackPanel.Styles>
+                        <Style Selector="TextBox">
+                            <Setter Property="Foreground" Value="White"/>
+                            <Setter Property="Background" Value="#F04080"/>
+                            <Setter Property="BorderBrush" Value="#85244E"/>
+                            <Setter Property="Height" Value="30"/>
+                            <Setter Property="FontSize" Value="18"/>
+                            <Setter Property="FontWeight" Value="Bold"/>
+                            <Setter Property="VerticalContentAlignment" Value="Center"/>
+                            <Setter Property="IsReadOnly" Value="True"/>
+                            <Setter Property="Focusable" Value="False"/>
+                            <Setter Property="Cursor" Value="Hand"/>
+                            <Setter Property="Padding" Value="5,0"/>
+                        </Style>
+                    </StackPanel.Styles>
+                    <TextBox Name="Int" PointerReleased="Click" Text="Introduction"/>
+                    <TextBox Name="Add" PointerReleased="Click" Text="Add Files"/>
+                    <TextBox Name="Usr" PointerReleased="Click" Text="User-Added.rbin"/>
+                    <TextBox Name="Tkt" PointerReleased="Click" Text="Romhacking Suite"/>
+                    <TextBox Name="Lnk" PointerReleased="Click" Text="Texture Linking"/>
+                    <TextBox Name="For" PointerReleased="Click" Text="Texture Formats"/>
+                    <TextBox Name="Txa" PointerReleased="Click" Text="TXA Files"/>
+                    <TextBox Name="Pak" PointerReleased="Click" Text="Packing Files"/>
+                    <TextBox Name="Mod" PointerReleased="Click" Text="Exporting Mods"/>
+                    <TextBox Name="Qrk" PointerReleased="Click" Text="Quirks"/>
+                    <TextBox Name="Faq" PointerReleased="Click" Text="FAQ / About"/>
+                </StackPanel>
+            </ScrollViewer>
+            <GridSplitter Grid.Row="1" Grid.Column="1" Width="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeDirection="Columns" Background="White" Cursor="LeftSide"/>
+            <Grid Grid.Column="2" Grid.Row="1" Background="#F04080">
+			    <md:MarkdownScrollViewer Name="MD" Margin="10" Grid.Column="1" Grid.Row="1" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" Markdown="Hello, World!">
+                    <md:MarkdownScrollViewer.Styles>
+                        <Style Selector="ctxt|CTextBlock">
+                            <Setter Property="Foreground" Value="Black"/>
+                            <Setter Property="FontWeight" Value="Black"/>
+                            <Setter Property="FontFamily" Value="{StaticResource 'Ubuntu Sans'}"/>
+                            <Setter Property="FontSize" Value="28"/>
+                        </Style>
+                        <Style Selector="ctxt|CTextBlock.Heading1">
+                            <Setter Property="Foreground" Value="Black"/>
+                            <Setter Property="FontWeight" Value="Black"/>
+                            <Setter Property="FontFamily" Value="{StaticResource 'KH2 Menu'}"/>
+                            <Setter Property="FontSize" Value="28"/>
+                        </Style>
+                        <Style Selector="ctxt|CTextBlock.Heading2">
+                            <Setter Property="Foreground" Value="Black"/>
+                            <Setter Property="FontWeight" Value="Bold"/>
+                            <Setter Property="FontFamily" Value="{StaticResource 'Ubuntu Sans'}"/>
+                            <Setter Property="FontSize" Value="20"/>
+                        </Style>
+                        <Style Selector="ctxt|CTextBlock.Heading3">
+                            <Setter Property="Foreground" Value="Black"/>
+                            <Setter Property="FontWeight" Value="DemiBold"/>
+                            <Setter Property="FontFamily" Value="{StaticResource 'Ubuntu Sans'}"/>
+                            <Setter Property="FontSize" Value="16"/>
+                        </Style>
+                    </md:MarkdownScrollViewer.Styles>
+                </md:MarkdownScrollViewer>
+            </Grid>
         </Grid>
-    </Grid>
+    </Viewbox>
 </Window>
