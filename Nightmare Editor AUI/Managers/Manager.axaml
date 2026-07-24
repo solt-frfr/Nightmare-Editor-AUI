@@ -68,7 +68,7 @@
             <Grid Grid.RowSpan="2" Grid.Column="1" RowDefinitions="9*,1*,9*,3*" Name="ModContent" IsVisible="True" Margin="10">
                 <Image Name="Preview" Source="/Images/Preview0.png" Stretch="Uniform" VerticalAlignment="Top" HorizontalAlignment="Center" RenderOptions.BitmapInterpolationMode="HighQuality"/>
                 <Grid Grid.RowSpan="2" Grid.Row="2">
-                    <TextBox Name="DescBox" VerticalAlignment="Stretch" Classes="NoHover" FontSize="12" Background="#F04080" BorderBrush="White" Foreground="#ffffff" TextWrapping="WrapWithOverflow" IsReadOnly="True" Text="Make Sora and Riku's mark of mastery exam your own. You're seeing this because this mod has no description, or no mod is selected.&#xA;&#xA;Confused about the buttons at the bottom? Hover over them for more info."/>
+                    <TextBox Name="DescBox" VerticalAlignment="Stretch" Classes="NoHover" FontSize="12" Padding="10" Background="#F04080" BorderBrush="White" Foreground="#ffffff" TextWrapping="WrapWithOverflow" IsReadOnly="True" Text="Make Sora and Riku's mark of mastery exam your own. You're seeing this because this mod has no description, or no mod is selected.&#xA;&#xA;Confused about the buttons at the bottom? Hover over them for more info."/>
                 </Grid>
             </Grid>
             
@@ -126,6 +126,9 @@
             <Grid ColumnDefinitions="*,*,*,*,5*,*,*,*,*" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,5,0,0">
                 <controls:ImageButtonColor Name="DeployButton" Click="Deploy_Click" Color="#F04080" Source="/Images/Deploy.png" Grid.Column="0" Cursor="Hand" ToolTip.Tip="Deploy mods to selected folder." HorizontalAlignment="Center"/>
                 <controls:ImageButton Name="NewButton" Click="New_OnClick" Source="/Images/nightmare.png" Grid.Column="4" Cursor="Hand" ToolTip.Tip="Go to Nightmare Editor" HorizontalAlignment="Center"/>
+                <Viewbox Grid.Column="4" HorizontalAlignment="Center" Stretch="Fill" StretchDirection="Both">
+                    <ProgressBar Name="ProgressBar" Minimum="0" Maximum="1" IsVisible="False"/>
+                </Viewbox>
                 <controls:ImageButtonColor Name="RefreshButton" Click="Refresh_Click" Color="#F04080" Source="/Images/Refresh.png" Grid.Column="1" Cursor="Hand" ToolTip.Tip="Refresh mods and settings." HorizontalAlignment="Center"/>
                 <controls:ImageButtonColor Name="OpenFolderButton" Click="OpenFolder_Click" Color="#F04080" Source="/Images/OpenFolder.png" Grid.Column="2" Cursor="Hand" ToolTip.Tip="Open the mods folder." HorizontalAlignment="Center"/>
                 <controls:ImageButtonColor Name="InstallArchiveButton" Click="InstallArchive_Click" Color="#F04080" Source="/Images/InstallArchive.png" Grid.Column="3" Cursor="Hand" ToolTip.Tip="Install a mod from an archive." HorizontalAlignment="Center"/>

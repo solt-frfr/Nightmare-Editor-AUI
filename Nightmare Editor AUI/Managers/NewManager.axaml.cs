@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
 using System.Threading;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
@@ -502,6 +503,17 @@ public partial class NewManager : Window
                 try
                 {
                     File.Copy(files[0].Path.LocalPath, System.IO.Path.Combine(Misc.Paths.current, System.IO.Path.GetFileName(files[0].Path.LocalPath)));
+                    ProgressBar.IsVisible = true;
+                    var progress = new Progress<(int current, int total, string message)>(message =>
+                    {
+                        ProgressBar.Value = (double)message.current / (double)message.total;
+                        BottomRightText.Text = message.message;
+                    });
+                    await Task.Run(() =>
+                    {
+                        RBIN.Load(files[0].Path.LocalPath, progress: progress);
+                    });
+                    ProgressBar.IsVisible = false;
                 }
                 catch
                 {
@@ -509,7 +521,6 @@ public partial class NewManager : Window
 
                     await mw.ShowDialog(this);
                 }
-                RBIN.Load(files[0].Path.LocalPath);
             }
             else
             {

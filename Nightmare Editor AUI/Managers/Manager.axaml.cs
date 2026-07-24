@@ -257,9 +257,16 @@ namespace Nightmare_Editor
         }
         private void New_OnClick(object sender, EventArgs e)
         {
-            var ew = new Editor();
-            ew.Show();
-            Close();
+            if (ProgressBar.IsVisible)
+            {
+                DescBox.Text = "Please wait for the file to finish extracting.";
+            }
+            else
+            {
+                var ew = new Editor();
+                ew.Show();
+                Close();
+            }
         }
 
         private void Folder_OnClick(object sender, RoutedEventArgs e)
@@ -698,6 +705,11 @@ namespace Nightmare_Editor
                     PathBox.Text = files[0].Path.LocalPath;
                 }
             }
+
+            if (files == null || files.Count < 1)
+            {
+                return;
+            }
             if (!string.IsNullOrWhiteSpace(files[0].Path.LocalPath))
             {
                 if (Path.GetExtension(files[0].Path.LocalPath) == ".rbin")
@@ -705,6 +717,17 @@ namespace Nightmare_Editor
                     try
                     {
                         File.Copy(files[0].Path.LocalPath, Path.Combine(Misc.Paths.current, Path.GetFileName(files[0].Path.LocalPath)));
+                        ProgressBar.IsVisible = true;
+                        var progress = new Progress<(int current, int total, string message)>(message =>
+                        {
+                            ProgressBar.Value = (double)message.current / (double)message.total;
+                            DescBox.Text = message.message;
+                        });
+                        await Task.Run(() =>
+                        {
+                            RBIN.Load(files[0].Path.LocalPath, progress: progress);
+                        });
+                        ProgressBar.IsVisible = false;
                     }
                     catch
                     {
@@ -716,7 +739,6 @@ namespace Nightmare_Editor
                         );
                         await box.ShowAsPopupAsync(this);
                     }
-                    RBIN.Load(files[0].Path.LocalPath);
                 }
                 else
                 {

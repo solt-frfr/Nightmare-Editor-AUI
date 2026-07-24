@@ -8,15 +8,19 @@
     <Application.DataTemplates>
         <local:ViewLocator/>
     </Application.DataTemplates>
-  
+	<Application.Resources>
+        <FontFamily x:Key="Ubuntu Sans">avares://Nightmare Editor AUI/Assets/fonts#Ubuntu Sans</FontFamily>
+	</Application.Resources>
     <Application.Styles>
 		<FluentTheme />
 		<StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>
 		<StyleInclude Source="avares://Avalonia.Controls.ColorPicker/Themes/Fluent/Fluent.xaml" />
 		<Style Selector="TextBox.NoHover">
 			<Setter Property="Focusable" Value="False"/>
+			<Setter Property="IsReadOnly" Value="True"/>
+			<Setter Property="Cursor" Value="Arrow"/>
 			<Setter Property="Foreground"
-				Value="White" />
+			        Value="White" />
 			<Setter Property="Template">
 				<ControlTemplate>
 					<Border Background="{Binding Background, RelativeSource={RelativeSource TemplatedParent}}"
@@ -62,6 +66,20 @@
 				Value="White" />
 			<Setter Property="BorderBrush"
 				Value="#4080F0" />
+		</Style>
+		<Style Selector="TextBox">
+			<Setter Property="FontFamily" Value="{StaticResource 'Ubuntu Sans'}" />
+			<Setter Property="Padding" Value="2"/>
+			<Setter Property="MinHeight" Value="0"/>
+			<Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+			<Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
+			<Setter Property="ScrollViewer.BringIntoViewOnFocusChange" Value="False"/>
+		</Style>
+		<Style Selector="TextBlock">
+			<Setter Property="FontFamily" Value="{StaticResource 'Ubuntu Sans'}" />
+		</Style>
+		<Style Selector="Button">
+			<Setter Property="FontFamily" Value="{StaticResource 'Ubuntu Sans'}" />
 		</Style>
     </Application.Styles>
 </Application>

@@ -89,8 +89,10 @@ public class RBIN
     /// <summary>
     /// Create an RBINFile class from an RBIN file.
     /// </summary>
-    public static RBINFile Load(string input, string output = null, bool recursive = true)
+    public static RBINFile Load(string input, string output = null, bool recursive = true, bool silent = false, IProgress<(int current, int total, string message)>? progress = null)
     {
+        progress ??= new Progress<(int current, int total, string message)>();
+        
         List<Entry> json = new List<Entry>();
         string realoutput;
         if (string.IsNullOrWhiteSpace(output))
@@ -118,6 +120,12 @@ public class RBIN
         mountBytes = mountBytes.Where(b => b != 0).ToArray();
         rbin.MountPoint = System.Text.Encoding.ASCII.GetString(mountBytes);
         int groupcount = data[0x6] + (data[0x7] * 0x100);
+        if (!silent)
+        {
+            string message = rbin.ReadEntryCount + "files to unpack.";
+            Console.WriteLine(message);
+            progress.Report((0, rbin.ReadEntryCount, message));
+        }
         for (int i = 0; i < rbin.ReadEntryCount; i++)
         {
             Entry entry = new Entry();
@@ -143,6 +151,13 @@ public class RBIN
             {
                 entry.Compressed = false;
             }
+
+            if (!silent)
+            {
+                string message = $"({i + 1}/{rbin.ReadEntryCount}) Extracting {entry.ReadSize} bytes to {entry.Name}";
+                Console.WriteLine(message);
+                progress.Report((i + 1, rbin.ReadEntryCount, message));
+            }
             offset = (uint)(data[j++] + (data[j++] * 0x100) + (data[j++] * 0x10000) + (data[j++] * 0x1000000));
             entry.Data = new byte[entry.ReadSize];
             using (FileStream fs = new FileStream(input, FileMode.Open, FileAccess.Read))
@@ -154,6 +169,12 @@ public class RBIN
             Directory.CreateDirectory(realoutput);
             if (entry.Compressed)
             {
+                if (!silent)
+                {
+                    string message = $"({i}/{rbin.ReadEntryCount}) Decompressing {entry.Name}";
+                    Console.WriteLine(message);
+                    progress.Report((i + 1, rbin.ReadEntryCount, message));
+                }
                 MemoryStream ms = new MemoryStream();
                 ms.Write(entry.Data);
                 ms.Seek(0, SeekOrigin.Begin);
@@ -170,20 +191,41 @@ public class RBIN
         File.WriteAllText(Path.Combine(realoutput, "info.json"), jsonString);
         if (recursive)
         {
+            if (!silent)
+            {
+                string message = "Recursively unpacking files...";
+                Console.WriteLine(message);
+                progress.Report((0, rbin.ReadEntryCount, message));
+            }
             string[] files = Directory.GetFiles(realoutput, "*", SearchOption.AllDirectories);
+            int count = 1;
             foreach (string file in files)
             {
                 if (Containers.IsArc(file))
                 {
                     Containers.Generic.Unpack(file);
+                    if (!silent)
+                    {
+                        string message = $"({count}/{files.Length}) Unpacked {Path.GetFileName(file)}";
+                        Console.WriteLine(message);
+                        progress.Report((count, rbin.ReadEntryCount, message));
+                    }
                 }
 
                 if (Path.GetExtension(file) == ".ctt")
                 {
                     CTT.Decode(file);
+                    if (!silent)
+                    {
+                        string message = $"({count}/{files.Length}) Decoded {Path.GetFileName(file)}";
+                        Console.WriteLine(message);
+                        progress.Report((count, rbin.ReadEntryCount, message));                    }
                 }
+
+                count++;
             }
         }
+        progress.Report((1, 1, "Done."));
         return rbin;
     }
     

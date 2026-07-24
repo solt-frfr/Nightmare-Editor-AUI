@@ -81,7 +81,7 @@ namespace Nightmare_Editor
             foreach (string file in files)
             {
                 string filetrim = file.Replace(Misc.Paths.current + Path.DirectorySeparatorChar, "");
-                AddFile(filetrim);
+                AddFile(filetrim, 1);
             }
             if (!File.Exists(linkPath))
             {
@@ -167,7 +167,7 @@ namespace Nightmare_Editor
                         try
                         {
                             File.Copy(files[0].Path.LocalPath, Path.Combine(Misc.Paths.current, Path.GetFileName(files[0].Path.LocalPath)));
-                            AddFile(Path.GetFileName(files[0].Path.LocalPath));
+                            AddFile(Path.GetFileName(files[0].Path.LocalPath), 1);
                             RBIN.Load(files[0].Path.LocalPath);
                         }
                         catch
@@ -348,7 +348,7 @@ namespace Nightmare_Editor
             return contextMenu;
         }
 
-        private void AddFile(string filename)
+        private void AddFile(string filename, int column)
         {
             TextBox newTextBox = new TextBox
             {
@@ -356,86 +356,66 @@ namespace Nightmare_Editor
                 IsReadOnly = true,
                 Width = 200,
                 Height = 20,
+                FontSize = 12,
                 HorizontalAlignment = HorizontalAlignment.Left,
                 VerticalAlignment = VerticalAlignment.Center,
+                VerticalContentAlignment = VerticalAlignment.Center,
                 Background = new SolidColorBrush(Avalonia.Media.Color.Parse("#202020")),
                 BorderBrush = new SolidColorBrush(Avalonia.Media.Color.Parse("#424242")),
                 Foreground = new SolidColorBrush(Avalonia.Media.Color.Parse("#f2f2f2")),
                 Cursor = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
                 Focusable = false,
             };
-            
-            var contextMenu = Cont1();
-            contextMenu.Opened += (s, e) => {
-            TextBox_PreviewMouseLeftButtonDown(newTextBox, null);
-            };
-            newTextBox.ContextMenu = contextMenu; 
             newTextBox.Classes.Add("NoHover");
-            newTextBox.PointerReleased += TextBox_Click;
-            newTextBox.PointerPressed += TextBox_PreviewMouseLeftButtonDown;
-            Files.Children.Add(newTextBox);
-        }
 
-        private void AddFile2(string filename)
-        {
-            TextBox newTextBox = new TextBox
+            if (column == 1)
             {
-                Name = filename,
-                Text = Misc.RemoveAtFirst(filename, '-'),
-                IsReadOnly = true,
-                Width = 200,
-                Height = 20,
-                HorizontalAlignment = HorizontalAlignment.Left,
-                VerticalAlignment = VerticalAlignment.Center,
-                Background = new SolidColorBrush(Avalonia.Media.Color.Parse("#202020")),
-                BorderBrush = new SolidColorBrush(Avalonia.Media.Color.Parse("#424242")),
-                Foreground = new SolidColorBrush(Avalonia.Media.Color.Parse("#f2f2f2")),
-                Cursor = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
-                Focusable = false,
-            };
-            var contextMenu = Cont2();
-            contextMenu.Opened += (s, e) => {
-                TextBox2_PreviewMouseLeftButtonDown(newTextBox, null);
-            };
-            newTextBox.ContextMenu = contextMenu;
-            newTextBox.Classes.Add("NoHover");
-            newTextBox.PointerReleased += TextBox2_Click;
-            newTextBox.PointerPressed += TextBox2_PreviewMouseLeftButtonDown;
-            Files2.Children.Add(newTextBox);
-        }
-        private void AddFile3(string filename)
-        {
-            TextBox newTextBox = new TextBox
+                var contextMenu = Cont1();
+                contextMenu.Opened += (s, e) => {
+                    TextBox_PreviewMouseLeftButtonDown(newTextBox, null);
+                };
+                newTextBox.ContextMenu = contextMenu; 
+                newTextBox.PointerReleased += TextBox_Click;
+                newTextBox.PointerPressed += TextBox_PreviewMouseLeftButtonDown;
+                Files.Children.Add(newTextBox);
+            }
+
+            if (column == 2)
             {
-                Name = filename,
-                Text = filename,
-                IsReadOnly = true,
-                Width = 200,
-                Height = 20,
-                HorizontalAlignment = HorizontalAlignment.Left,
-                VerticalAlignment = VerticalAlignment.Center,
-                Background = new SolidColorBrush(Avalonia.Media.Color.Parse("#202020")),
-                BorderBrush = new SolidColorBrush(Avalonia.Media.Color.Parse("#424242")),
-                Foreground = new SolidColorBrush(Avalonia.Media.Color.Parse("#f2f2f2")),
-                Cursor = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
-                Focusable = false,
-            };
-            var contextMenu = Cont3();
-            contextMenu.Opened += (s, e) => {
-                TextBox3_PreviewMouseLeftButtonDown(newTextBox, null);
-            };
-            newTextBox.ContextMenu = contextMenu;
-            newTextBox.Classes.Add("NoHover");
-            newTextBox.PointerReleased += TextBox3_Click;
-            newTextBox.PointerPressed += TextBox3_PreviewMouseLeftButtonDown;
-            Files3.Children.Add(newTextBox);
-            if (Files3.Children.Count == 1)
+                newTextBox.Name = filename;
+                newTextBox.Text = Misc.RemoveAtFirst(filename, '-');
+                
+                var contextMenu = Cont2();
+                contextMenu.Opened += (s, e) => {
+                    TextBox2_PreviewMouseLeftButtonDown(newTextBox, null);
+                };
+                newTextBox.ContextMenu = contextMenu;
+                newTextBox.PointerReleased += TextBox2_Click;
+                newTextBox.PointerPressed += TextBox2_PreviewMouseLeftButtonDown;
+                Files2.Children.Add(newTextBox);
+            }
+            
+            if (column == 3)
             {
-                TextBox3_PreviewMouseLeftButtonDown(newTextBox, null);
-                TextBox3_Click(newTextBox, null);
+                newTextBox.Name = filename;
+                newTextBox.Text = filename;
+                
+                var contextMenu = Cont3();
+                contextMenu.Opened += (s, e) => {
+                    TextBox3_PreviewMouseLeftButtonDown(newTextBox, null);
+                };
+                newTextBox.ContextMenu = contextMenu;
+                newTextBox.PointerReleased += TextBox3_Click;
+                newTextBox.PointerPressed += TextBox3_PreviewMouseLeftButtonDown;
+                Files3.Children.Add(newTextBox);
+                if (Files3.Children.Count == 1)
+                {
+                    TextBox3_PreviewMouseLeftButtonDown(newTextBox, null);
+                    TextBox3_Click(newTextBox, null);
+                }
             }
         }
-
+        
         private void TextBox_PreviewMouseLeftButtonDown(object sender, RoutedEventArgs e)
         {
             if (sender is TextBox tb)
@@ -504,7 +484,7 @@ namespace Nightmare_Editor
                                 !filetrim.Contains(".json") && 
                                 !filetrim.Contains(".pnt"))
                             {
-                                AddFile2(filetrim);
+                                AddFile(filetrim, 2);
                             }
                         }
                     }
@@ -606,7 +586,7 @@ namespace Nightmare_Editor
                                 !filetrim.Contains(".json") && 
                                 !filetrim.Contains(".pnt"))
                             {
-                                AddFile3(filetrim);
+                                AddFile(filetrim, 3);
                             }
                         }
                         var sorted = Files3.Children
@@ -1469,6 +1449,10 @@ namespace Nightmare_Editor
                         }
                     }
             });
+            if (file == null || file.Count < 1)
+            {
+                return;
+            }
             if (!string.IsNullOrWhiteSpace(file[0].Path.LocalPath))
             {
                 FileLink.Text = file[0].Path.LocalPath;
