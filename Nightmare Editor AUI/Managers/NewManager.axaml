@@ -88,13 +88,17 @@
                         </Rectangle.Fill>
                     </Rectangle>
                     <Rectangle Height="1" Fill="#a1a6ff" VerticalAlignment="Top"></Rectangle>
-                    <StackPanel>
+                    <StackPanel Name="SettingsPanel">
                         <controls:ConfigSlot Name="DeployPathConfig" LeftText="Deploy Path" RightText="Browse" Click="DeployPathConfig_OnClick" PointerEntered="MenuButton_Hover" Description="After clicking Deploy, the mods will be placed in this path." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16,6,16,1"/>
                         <controls:ConfigSlot Name="EmulatorConfig" LeftText="Using an Emulator" RightText="Yes" Click="EmulatorConfig_OnClick" PointerEntered="MenuButton_Hover" Description="Enable emulator-specific enhancements. Place the Deploy path in your emulator's /load folder." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16,0"/>
                         <controls:ConfigSlot Name="RegionConfig" LeftText="Game Region" RightText="North America" Click="RegionConfig_OnClick" PointerEntered="MenuButton_Hover" Description="Used to ensure the directories are correct for your game version." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16,0"/>
                         <controls:ConfigSlot Name="ETCConfig" LeftText="ETC1 Encoder" RightText="Yes" Click="ETCConfig_OnClick" PointerEntered="MenuButton_Hover" Description="Change the ETC1 Encoder used in Nightmare Editor. Wine is experimental." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16,0"/>
                         <controls:ConfigSlot Name="UnpackRBINConfig" LeftText="Unpack RBIN" RightText="Browse" Click="UnpackRBINConfig_OnClick" PointerEntered="MenuButton_Hover" Description="Add an RBIN to use inside the program." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16,0"/>
                         <controls:ConfigSlot Name="SwitchUIConfig" LeftText="Switch UI" RightText="Menu UI" Click="SwitchUIConfig_OnClick" PointerEntered="MenuButton_Hover" Description="Switch the UI." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16,0"/>
+                    </StackPanel>
+                    <StackPanel Name="ThemePanel">
+                        <controls:ConfigSlot Name="DefaultThemeSlot" LeftText="Default Themes" RightText="Default" Click="ChangeTheme_OnClick" PointerEntered="MenuButton_Hover" Description="Cycle to the next default theme." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16,6,16,1"/>
+                        <controls:ConfigSlot Name="ImportThemeSlot" LeftText="Import Theme" RightText="Browse" Click="ImportTheme_OnClick" PointerEntered="MenuButton_Hover" Description="Import a theme from a file." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16,0"/>
                     </StackPanel>
                 </Grid>
             </Viewbox>

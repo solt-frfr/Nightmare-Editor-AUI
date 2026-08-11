@@ -49,12 +49,13 @@ namespace Nightmare_Editor
         private bool isInitialized = false;
         private List<string[]> music = new List<string[]>();
         private MainWindowViewModel viewModel = new MainWindowViewModel();
-        private static Themes.Theme theme = Themes.Default;
+        private static Themes.Theme theme = CurrentTheme.Theme;
+
 
         public Manager()
         {
             InitializeComponent();
-            SetTheme(0);
+            SwapTheme(0);
             ModsWindow(true);
             ModsButton.Content = MainButtonContent(true, "Mods");
             SettingsButton.Content = MainButtonContent(false, "Settings");
@@ -858,7 +859,7 @@ namespace Nightmare_Editor
 
         private void MusicReplaceButton_OnClick(object? sender, RoutedEventArgs e)
         {
-            SetTheme(int.Parse(Console.ReadLine()));
+            SwapTheme(int.Parse(Console.ReadLine()));
             //throw new NotImplementedException();
         }
 
@@ -872,27 +873,20 @@ namespace Nightmare_Editor
             Close();
         }
 
-        private void SetTheme(int theme_index)
+        private void SwapTheme(int theme_index)
         {
-            switch(theme_index) 
+            if (theme_index >= 0 && theme_index < Themes.Defaults.Count)
             {
-                case 0:
-                    theme = Themes.Default;
-                    break;
-                case 1:
-                    theme = Themes.Topaz;
-                    break;
-                case 2:
-                    theme = Themes.Cagaroo;
-                    break;
-                default:
-                    theme = Themes.Default;
-                    break;
+                theme = Themes.Defaults[theme_index];
+            }
+            else
+            {
+                theme = Themes.Defaults.FirstOrDefault(x => x.Name == "Default");
             }
             ThemeChange();
         }
         
-        private void SetTheme(string filepath)
+        private void SwapTheme(string filepath)
         {
             string jsonString = System.IO.File.ReadAllText(filepath);
             theme = JsonSerializer.Deserialize<Themes.Theme>(jsonString, WriteIndented);
@@ -901,6 +895,8 @@ namespace Nightmare_Editor
 
         private void ThemeChange()
         {
+            SetTheme(new Themes.ThemeData { Theme = theme, MenuTheme = CurrentTheme.MenuTheme });
+            
             this.Background = new LinearGradientBrush()
             {
                 StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative),
@@ -1104,6 +1100,33 @@ namespace Nightmare_Editor
                     return presenter;
                 }));
             return output;
+        }
+
+        private void SwitchTheme_OnClick(object? sender, RoutedEventArgs e)
+        {
+            int index = Themes.Defaults.IndexOf(Themes.Defaults.FirstOrDefault(x => x.Name == theme.Name));
+            SwapTheme((index + 1) % Themes.Defaults.Count);
+        }
+
+        private async void ImportTheme_OnClick(object? sender, RoutedEventArgs e)
+        {
+            var files = await this.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+            {
+                Title = "Import a new theme...",
+                FileTypeFilter = new List<FilePickerFileType>
+                {
+                    new FilePickerFileType("Theme")
+                    {
+                        Patterns = new List<string> { "*.json" }
+                    }
+                },
+                AllowMultiple = false
+            });
+            if (files == null || files.Count < 1) return;
+            if (!string.IsNullOrWhiteSpace(files[0].Path.LocalPath))
+            {
+                SwapTheme(files[0].Path.LocalPath);
+            }
         }
     }
 }

@@ -55,6 +55,7 @@ namespace Nightmare_Editor
 
         private readonly string linkPath = Misc.Jsons.textures;
 
+        private List<TextBox> tempList = new List<TextBox>();
         private List<TextBox> unfiltered = new List<TextBox>();
         private List<TextBox> filtered = new List<TextBox>();
 
@@ -348,7 +349,7 @@ namespace Nightmare_Editor
             return contextMenu;
         }
 
-        private void AddFile(string filename, int column)
+        private void AddFile(string filename, int column, bool toTempList = false)
         {
             TextBox newTextBox = new TextBox
             {
@@ -392,7 +393,14 @@ namespace Nightmare_Editor
                 newTextBox.ContextMenu = contextMenu;
                 newTextBox.PointerReleased += TextBox2_Click;
                 newTextBox.PointerPressed += TextBox2_PreviewMouseLeftButtonDown;
-                Files2.Children.Add(newTextBox);
+                if (toTempList)
+                {
+                    tempList.Add(newTextBox);
+                }
+                else
+                {
+                    Files2.Children.Add(newTextBox);
+                }
             }
             
             if (column == 3)
@@ -463,6 +471,7 @@ namespace Nightmare_Editor
             foreach (var child in Files.Children)
             {
                 Files2.Children.Clear();
+                tempList.Clear();
                 Log.Text = "Loading...";
                 if (child is TextBox textBox && textBox == selectedTextBox)
                 {
@@ -484,7 +493,7 @@ namespace Nightmare_Editor
                                 !filetrim.Contains(".json") && 
                                 !filetrim.Contains(".pnt"))
                             {
-                                AddFile(filetrim, 2);
+                                AddFile(filetrim, 2, true);
                             }
                         }
                     }
@@ -494,12 +503,12 @@ namespace Nightmare_Editor
 
             if (!(sender is TextBox tb1 && tb1.Text == "User-Added.rbin"))
             {
-                var sorted = Files2.Children
-                    .OfType<TextBox>()
+                var sorted = tempList
                     .OrderBy(tb => int.Parse(tb.Name.Split('-')[0]))
                     .ToList();
 
                 Files2.Children.Clear();
+                tempList.Clear();
                 unfiltered.Clear();
 
                 foreach (var textBox in sorted)
@@ -510,12 +519,12 @@ namespace Nightmare_Editor
             }
             else
             {
-                var sorted = Files2.Children
-                    .OfType<TextBox>()
+                var sorted = tempList
                     .OrderBy(tb => tb.Name)
                     .ToList();
 
                 Files2.Children.Clear();
+                tempList.Clear();
                 unfiltered.Clear();
 
                 foreach (var textBox in sorted)
@@ -705,6 +714,7 @@ namespace Nightmare_Editor
             NewTools.CTT.Decode(file, false).SaveAsPng(ms);
             ms.Seek(0, SeekOrigin.Begin);
             Bitmap bitmap = new Bitmap(ms);
+            Bitmap bitmap2;
             if (textureSwap)
             {
                 Texture.Source = bitmap;
@@ -739,7 +749,7 @@ namespace Nightmare_Editor
                         }
                         else
                         {
-                            Bitmap bitmap2 = new Bitmap(File.OpenRead(arr[1]));
+                            bitmap2 = new Bitmap(File.OpenRead(arr[1]));
                             if (textureSwap)
                             {
                                 TextureSmall.Source = bitmap2;

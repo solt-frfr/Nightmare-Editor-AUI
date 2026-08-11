@@ -96,30 +96,26 @@
                     <TextBox Text="Linear Scaling" PointerReleased="SLS_Click" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" HorizontalContentAlignment="Right" IsReadOnly="True" Focusable="False" Cursor="Hand" Height="17" FontSize="12"/>
                     <TextBox Text="Swap Images" PointerReleased="TextureSwap" Foreground="Blue" FontWeight='Black' BorderBrush="Gray" FontStyle="Italic" Background="White" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" IsReadOnly="True" Focusable="False" Cursor="Hand" Height="17" FontSize="12"/>
                 </StackPanel>
-                <Viewbox Grid.Column="1" Margin="5">
-                    <StackPanel >
-                        <Grid>
-                            <Grid.ContextMenu>
-                                <ContextMenu>
-                                    <MenuItem Header="Save Embedded Texture"
-                                              Click="SaveTex_Click" />
-                                </ContextMenu>
-                            </Grid.ContextMenu>
-                            <Viewbox>
-                                <Rectangle Name="TransRights" Stretch="Fill" Height="512" Width="512">
-                                    <Rectangle.Fill>
-                                        <ImageBrush Source="Images/transrights.png"
-                                                    TileMode="Tile"
-                                                    DestinationRect="0,0,64,64"
-                                                    Stretch="None" />
-                                    </Rectangle.Fill>
-                                </Rectangle>
-                            </Viewbox>
-                            <Image Name="Texture" Source="Images/plus.png" RenderOptions.BitmapInterpolationMode="HighQuality"/>
-                        </Grid>
-                        <TextBox Name="Location" Text="Linked Texture" VerticalAlignment="Bottom" Height="20" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Classes="NoHover"/>
-                    </StackPanel>
-                </Viewbox>
+                <Grid RowDefinitions="*,Auto" Grid.Column="1" Margin="5">
+                    <Grid>
+                        <Grid.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Save Embedded Texture"
+                                          Click="SaveTex_Click" />
+                            </ContextMenu>
+                        </Grid.ContextMenu>
+                        <Rectangle Name="TransRights" Stretch="Fill">
+                            <Rectangle.Fill>
+                                <ImageBrush Source="Images/transrights.png"
+                                            TileMode="Tile"
+                                            DestinationRect="0,0,64,64"
+                                            Stretch="None" />
+                            </Rectangle.Fill>
+                        </Rectangle>
+                        <Image Name="Texture" Source="Images/plus.png" RenderOptions.BitmapInterpolationMode="HighQuality"/>
+                    </Grid>
+                    <TextBox Grid.Row="1" Name="Location" Text="Linked Texture" VerticalAlignment="Bottom" Height="20" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Classes="NoHover"/>
+                </Grid>
                 <StackPanel Margin="5,5,5,0" VerticalAlignment="Bottom">
                     <Grid>
                         <Grid.ContextMenu>

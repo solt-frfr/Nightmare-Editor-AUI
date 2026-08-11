@@ -55,6 +55,33 @@ public static class Standard
         set => SetEnabledMods(value);
     }
     
+    public static Themes.ThemeData CurrentTheme
+    {
+        get => GetTheme();
+        set => SetTheme(value);
+    }
+    
+    public static Themes.ThemeData GetTheme()
+    {
+        if (!File.Exists(Misc.Jsons.theme))
+        {
+            Themes.ThemeData theme = new Themes.ThemeData
+            {
+                Theme = Themes.Defaults.FirstOrDefault(x => x.Name == "Default"),
+                MenuTheme = Themes.MenuDefaults.FirstOrDefault(x => x.Name == "Default")
+            };
+            string jsonString = JsonSerializer.Serialize<Themes.ThemeData>(theme, WriteIndented);
+            System.IO.File.WriteAllText(Misc.Jsons.theme, jsonString);
+        }
+        return JsonSerializer.Deserialize<Themes.ThemeData>(File.ReadAllText(Misc.Jsons.theme), WriteIndented);
+    }
+    
+    public static void SetTheme(Themes.ThemeData newTheme)
+    {
+        string jsonString = JsonSerializer.Serialize<Themes.ThemeData>(newTheme, WriteIndented);
+        System.IO.File.WriteAllText(Misc.Jsons.theme, jsonString);
+    }
+    
     public static List<string> GetEnabledMods()
     {
         if (!File.Exists(Misc.Jsons.enabled))

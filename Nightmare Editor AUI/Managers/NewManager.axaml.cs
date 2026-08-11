@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -33,13 +34,12 @@ using static Nightmare_Editor_AUI.Managers.Standard;
 using Nightmare_Editor_AUI.Controls;
 using Nightmare_Editor.NewTools;
 using SharpCompress.Archives;
-using Path = SixLabors.ImageSharp.Drawing.Path;
 
 namespace Nightmare_Editor_AUI;
 
 public partial class NewManager : Window
 {
-    private Themes.MenuTheme theme = Themes.MenuDefault;
+    private Themes.MenuTheme theme = CurrentTheme.MenuTheme;
     public NewManager()
     {
         InitializeComponent();
@@ -163,6 +163,8 @@ public partial class NewManager : Window
     {
         MenuButtonsPanel.IsVisible = false;
         SettingsWindow.IsVisible = true;
+        SettingsPanel.IsVisible = true;
+        ThemePanel.IsVisible = false;
         MainText.Text = "Settings";
         BottomLeftTextLower.Text = "Return";
         BottomLeftTextLower2.Text = "Back";
@@ -184,6 +186,17 @@ public partial class NewManager : Window
     private void Menu_Download_OnClick(object? sender, EventArgs e)
     {
         OpenGamebanana();
+    }
+    
+    private void Menu_Themes_OnClick(object? sender, EventArgs e)
+    {
+        MenuButtonsPanel.IsVisible = false;
+        SettingsWindow.IsVisible = true;
+        SettingsPanel.IsVisible = false;
+        ThemePanel.IsVisible = true;
+        MainText.Text = "Themes";
+        BottomLeftTextLower.Text = "Return";
+        BottomLeftTextLower2.Text = "Back";
     }
 
     private void DeployPathConfig_OnClick(object? sender, EventArgs e)
@@ -231,6 +244,8 @@ public partial class NewManager : Window
                 ETCConfig.RightText = "Unknown";
                 break;
         }
+
+        DefaultThemeSlot.RightText = theme.Name;
         
         ModsPanel.Children.Clear();
         string[] griditems = Directory.GetDirectories(Misc.Paths.mods);
@@ -269,6 +284,8 @@ public partial class NewManager : Window
         }
 
         BottomLeftTextUpper2.Text = griditems.Length.ToString();
+
+        ThemeChange();
     }
 
     private ContextMenu ModContext(ModSlot slot)
@@ -753,25 +770,37 @@ public partial class NewManager : Window
         Close();
     }
     
-    private void SetTheme(int theme_index)
+    private void SwapTheme(int theme_index)
     {
-        switch(theme_index) 
+        if (theme_index >= 0 && theme_index < Themes.MenuDefaults.Count)
         {
-            case 0:
-                theme = Themes.MenuDefault;
-                break;
-            case 1:
-                theme = Themes.MenuTopaz;
-                break;
-            default:
-                theme = Themes.MenuDefault;
-                break;
+            theme = Themes.MenuDefaults[theme_index];
         }
-        ThemeChange();
+        else
+        {
+            theme = Themes.MenuDefaults.FirstOrDefault(x => x.Name == "Default");
+        }
+        Refresh();
+    }
+    
+    private void SwapTheme(string filepath)
+    {
+        string jsonString = System.IO.File.ReadAllText(filepath);
+        try
+        {
+            theme = JsonSerializer.Deserialize<Themes.MenuTheme>(jsonString, WriteIndented);
+        }
+        catch (Exception e)
+        {
+            MesgWindow mw = new MesgWindow("ERROR", "The file you selected does not contain Menu Theme data.", MesgWindow.MsgBoxType.Info);
+        }
+        Refresh();
     }
 
     private void ThemeChange()
     {
+        SetTheme(new Themes.ThemeData { Theme = CurrentTheme.Theme, MenuTheme = theme });
+        
         SolidColorBrush _bg_highlight_brush_u = new SolidColorBrush(Color.Parse(theme.BGHighlight_U));
         SolidColorBrush _bg_highlight_brush_l = new SolidColorBrush(Color.Parse(theme.BGHighlight_L));
         SolidColorBrush _bg_highlight_brush_r = new SolidColorBrush(Color.Parse(theme.BGHighlight_R));
@@ -840,9 +869,31 @@ public partial class NewManager : Window
         Heart.Fill = new ImmutableSolidColorBrush(Color.Parse(theme.HeartColor));
     }
 
-    private void Menu_Themes_OnClick(object? sender, EventArgs e)
+
+    private void ChangeTheme_OnClick(object? sender, EventArgs e)
     {
-        SetTheme(int.Parse(Console.ReadLine()));
-        //throw new NotImplementedException();
+        int index = Themes.MenuDefaults.IndexOf(Themes.MenuDefaults.FirstOrDefault(x => x.Name == theme.Name));
+        SwapTheme((index + 1) % Themes.MenuDefaults.Count);
+    }
+
+    private async void ImportTheme_OnClick(object? sender, EventArgs e)
+    {
+        var files = await this.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title = "Import a new theme...",
+            FileTypeFilter = new List<FilePickerFileType>
+            {
+                new FilePickerFileType("Menu Theme")
+                {
+                    Patterns = new List<string> { "*.json" }
+                }
+            },
+            AllowMultiple = false
+        });
+        if (files == null || files.Count < 1) return;
+        if (!string.IsNullOrWhiteSpace(files[0].Path.LocalPath))
+        {
+            SwapTheme(files[0].Path.LocalPath);
+        }
     }
 }
