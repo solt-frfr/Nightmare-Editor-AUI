@@ -19,8 +19,9 @@
 			<Setter Property="Focusable" Value="False"/>
 			<Setter Property="IsReadOnly" Value="True"/>
 			<Setter Property="Cursor" Value="Arrow"/>
-			<Setter Property="Foreground"
-			        Value="White" />
+			<Style Selector="^:pointerover">
+				<Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource Self}}"/>
+			</Style>
 			<Setter Property="Template">
 				<ControlTemplate>
 					<Border Background="{Binding Background, RelativeSource={RelativeSource TemplatedParent}}"
@@ -80,6 +81,10 @@
 		</Style>
 		<Style Selector="Button">
 			<Setter Property="FontFamily" Value="{StaticResource 'Ubuntu Sans'}" />
+		</Style>
+		<Style Selector="ToolTip">
+			<Setter Property="Foreground"
+			        Value="Black" />
 		</Style>
     </Application.Styles>
 </Application>

@@ -55,7 +55,6 @@ namespace Nightmare_Editor
         public Manager()
         {
             InitializeComponent();
-            SwapTheme(0);
             ModsWindow(true);
             ModsButton.Content = MainButtonContent(true, "Mods");
             SettingsButton.Content = MainButtonContent(false, "Settings");
@@ -75,7 +74,9 @@ namespace Nightmare_Editor
             Refresh();
             isInitialized = true;
             DataContext = viewModel;
-            
+            ModsButton.Content = MainButtonContent(true, "Mods");
+            SettingsButton.Content = MainButtonContent(false, "Settings");
+            MusicButton.Content = MainButtonContent(false, "Music");
         }
         
         public static Grid MainButtonContent(bool on, string text)
@@ -178,6 +179,7 @@ namespace Nightmare_Editor
         }
         public void Refresh()
         {
+            ThemeChange();
             try
             {
                 try
@@ -1049,9 +1051,9 @@ namespace Nightmare_Editor
             InstallArchiveButton.Color = new ImmutableSolidColorBrush(Color.Parse(theme.ButtonColor));
             
             DownloadButton.Content = MainButtonContent(false, "Download");
-            
-            Refresh();
-            Mods_Click(null, null);
+            ModsButton.Content = MainButtonContent(IsMenuButtonEnabled(ModsButton), "Mods");
+            SettingsButton.Content = MainButtonContent(IsMenuButtonEnabled(SettingsButton), "Settings");
+            MusicButton.Content = MainButtonContent(IsMenuButtonEnabled(MusicButton), "Music");
         }
 
         private Setter RemoveButtonHover()
@@ -1100,6 +1102,21 @@ namespace Nightmare_Editor
                     return presenter;
                 }));
             return output;
+        }
+
+        private bool IsMenuButtonEnabled(Button button)
+        {
+            if (button.Content is Grid grid)
+            {
+                for (int i = 0; i < grid.Children.Count; i++)
+                {
+                    if (grid.Children[i].Margin.IsUniform && (int)Math.Round(grid.Children[i].Margin.Top) == 8)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         private void SwitchTheme_OnClick(object? sender, RoutedEventArgs e)

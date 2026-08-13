@@ -94,6 +94,22 @@ public static class Themes
             TopButtonBorder = "#ffb702",
             TopButtonShadow = "#606060",
             ButtonColor = "#ffb703",
+        },
+        new Theme
+        {
+            Name = "Cagaroo B",
+            BGColorUp = "#003566",
+            BGColorLow = "#001D3D",
+            SettingsColor = "#000814",
+            GridColor = "#588157",
+            GridColorAlt = "#3A5A40",
+            GridColorBG = "#A3B18A",
+            DescColor = "#000814",
+            TopButtonColor = "#A3B18A",
+            TopButtonHighlight = "#DAD7CD",
+            TopButtonBorder = "#344E41",
+            TopButtonShadow = "#000000",
+            ButtonColor = "#DAD7CD",
         }
     };
 
