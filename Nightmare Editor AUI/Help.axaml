@@ -41,22 +41,17 @@
                             <Setter Property="Padding" Value="5,0"/>
                         </Style>
                     </StackPanel.Styles>
-                    <TextBox Name="Int" PointerReleased="Click" Text="Introduction"/>
-                    <TextBox Name="Add" PointerReleased="Click" Text="Add Files"/>
-                    <TextBox Name="Usr" PointerReleased="Click" Text="User-Added.rbin"/>
-                    <TextBox Name="Tkt" PointerReleased="Click" Text="Romhacking Suite"/>
-                    <TextBox Name="Lnk" PointerReleased="Click" Text="Texture Linking"/>
-                    <TextBox Name="For" PointerReleased="Click" Text="Texture Formats"/>
-                    <TextBox Name="Txa" PointerReleased="Click" Text="TXA Files"/>
-                    <TextBox Name="Pak" PointerReleased="Click" Text="Packing Files"/>
-                    <TextBox Name="Mod" PointerReleased="Click" Text="Exporting Mods"/>
-                    <TextBox Name="Qrk" PointerReleased="Click" Text="Quirks"/>
-                    <TextBox Name="Faq" PointerReleased="Click" Text="FAQ / About"/>
+                    <TextBox Name="Introduction" PointerReleased="Click" Text="Introduction"/>
+                    <TextBox Name="Tutorial" PointerReleased="Click" Text="Tutorial"/>
+                    <TextBox Name="Glossary" PointerReleased="Click" Text="Glossary"/>
+                    <TextBox Name="Other_Files" PointerReleased="Click" Text="Other Files"/>
+                    <TextBox Name="Texture_Formats" PointerReleased="Click" Text="Texture Formats"/>
+                    <TextBox Name="Frequently_Asked_Questions" PointerReleased="Click" Text="FAQ / About"/>
                 </StackPanel>
             </ScrollViewer>
             <GridSplitter Grid.Row="1" Grid.Column="1" Width="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeDirection="Columns" Background="White" Cursor="LeftSide"/>
-            <Grid Grid.Column="2" Grid.Row="1" Background="#F04080">
-			    <md:MarkdownScrollViewer Name="MD" Margin="10" Grid.Column="1" Grid.Row="1" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" Markdown="Hello, World!">
+            <Grid Grid.Column="2" Grid.Row="1" RowDefinitions="*, 30" Background="#F04080">
+			    <md:MarkdownScrollViewer Name="MD" Margin="10" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" Markdown="Hello, World!">
                     <md:MarkdownScrollViewer.Styles>
                         <Style Selector="ctxt|CTextBlock">
                             <Setter Property="Foreground" Value="Black"/>
@@ -82,8 +77,21 @@
                             <Setter Property="FontFamily" Value="{StaticResource 'Ubuntu Sans'}"/>
                             <Setter Property="FontSize" Value="16"/>
                         </Style>
+                        <Style Selector="ctxt|CCode">
+                            <Setter Property="FontSize" Value="12"/>        
+                            <Setter Property="Padding" Value="2"/>
+                            <Setter Property="MonospaceFontFamily" Value="{StaticResource 'JetBrains Mono'}" />
+                            <Setter Property="Foreground" Value="DarkGreen" />
+                            <Setter Property="Background" Value="LightGreen" />
+                        </Style>
+                        <Style Selector="ctxt|CHyperlink">
+                            <Setter Property="Foreground" Value="DarkGreen" />
+                            <Setter Property="HoverForeground" Value="#C03000"/>
+                        </Style>
                     </md:MarkdownScrollViewer.Styles>
                 </md:MarkdownScrollViewer>
+                <Button Grid.Row="1" Name="Previous" IsVisible="False" Click="Previous_OnClick">Previous</Button>
+                <Button Grid.Row="1" Name="Next" IsVisible="False" Click="Next_OnClick" HorizontalAlignment="Right">Next</Button>
             </Grid>
         </Grid>
     </Viewbox>

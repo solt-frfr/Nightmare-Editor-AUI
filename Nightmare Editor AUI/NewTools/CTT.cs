@@ -36,11 +36,11 @@ namespace Nightmare_Editor.NewTools
             RGBA5551 = 2,
             RGB565 = 3,
             RGBA4444 = 4,
-            LA8 = 5,
-            HILO8 = 6,
+            LA88 = 5,
+            HILO88 = 6,
             L8 = 7,
             A8 = 8,
-            LA4 = 9,
+            LA44 = 9,
             L4 = 10,
             A4 = 11,
             ETC1 = 12,
@@ -393,13 +393,13 @@ namespace Nightmare_Editor.NewTools
             }
             else if (format == 5)
             {
-                byte[] newData = LA8unpack(rawData);
+                byte[] newData = LA88unpack(rawData);
                 var image = Assemble(newData, width, height, true);
                 return image;
             }
             else if (format == 6)
             {
-                byte[] newData = HILO8unpack(rawData);
+                byte[] newData = HILO88unpack(rawData);
                 var image = Assemble(newData, width, height, false);
                 return image;
             }
@@ -417,7 +417,7 @@ namespace Nightmare_Editor.NewTools
             }
             else if (format == 9)
             {
-                byte[] newData = LA4unpack(rawData);
+                byte[] newData = LA44unpack(rawData);
                 var image = Assemble(newData, width, height, true);
                 return image;
             }
@@ -482,11 +482,11 @@ namespace Nightmare_Editor.NewTools
             }
             else if (format == 5)
             {
-                newData = LA8pack(image);
+                newData = LA88pack(image);
             }
             else if (format == 6)
             {
-                newData = HILO8pack(image);
+                newData = HILO88pack(image);
             }
             else if (format == 7)
             {
@@ -498,7 +498,7 @@ namespace Nightmare_Editor.NewTools
             }
             else if (format == 9)
             {
-                newData = LA4pack(image);
+                newData = LA44pack(image);
             }
             else if (format == 10)
             {
@@ -864,7 +864,7 @@ namespace Nightmare_Editor.NewTools
         /// </summary>
         /// <param name="ogData">Raw LA8 byte array.</param>
         /// <returns>Returns a byte array containing raw RGBA8888 data.</returns>
-        public static byte[] LA8unpack(byte[] ogData)
+        public static byte[] LA88unpack(byte[] ogData)
         {
             byte[] newData = new byte[ogData.Length * 2];
 
@@ -887,7 +887,7 @@ namespace Nightmare_Editor.NewTools
         /// <returns>Returns a byte array containing raw RGB888 data.
         /// The red channel represents the Hi channel.
         /// The blue channel represents the Lo channel.</returns>
-        public static byte[] HILO8unpack(byte[] ogData)
+        public static byte[] HILO88unpack(byte[] ogData)
         {
             byte[] newData = new byte[ogData.Length * 3 / 2];
 
@@ -948,7 +948,7 @@ namespace Nightmare_Editor.NewTools
         /// </summary>
         /// <param name="ogData">Raw LA4 byte array.</param>
         /// <returns>Returns a byte array containing raw RGBA8888 data.</returns>
-        public static byte[] LA4unpack(byte[] ogData)
+        public static byte[] LA44unpack(byte[] ogData)
         {
             byte[] newData = new byte[ogData.Length * 4];
 
@@ -1611,11 +1611,11 @@ namespace Nightmare_Editor.NewTools
         /// </summary>
         /// <param name="ogData">Raw RGBA8888 byte array, with CTT Header.</param>
         /// <returns>Returns a byte array containing raw LA8 data, with a CTT Header.</returns>
-        public static byte[] LA8pack(byte[] ogData)
+        public static byte[] LA88pack(byte[] ogData)
         {
             ushort width = (ushort)(ogData[0x20] | (ogData[0x21] << 8));
             ushort height = (ushort)(ogData[0x22] | (ogData[0x23] << 8));
-            byte[] header = CTTHeader(width, height, (int)Format.LA8);
+            byte[] header = CTTHeader(width, height, (int)Format.LA88);
             byte[] newData = new byte[((ogData.Length - 0x80) / 2) + 0x80];
 
             for (int i = 0; i < 0x80; i++)
@@ -1645,11 +1645,11 @@ namespace Nightmare_Editor.NewTools
         /// </summary>
         /// <param name="ogData">Raw RGBA8888 byte array, with CTT Header.</param>
         /// <returns>Returns a byte array containing raw HILO8 data, with a CTT Header.</returns>
-        public static byte[] HILO8pack(byte[] ogData)
+        public static byte[] HILO88pack(byte[] ogData)
         {
             ushort width = (ushort)(ogData[0x20] | (ogData[0x21] << 8));
             ushort height = (ushort)(ogData[0x22] | (ogData[0x23] << 8));
-            byte[] header = CTTHeader(width, height, (int)Format.HILO8);
+            byte[] header = CTTHeader(width, height, (int)Format.HILO88);
             byte[] newData = new byte[((ogData.Length - 0x80) / 3 * 2) + 0x80];
 
             for (int i = 0; i < 0x80; i++)
@@ -1732,11 +1732,11 @@ namespace Nightmare_Editor.NewTools
         /// </summary>
         /// <param name="ogData">Raw RGBA8888 byte array, with CTT Header.</param>
         /// <returns>Returns a byte array containing raw LA4 data, with a CTT Header.</returns>
-        public static byte[] LA4pack(byte[] ogData)
+        public static byte[] LA44pack(byte[] ogData)
         {
             ushort width = (ushort)(ogData[0x20] | (ogData[0x21] << 8));
             ushort height = (ushort)(ogData[0x22] | (ogData[0x23] << 8));
-            byte[] header = CTTHeader(width, height, (int)Format.LA4);
+            byte[] header = CTTHeader(width, height, (int)Format.LA44);
             byte[] newData = new byte[((ogData.Length - 0x80) / 4) + 0x80];
 
             for (int i = 0; i < 0x80; i++)

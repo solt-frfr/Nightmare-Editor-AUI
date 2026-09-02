@@ -14,6 +14,7 @@ using Markdown.Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data.Converters;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Platform;
@@ -29,6 +30,8 @@ namespace Nightmare_Editor
     public partial class Help : Window
     {
         private static double scale = 1;
+        private List<string> files = new List<string>();
+        private int currentIndex = 0;
         public Help()
         {
             InitializeComponent();
@@ -38,7 +41,7 @@ namespace Nightmare_Editor
                 .Subscribe(new AnonymousObserver<double>(e => EnsureWidth()));
 
             MD = this.FindControl<Markdown.Avalonia.MarkdownScrollViewer>("MD");
-            MD.Markdown = QuickRead("Help/Int.md");
+            MD.Markdown = QuickRead("Help/Introduction.md");
             ScrollToTop();
             foreach (TextBox tb in TextBoxPanel.Children)
             {
@@ -52,8 +55,24 @@ namespace Nightmare_Editor
         {
             if (sender is TextBox tb)
             {
-                MD.Markdown = QuickRead($"Help/{tb.Name}.md");
+                files.Clear();
+                if (tb.Name == "Tutorial")
+                {
+                    files.Add($"Help/{tb.Name}-1.md");
+                    files.Add($"Help/{tb.Name}-2.md");
+                    files.Add($"Help/{tb.Name}-3.md");
+                    files.Add($"Help/{tb.Name}-4.md");
+                }
+                else
+                {
+                    files.Add($"Help/{tb.Name}.md");
+                }
+                MD.Markdown = QuickRead(files[0]);
                 ScrollToTop();
+                currentIndex = 0;
+
+                Previous.IsVisible = false;
+                Next.IsVisible = files.Count > 1;
             }
         }
 
@@ -111,6 +130,26 @@ namespace Nightmare_Editor
             {
                 Main.Height = this.Height * scale;
             });
+        }
+
+        private void Previous_OnClick(object? sender, RoutedEventArgs e)
+        {
+            currentIndex -= 1;
+            if (currentIndex < 0) currentIndex = 0;
+            MD.Markdown = QuickRead(files[currentIndex]);
+            Previous.IsVisible = currentIndex > 0;
+            Next.IsVisible = currentIndex < files.Count - 1;
+            ScrollToTop();
+        }
+
+        private void Next_OnClick(object? sender, RoutedEventArgs e)
+        {
+            currentIndex += 1;
+            if (currentIndex >= files.Count) currentIndex = files.Count - 1;
+            MD.Markdown = QuickRead(files[currentIndex]);
+            Next.IsVisible = currentIndex < files.Count - 1;
+            Previous.IsVisible = currentIndex > 0;
+            ScrollToTop();
         }
     }
 }

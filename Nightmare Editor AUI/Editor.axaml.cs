@@ -1405,6 +1405,7 @@ namespace Nightmare_Editor
                     Cursor = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.No),
                     Focusable = false,
                 };
+                newTextBox.Classes.Add("NoHover");
                 Queued.Children.Add(newTextBox);
             }
             if (windowSwap)
