@@ -26,7 +26,7 @@
                 <Grid RowDefinitions="2*,3*">
                 <Viewbox>
                     <StackPanel Name="GitStackPanel" Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
-                        <TextBox Name="GitRepoBox" VerticalAlignment="Center" Width="150" HorizontalAlignment="Left" PlaceholderText="user/repository"/>
+                        <TextBox Name="GitRepoBox" VerticalAlignment="Center" Width="150" HorizontalAlignment="Left" Watermark="user/repository"/>
                         <Button Click="Git_Click">Install from Git Repository</Button>
                         <Button Name="UpdateButton" Click="UpdateGit_Click">Update Mods</Button>
                     </StackPanel>
