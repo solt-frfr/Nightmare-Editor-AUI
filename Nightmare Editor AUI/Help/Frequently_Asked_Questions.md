@@ -28,6 +28,6 @@ I have no idea who these people are, but their tools are what originally made th
 
 ### OpenKH
 
-The #ddd-modding channel has bore the pains with me as I developed this. They also showed to me that modding this game actually *is* possible. They've also helped me with some of my programming on occasion.
+The `#ddd-modding` channel has bore the pains with me as I developed this. They also showed to me that modding this game actually *is* possible. They've also helped me with some of my programming on occasion.
 
 
