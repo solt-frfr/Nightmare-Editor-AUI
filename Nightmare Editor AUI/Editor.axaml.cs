@@ -602,6 +602,7 @@ namespace Nightmare_Editor
                 Column.EmbeddedFile => Files3.Children,
                 _ => Files2.Children
             };
+            InfoWindow.IsVisible = source == Column.File || source == Column.EmbeddedFile;
             
             if (Directory.Exists(Path.Combine(Misc.Paths.work, GetSelecedFilePathFolder(destination))) && Enum.IsDefined(destination))
             {
@@ -618,8 +619,6 @@ namespace Nightmare_Editor
             {
                 AttemptDisplay(source);
             }
-
-            InfoWindow.IsVisible = source == Column.File || source == Column.EmbeddedFile;
         }
 
         private async Task ListFiles(object sender, Column destination, Controls sourceColumn, Controls destinationColumn)
@@ -793,6 +792,7 @@ namespace Nightmare_Editor
                 AnimWindow anim = new AnimWindow(Path.Combine(Misc.Paths.work, filepath));
                 anim.Show();
                 Log.Text = $"Opened {ef.Text} in Nightmare Animation Studio";
+                InfoWindow.IsVisible = false;
             }
 
             Files3.IsVisible = source == Column.EmbeddedFile;

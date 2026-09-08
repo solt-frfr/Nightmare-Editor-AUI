@@ -15,8 +15,10 @@ using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
+using Nightmare_Editor_AUI.Controls;
 using Nightmare_Editor.NewTools;
 using Nightmare_Editor.NewTools.L2D;
 using SixLabors.ImageSharp;
@@ -35,12 +37,22 @@ namespace Nightmare_Editor
         private TXA.TXAFile main;
 
         private bool loaded = false;
-        private TextBox selectedTextBox;
-        private TextBox selectedTextBox2;
-        private TextBox selectedTextBox3;
-        private TextBox selectedTextBox4;
+        private EditorFile selectedGroup;
+        private EditorFile selectedAnimation;
+        private EditorFile selectedFrame;
+        private EditorFile selectedTexture;
+
+        private EditorFile requestedContextMenu;
 
         private string openedFile;
+        
+        private enum Column
+        {
+            Group = 1,
+            Animation = 2,
+            Frame = 3,
+            Texture = 4
+        }
 
         public AnimWindow()
         {
@@ -90,151 +102,184 @@ namespace Nightmare_Editor
             loaded = true;
         }
 
-        private void AddFile(string filename)
+        private List<EditorFile> AddFile(List<EditorFile> list, string filename, Column column)
         {
-            TextBox newTextBox = new TextBox
+            var destinationColumn = column switch
             {
-                Text = filename,
-                IsReadOnly = true,
-                Width = 200,
-                Height = 20,
-                HorizontalAlignment = HorizontalAlignment.Left,
-                VerticalAlignment = VerticalAlignment.Center,
-                Background = new SolidColorBrush(Avalonia.Media.Color.Parse("#202020")),
-                BorderBrush = new SolidColorBrush(Avalonia.Media.Color.Parse("#424242")),
-                Foreground = new SolidColorBrush(Avalonia.Media.Color.Parse("#f2f2f2")),
-                Cursor = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
-                Focusable = false,
+                Column.Group => Files.Children,
+                Column.Animation => Files2.Children,
+                Column.Frame => Files3.Children,
+                Column.Texture => Textures.Children,
+                _ => Files2.Children
             };
-            newTextBox.PointerReleased += TextBox_Click;
-            newTextBox.PointerPressed += TextBox_PreviewMouseLeftButtonDown;
-            newTextBox.Classes.Add("NoHover");
-            Files.Children.Add(newTextBox);
-        }
-
-        private void AddFile2(string filename)
-        {
             string zeros = "";
-            for (int i = 0; i < 4 - (Files2.Children.Count + 1).ToString().Length; i++)
+            for (int i = 0; i < 4 - (destinationColumn.Count + 1).ToString().Length; i++)
             {
                 zeros += "0";
             }
-            TextBox newTextBox = new TextBox
+            EditorFile ef = new EditorFile
             {
-                Name = "file" + zeros + (Files2.Children.Count + 1).ToString(),
+                Name = "file" + zeros + (destinationColumn.Count + 1).ToString(),
                 Text = filename,
-                IsReadOnly = true,
-                Width = 200,
-                Height = 20,
-                HorizontalAlignment = HorizontalAlignment.Left,
-                VerticalAlignment = VerticalAlignment.Center,
-                Background = new SolidColorBrush(Avalonia.Media.Color.Parse("#202020")),
-                BorderBrush = new SolidColorBrush(Avalonia.Media.Color.Parse("#424242")),
-                Foreground = new SolidColorBrush(Avalonia.Media.Color.Parse("#f2f2f2")),
-                Cursor = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
-                Focusable = false,
             };
-            newTextBox.PointerReleased += TextBox2_Click;
-            newTextBox.PointerPressed += TextBox2_PreviewMouseLeftButtonDown;
-            newTextBox.Classes.Add("NoHover");
-            Files2.Children.Add(newTextBox);
-        }
-        private void AddFile3(string filename)
-        {
-            string zeros = "";
-            for (int i = 0; i < 4 - (Files3.Children.Count + 1).ToString().Length; i++)
+            
+            switch (column)
             {
-                zeros += "0";
+                case Column.Group:
+                    ef.Click += EditorFile_Group_Click;
+                    break;
+                case Column.Animation:
+                    ef.Click += EditorFile_Animation_Click;
+                    break;
+                case Column.Frame:
+                    ef.Click += EditorFile_Frame_Click;
+                    ef.AddHandler(ContextRequestedEvent, EditorFile_ContextRequested, RoutingStrategies.Tunnel);
+                    break;
+                case Column.Texture:
+                    ef.Name = "Texture" + zeros + (Textures.Children.Count + 1).ToString().Length;
+                    ef.Text = $@"Texture {Textures.Children.Count + 1}";
+                    ef.Click += EditorFile_Texture_Click;
+                    break;
+                default:
+                    break;
             }
-            TextBox newTextBox = new TextBox
-            {
-                Name = "file" + zeros + (Files3.Children.Count + 1).ToString().Length,
-                Text = filename,
-                IsReadOnly = true,
-                Width = 200,
-                Height = 20,
-                HorizontalAlignment = HorizontalAlignment.Left,
-                VerticalAlignment = VerticalAlignment.Center,
-                Background = new SolidColorBrush(Avalonia.Media.Color.Parse("#202020")),
-                BorderBrush = new SolidColorBrush(Avalonia.Media.Color.Parse("#424242")),
-                Foreground = new SolidColorBrush(Avalonia.Media.Color.Parse("#f2f2f2")),
-                Cursor = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
-                Focusable = false,
-            };
-            newTextBox.PointerReleased += TextBox3_Click;
-            newTextBox.PointerPressed += TextBox3_PreviewMouseLeftButtonDown;
-            newTextBox.Classes.Add("NoHover");
-            Files3.Children.Add(newTextBox);
-            if (Files3.Children.Count <= 1)
-            {
-                TextBox3_PreviewMouseLeftButtonDown(newTextBox, null);
-                TextBox3_Click(newTextBox, null);
-            }
-        }
+            list.Add(ef);
 
-        private void AddFile4()
-        {
-            string zeros = "";
-            for (int i = 0; i < 4 - (Textures.Children.Count + 1).ToString().Length; i++)
-            {
-                zeros += "0";
-            }
-            TextBox newTextBox = new TextBox
-            {
-                Name = "Texture" + zeros + (Textures.Children.Count + 1).ToString().Length,
-                Text = $@"Texture {Textures.Children.Count + 1}",
-                IsReadOnly = true,
-                Width = 200,
-                Height = 20,
-                HorizontalAlignment = HorizontalAlignment.Left,
-                VerticalAlignment = VerticalAlignment.Center,
-                Background = new SolidColorBrush(Avalonia.Media.Color.Parse("#202020")),
-                BorderBrush = new SolidColorBrush(Avalonia.Media.Color.Parse("#424242")),
-                Foreground = new SolidColorBrush(Avalonia.Media.Color.Parse("#f2f2f2")),
-                Cursor = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
-                Focusable = false,
-            };
-            newTextBox.PointerReleased += TextBox4_Click;
-            newTextBox.PointerPressed += TextBox4_PreviewMouseLeftButtonDown;
-            newTextBox.Classes.Add("NoHover");
-            Textures.Children.Add(newTextBox);
+            return list;
         }
-
-        private void TextBox_PreviewMouseLeftButtonDown(object sender, PointerPressedEventArgs e)
+        
+        private void EditorFile_ContextRequested(object? sender, ContextRequestedEventArgs e)
         {
-            if (sender is TextBox tb)
+            if (sender is EditorFile ef)
             {
-                selectedTextBox = tb;
-                tb.Background = new SolidColorBrush(Avalonia.Media.Color.Parse("#F04080"));
-            }
-            foreach (TextBox textbox in Files.Children)
-            {
-                if (textbox != selectedTextBox)
-                    textbox.Background = new SolidColorBrush(Avalonia.Media.Color.Parse("#202020"));
+                try
+                {
+                    requestedContextMenu.RequestedContext = false;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                requestedContextMenu = ef;
+                requestedContextMenu.RequestedContext = true;
             }
         }
-
-        private void TextBox_Click(object sender, PointerReleasedEventArgs e)
+        
+        private void ChangeSelection(EditorFile newFile, Column column)
         {
-            TextBox_PreviewMouseLeftButtonDown(sender, null);
             try
             {
-                Files2_Scroll.ScrollToHome();
+                switch (column)
+                {
+                    case Column.Group:
+                        selectedGroup.IsSelected = false;
+                        break;
+                    case Column.Animation:
+                        selectedAnimation.IsSelected = false;
+                        break;
+                    case Column.Frame:
+                        selectedFrame.IsSelected = false;
+                        break;
+                    case Column.Texture:
+                        selectedTexture.IsSelected = false;
+                        break;
+                    default:
+                        break;
+                }
             }
             catch { }
-            InfoWindow.IsVisible = false;
-            Files2.Children.Clear();
-            foreach (var child in Files.Children)
+            switch (column)
             {
-                if (child is TextBox textBox && textBox == selectedTextBox)
-                {
+                case Column.Group:
+                    selectedGroup = newFile;
+                    selectedGroup.IsSelected = true;
+                    break;
+                case Column.Animation:
+                    selectedAnimation = newFile;
+                    selectedAnimation.IsSelected = true;
+                    break;
+                case Column.Frame:
+                    selectedFrame = newFile;
+                    selectedFrame.IsSelected = true;
+                    break;
+                case Column.Texture:
+                    selectedTexture = newFile;
+                    selectedTexture.IsSelected = true;
+                    break;
+                default:
+                    break;
+            }
+        }
+        
+        private async void EditorFile_Group_Click(object? sender, EventArgs e)
+        {
+            File_Click(sender, Column.Group);
+        }
+        private async void EditorFile_Animation_Click(object? sender, EventArgs e)
+        {
+            File_Click(sender, Column.Animation);
+        }
+        private async void EditorFile_Frame_Click(object? sender, EventArgs e)
+        {
+            File_Click(sender, Column.Frame);
+        }
+        private async void EditorFile_Texture_Click(object? sender, EventArgs e)
+        {
+            File_Click(sender, Column.Texture);
+        }
+        
+        private EditorFile MakeEditorFile(string filename, Column column)
+        {
+            List<EditorFile> tempList = new List<EditorFile>();
+            tempList = AddFile(tempList, filename, column);
+            return tempList[0];
+        }
+        
+        private EditorFile MakeEditorFile4()
+        {
+            List<EditorFile> tempList = new List<EditorFile>();
+            tempList = AddFile(tempList, null, Column.Texture);
+            return tempList[0];
+        }
+
+        private async void File_Click(object sender, Column source)
+        {
+            sender ??= new object();
+            if (sender is EditorFile tempef) ChangeSelection(tempef, source);
+            Column destination = (Column)((int)source + 1);
+            var sourceColumn = source switch
+            {
+                Column.Group => Files.Children,
+                Column.Animation => Files2.Children,
+                Column.Frame => Files3.Children,
+                Column.Texture => Textures.Children,
+                _ => Files.Children
+            };
+            var destinationColumn = destination switch
+            {
+                Column.Group => Files.Children,
+                Column.Animation => Files2.Children,
+                Column.Frame => Files3.Children,
+                Column.Texture => Textures.Children,
+                _ => Files2.Children
+            };
+
+            InfoWindow.IsVisible = source == Column.Texture || source == Column.Frame;
+            GroupInfoPanel.IsVisible = source == Column.Group || source == Column.Animation || source == Column.Frame;
+            Files3.IsVisible = source == Column.Frame;
+
+            List<EditorFile> fileList = new List<EditorFile>();
+            
+            switch (source)
+            {
+                case Column.Group:
                     foreach (AnimGroup group in main.Groups)
                     {
-                        if (selectedTextBox.Text == group.Name)
+                        if (selectedGroup.Text == group.Name)
                         {
                             foreach (Anim anim in group.Anims)
                             {
-                                AddFile2(anim.Name);
+                                fileList = AddFile(fileList, anim.Name, Column.Animation);
                             }
 
                             GroupInfoPanel.IsVisible = true;
@@ -246,69 +291,23 @@ namespace Nightmare_Editor
                         }
                     }
                     break;
-                }
-            }
-            var sorted = Files2.Children
-                .OfType<TextBox>()
-                .OrderBy(tb => tb.Name)
-                .ToList();
-
-            Files2.Children.Clear();
-
-            foreach (var textBox in sorted)
-            {
-                Files2.Children.Add(textBox);
-            }
-        }
-        private void TextBox2_PreviewMouseLeftButtonDown(object sender, PointerPressedEventArgs e)
-        {
-            if (sender is TextBox tb)
-            {
-                selectedTextBox2 = tb;
-                tb.Background = new SolidColorBrush(Avalonia.Media.Color.Parse("#F04080"));
-            }
-            foreach (TextBox textbox in Files2.Children)
-            {
-                if (textbox != selectedTextBox2)
-                    textbox.Background = new SolidColorBrush(Avalonia.Media.Color.Parse("#202020"));
-            }
-        }
-
-        private void TextBox2_Click(object sender, PointerReleasedEventArgs e)
-        {
-            TextBox2_PreviewMouseLeftButtonDown(sender, null);
-            try
-            {
-                FileName.Items.Clear();
-            }
-            catch { }
-            FileName.Items.Add($@"Destination Texture");
-            for (int i = 0; i < main.Textures.Count; i++)
-            {
-                FileName.Items.Add($@"Texture {i + 1}");
-            }
-            try
-            {
-                Files3_Scroll.ScrollToHome();
-            }
-            catch { }
-            InfoWindow.IsVisible = false;
-            foreach (var child in Files2.Children)
-            {
-                Files3.Children.Clear();
-                if (child is TextBox textBox && textBox == selectedTextBox2)
-                {
+                case Column.Animation:
+                    FileName.Items.Add($@"Destination Texture");
+                    for (int i = 0; i < main.Textures.Count; i++)
+                    {
+                        FileName.Items.Add($@"Texture {i + 1}");
+                    }
                     foreach (AnimGroup group in main.Groups)
                     {
-                        if (selectedTextBox.Text == group.Name)
+                        if (selectedGroup.Text == group.Name)
                         {
                             foreach (Anim anim in group.Anims)
                             {
-                                if (selectedTextBox2.Text == anim.Name)
+                                if (selectedAnimation.Text == anim.Name)
                                 {
                                     for (int i = 1; i <= anim.Frames.Count; i++)
                                     {
-                                        AddFile3($"Frame {i}");
+                                        AddFile(fileList, $"Frame {i}", Column.Frame);
                                     }
                                     break;
                                 }
@@ -316,70 +315,36 @@ namespace Nightmare_Editor
                         }
                     }
                     break;
-                }
-            }
-        }
-
-        private void TextBox3_PreviewMouseLeftButtonDown(object sender, PointerPressedEventArgs e)
-        {
-            if (sender is TextBox tb)
-            {
-                selectedTextBox3 = tb;
-                tb.Background = new SolidColorBrush(Avalonia.Media.Color.Parse("#F04080"));
-            }
-            foreach (TextBox textbox in Files3.Children)
-            {
-                if (textbox != selectedTextBox3)
-                    textbox.Background = new SolidColorBrush(Avalonia.Media.Color.Parse("#202020"));
-            }
-        }
-
-        private void TextBox3_Click(object sender, PointerReleasedEventArgs e)
-        {
-            TextBox3_PreviewMouseLeftButtonDown(sender, null);
-            for (int i = 0; i < Files3.Children.Count; i++)
-            {
-                InfoWindow.IsVisible = false;
-                if (Files3.Children[i] is TextBox textBox && textBox == selectedTextBox3)
-                {
-                    AssignImage(i, 3);
-                    GroupInfoPanel.IsVisible = true;
+                case Column.Frame:
+                    int j = Files3.Children.IndexOf(selectedFrame);
+                    AssignImage(j, Column.Frame);
                     break;
-                }
-            }
-        }
-
-        private void TextBox4_PreviewMouseLeftButtonDown(object sender, PointerPressedEventArgs e)
-        {
-            if (sender is TextBox tb)
-            {
-                selectedTextBox4 = tb;
-                tb.Background = new SolidColorBrush(Avalonia.Media.Color.Parse("#F04080"));
-            }
-            foreach (TextBox textbox in Textures.Children)
-            {
-                if (textbox != selectedTextBox4)
-                    textbox.Background = new SolidColorBrush(Avalonia.Media.Color.Parse("#202020"));
-            }
-        }
-
-        private void TextBox4_Click(object sender, PointerReleasedEventArgs e)
-        {
-            TextBox4_PreviewMouseLeftButtonDown(sender, null);
-            for (int i = 0; i < Textures.Children.Count; i++)
-            {
-                Avalonia.Threading.Dispatcher.UIThread.Post(() =>
-                {
-                    InfoWindow.IsVisible = true;
-                });
-                if (Textures.Children[i] is TextBox textBox && textBox == selectedTextBox4)
-                {
-                    AssignImage(i, 2);
-                    GroupInfoPanel.IsVisible = false;
+                case Column.Texture:
+                    int k = Textures.Children.IndexOf(selectedTexture);
+                    AssignImage(k, Column.Texture);
                     break;
+                default:
+                    break;
+            }
+            if (fileList.Count > 0)
+            {
+                var sorted = fileList
+                    .OfType<EditorFile>()
+                    .OrderBy(tb => tb.Name)
+                    .ToList();
+
+                destinationColumn.Clear();
+
+                foreach (var ef in sorted)
+                {
+                    destinationColumn.Add(ef);
                 }
             }
-            Files3.Children.Clear();
+            
+            if (destination == Column.Frame && Files3.Children.Count > 0)
+            {
+                EditorFile_Frame_Click(Files3.Children[0], null);
+            }
         }
 
         private Bitmap ConvertToImageSource(SixLabors.ImageSharp.Image image)
@@ -394,11 +359,11 @@ namespace Nightmare_Editor
             }
         }
 
-        private async void AssignImage(int input, int from)
+        private async void AssignImage(int input, Column source)
         {
             long texture = 0;
             bool foundimage = false;
-            if (from == 2)
+            if (source == Column.Texture)
             {
                 texture = input;
                 InfoWindow.IsVisible = true;
@@ -429,7 +394,7 @@ namespace Nightmare_Editor
                 TexSize.Text = $@"{width}x{height}";
                 TexFormat.Text = ((CTT.Format)main.DestTextures[j].Texture[0x1C]).ToString();
             }
-            else if (from == 3)
+            else if (source == Column.Frame)
             {
                 InfoWindow.IsVisible = true;
                 FileInfo.IsVisible = true;
@@ -437,16 +402,16 @@ namespace Nightmare_Editor
                 AddFrame.IsVisible = true;
                 foreach (var child in Files3.Children)
                 {
-                    if (child is TextBox textBox && textBox == selectedTextBox3)
+                    if (child is EditorFile ef && ef == selectedFrame)
                     {
                         foreach (AnimGroup group in main.Groups)
                         {
-                            if (selectedTextBox.Text == group.Name)
+                            if (selectedGroup.Text == group.Name)
                             {
                                 Destination.Text = group.DestTexture;
                                 foreach (Anim anim in group.Anims)
                                 {
-                                    if (selectedTextBox2.Text == anim.Name)
+                                    if (selectedAnimation.Text == anim.Name)
                                     {
                                         Length.Text = anim.Frames[input].Length.ToString();
                                         Length2.Text = anim.Frames[input].Length2.ToString();
@@ -457,9 +422,9 @@ namespace Nightmare_Editor
                                                 if (group.DestTexture == main.DestTextures[i].Name)
                                                 {
                                                     foundimage = true;
-                                                    byte[] source = CTT.SplitHeader(main.DestTextures[i].Texture).data;
+                                                    byte[] sourceData = CTT.SplitHeader(main.DestTextures[i].Texture).data;
                                                     
-                                                    Texture.Source = ConvertToImageSource(CTT.Deswizzle(source, group.DestWidth, group.DestHeight, main.DestTextures[i].Texture[0x1C]));
+                                                    Texture.Source = ConvertToImageSource(CTT.Deswizzle(sourceData, group.DestWidth, group.DestHeight, main.DestTextures[i].Texture[0x1C]));
                                                     FileName.SelectedIndex = 0;
                                                     break;
                                                 }
@@ -501,15 +466,15 @@ namespace Nightmare_Editor
                     await box2.ShowAsPopupAsync(this);
                     foreach (var child in Files3.Children)
                     {
-                        if (child is TextBox textBox && textBox == selectedTextBox3)
+                        if (child is EditorFile ef && ef == selectedFrame)
                         {
                             foreach (AnimGroup group in main.Groups)
                             {
-                                if (selectedTextBox.Text == group.Name)
+                                if (selectedGroup.Text == group.Name)
                                 {
                                     foreach (Anim anim in group.Anims)
                                     {
-                                        if (selectedTextBox2.Text == anim.Name)
+                                        if (selectedAnimation.Text == anim.Name)
                                         {
                                             anim.Frames[input].Texture = 0;
                                         }
@@ -519,7 +484,7 @@ namespace Nightmare_Editor
                             break;
                         }
                     }
-                    AssignImage(input, from);
+                    AssignImage(input, source);
                 }
             }
         }
@@ -713,9 +678,9 @@ namespace Nightmare_Editor
             var result = await box.ShowAsPopupAsync(this);
             if (result == ButtonResult.Yes)
             {
-                int i = Files.Children.IndexOf(selectedTextBox);
-                int j = Files2.Children.IndexOf(selectedTextBox2);
-                int k = Files3.Children.IndexOf(selectedTextBox3);
+                int i = Files.Children.IndexOf(selectedGroup);
+                int j = Files2.Children.IndexOf(selectedAnimation);
+                int k = Files3.Children.IndexOf(requestedContextMenu);
                 if (main.Groups[i].Anims[j].Frames.Count <= 1)
                 {
                     var box2 = MessageBoxManager.GetMessageBoxStandard(
@@ -730,10 +695,12 @@ namespace Nightmare_Editor
                 {
                     main.Groups[i].Anims[j].Frames.Remove(main.Groups[i].Anims[j].Frames[k]);
                     Files3.Children.Clear();
+                    List<EditorFile> tempList = new List<EditorFile>();
                     for (int l = 0; l < main.Groups[i].Anims[j].Frames.Count; l++)
                     {
-                        AddFile3($"Frame {l + 1}");
+                        AddFile(tempList, $"Frame {l + 1}", Column.Frame);
                     }
+                    foreach (var file in tempList) Files3.Children.Add(file);
                     var box2 = MessageBoxManager.GetMessageBoxStandard(
                         "Done",
                         "Removed.",
@@ -756,7 +723,7 @@ namespace Nightmare_Editor
             var result = await box.ShowAsPopupAsync(this);
             if (result == ButtonResult.Yes)
             {
-                int i = Textures.Children.IndexOf(selectedTextBox4);
+                int i = Textures.Children.IndexOf(selectedTexture);
                 long texture = main.Adresses[i];
                 main.Adresses.Remove(main.Adresses[i]);
                 main.Textures.Remove(main.Textures[i]);
@@ -764,7 +731,7 @@ namespace Nightmare_Editor
                 Textures.Children.Clear();
                 foreach (long adress in main.Adresses)
                 {
-                    AddFile4();
+                    Textures.Children.Add(MakeEditorFile4());
                 }
                 foreach (AnimGroup group in main.Groups)
                 {
@@ -791,7 +758,7 @@ namespace Nightmare_Editor
 
         private async void Link_Click(object sender, RoutedEventArgs e)
         {
-            int i = Textures.Children.IndexOf(selectedTextBox4);
+            int i = Textures.Children.IndexOf(selectedTexture);
             int j = 0;
             for (int k = 0; k < main.Textures.Count; k++)
             {
@@ -833,7 +800,7 @@ namespace Nightmare_Editor
                         main.Textures[i].Data = text;
                         main.DecodedTextures[i] = SixLabors.ImageSharp.Image.Load(image);
                     }
-                    AssignImage(i, 2);
+                    AssignImage(i, Column.Texture);
                 }
 
             }
@@ -862,7 +829,7 @@ namespace Nightmare_Editor
                 if (!string.IsNullOrWhiteSpace(file.Path.LocalPath))
                 {
                     bool foundimage = false;
-                    int i = Textures.Children.IndexOf(selectedTextBox4);
+                    int i = Textures.Children.IndexOf(selectedTexture);
                     InfoWindow.IsVisible = true;
                     FileInfo.IsVisible = false;
                     TexInfo.IsVisible = true;
@@ -898,13 +865,19 @@ namespace Nightmare_Editor
             }
             catch { }
             File.Text = main.Name;
+            List<EditorFile> tempList = new List<EditorFile>();
             foreach (TXA.AnimGroup group in main.Groups)
             {
-                AddFile(group.Name);
+                AddFile(tempList, group.Name, Column.Group);
             }
             foreach (long adress in main.Adresses)
             {
-                AddFile4();
+                Textures.Children.Add(MakeEditorFile4());
+            }
+
+            foreach (var file in tempList)
+            {
+                Files.Children.Add(file);
             }
         }
 
@@ -923,7 +896,8 @@ namespace Nightmare_Editor
                 };
                 main.Textures.Add(texture);
                 main.DecodedTextures.Add(CTT.Deswizzle(split.data, attrib.width, attrib.height, (int)attrib.format));
-                AddFile4();
+                EditorFile ef = MakeEditorFile4();
+                Textures.Children.Add(ef);
                 for (int j = 1; j < 0x3FFFFFFF; j++)
                 {
                     if (!main.Adresses.Contains(j))
@@ -932,25 +906,15 @@ namespace Nightmare_Editor
                         break;
                     }
                 }
-                if (Textures.Children[Textures.Children.Count - 1] is TextBox tb)
-                {
-                    selectedTextBox4 = tb;
-                    tb.Background = (SolidColorBrush)new BrushConverter().ConvertFromString("#F04080");
-                    foreach (TextBox textbox in Textures.Children)
-                    {
-                        if (textbox != selectedTextBox4)
-                            textbox.Background = (SolidColorBrush)new BrushConverter().ConvertFromString("#202020");
-                    }
-                    TextBox4_Click(null, null);
-                }
+                EditorFile_Texture_Click(ef, null);
             };
             aw.ShowDialog(this);
         }
 
         private void AddFrame_Click(object sender, PointerReleasedEventArgs e)
         {
-            int i = Files.Children.IndexOf(selectedTextBox);
-            int j = Files2.Children.IndexOf(selectedTextBox2);
+            int i = Files.Children.IndexOf(selectedGroup);
+            int j = Files2.Children.IndexOf(selectedAnimation);
             TXA.Frame frame = new TXA.Frame
             {
                 Length = 0,
@@ -961,7 +925,7 @@ namespace Nightmare_Editor
             Files3.Children.Clear();
             for (int k = 0; k < main.Groups[i].Anims[j].Frames.Count; k++)
             {
-                AddFile3($"Frame {k + 1}");
+                Files3.Children.Add(MakeEditorFile($"Frame {k + 1}", Column.Frame));
             }
         }
 
@@ -972,42 +936,35 @@ namespace Nightmare_Editor
             {
                 return;
             }
-            foreach (var child in Files3.Children)
+            foreach (AnimGroup group in main.Groups)
             {
-                if (child is TextBox textBox && textBox == selectedTextBox3)
+                if (selectedGroup.Text == group.Name)
                 {
-                    foreach (AnimGroup group in main.Groups)
+                    foreach (Anim anim in group.Anims)
                     {
-                        if (selectedTextBox.Text == group.Name)
+                        if (selectedAnimation.Text == anim.Name)
                         {
-                            foreach (Anim anim in group.Anims)
+                            for (int i = 0; i < Files3.Children.Count; i++)
                             {
-                                if (selectedTextBox2.Text == anim.Name)
+                                if (i == Files3.Children.IndexOf(selectedFrame))
                                 {
-                                    for (int i = 0; i < Files3.Children.Count; i++)
+                                    if (FileName.SelectedIndex == 0)
                                     {
-                                        if (i == Files3.Children.IndexOf(selectedTextBox3))
-                                        {
-                                            if (FileName.SelectedIndex == 0)
-                                            {
-                                                anim.Frames[i].Texture = 0;
-                                            }
-                                            else
-                                            {
-                                                anim.Frames[i].Texture = main.Adresses[FileName.SelectedIndex - 1];
-                                            }
-                                            j = i;
-                                            break;
-                                        }
+                                        anim.Frames[i].Texture = 0;
                                     }
+                                    else
+                                    {
+                                        anim.Frames[i].Texture = main.Adresses[FileName.SelectedIndex - 1];
+                                    }
+                                    j = i;
+                                    break;
                                 }
                             }
                         }
                     }
-                    break;
                 }
             }
-            AssignImage(j, 3);
+            AssignImage(j, Column.Frame);
         }
 
         private void Length_TextChanged(object sender, TextChangedEventArgs e)
@@ -1024,9 +981,9 @@ namespace Nightmare_Editor
                 }
             }
             catch { }
-            int i = Files.Children.IndexOf(selectedTextBox);
-            int j = Files2.Children.IndexOf(selectedTextBox2);
-            int k = Files3.Children.IndexOf(selectedTextBox3);
+            int i = Files.Children.IndexOf(selectedGroup);
+            int j = Files2.Children.IndexOf(selectedAnimation);
+            int k = Files3.Children.IndexOf(selectedFrame);
             try
             {
                 main.Groups[i].Anims[j].Frames[k].Length = int.Parse(Length.Text);
@@ -1048,9 +1005,9 @@ namespace Nightmare_Editor
                 }
             }
             catch { }
-            int i = Files.Children.IndexOf(selectedTextBox);
-            int j = Files2.Children.IndexOf(selectedTextBox2);
-            int k = Files3.Children.IndexOf(selectedTextBox3);
+            int i = Files.Children.IndexOf(selectedGroup);
+            int j = Files2.Children.IndexOf(selectedAnimation);
+            int k = Files3.Children.IndexOf(selectedFrame);
             try
             {
                 main.Groups[i].Anims[j].Frames[k].Length2 = int.Parse(Length2.Text);
@@ -1135,7 +1092,7 @@ namespace Nightmare_Editor
         {
             if (e.Key == Key.Enter)
             {
-                int i = Files.Children.IndexOf(selectedTextBox);
+                int i = Files.Children.IndexOf(selectedGroup);
                 var box = MessageBoxManager.GetMessageBoxStandard(
                     $"Change Destination Texture",
                     $"Do you want to change this group's Destination Texture from {main.Groups[i].DestTexture} to {Group_TextureBox.Text}?",
@@ -1276,7 +1233,7 @@ namespace Nightmare_Editor
         {
             if (e.Key == Key.Enter)
             {
-                int i = Files.Children.IndexOf(selectedTextBox);
+                int i = Files.Children.IndexOf(selectedGroup);
                 if (int.TryParse(Group_WidthBox.Text, out int new_width))
                 {
                     if (new_width == main.Groups[i].DestWidth)
@@ -1342,7 +1299,7 @@ namespace Nightmare_Editor
         {
             if (e.Key == Key.Enter)
             {
-                int i = Files.Children.IndexOf(selectedTextBox);
+                int i = Files.Children.IndexOf(selectedGroup);
                 if (int.TryParse(Group_HeightBox.Text, out int new_height))
                 {
                     if (new_height == main.Groups[i].DestHeight)
