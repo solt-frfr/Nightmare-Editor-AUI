@@ -14,7 +14,7 @@
         <FontFamily x:Key="Ubuntu Sans">avares://Nightmare Editor AUI/Assets/fonts#Ubuntu Sans</FontFamily>
     </Window.Resources>
     <Viewbox>
-        <Grid Name="Main" RowDefinitions="*,9*" ColumnDefinitions="*,5,3*" Width="{Binding Width, RelativeSource={RelativeSource AncestorType=Window}}" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}}">
+        <Grid Name="Main" RowDefinitions="Auto,*" ColumnDefinitions="*,5,3*" Width="{Binding Width, RelativeSource={RelativeSource AncestorType=Window}}" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}}">
             <Grid.Styles>
                 <Style Selector="TextBlock">
                     <Setter Property="FontFamily" Value="{StaticResource 'Ubuntu Sans'}"/>
@@ -60,7 +60,7 @@
                             <Setter Property="FontSize" Value="28"/>
                         </Style>
                         <Style Selector="ctxt|CTextBlock.Heading1">
-                            <Setter Property="Foreground" Value="Black"/>
+                            <Setter Property="Foreground" Value="#400060"/>
                             <Setter Property="FontWeight" Value="Black"/>
                             <Setter Property="FontFamily" Value="{StaticResource 'KH2 Menu'}"/>
                             <Setter Property="FontSize" Value="28"/>
@@ -80,13 +80,19 @@
                         <Style Selector="ctxt|CCode">
                             <Setter Property="FontSize" Value="12"/>        
                             <Setter Property="Padding" Value="2"/>
+                            <Setter Property="CornerRadius" Value="4"/>
                             <Setter Property="MonospaceFontFamily" Value="{StaticResource 'JetBrains Mono'}" />
-                            <Setter Property="Foreground" Value="DarkGreen" />
-                            <Setter Property="Background" Value="LightGreen" />
+                            <Style Selector="^ ctxt|CRun">
+                                <Setter Property="Foreground" Value="#400060" />
+                                <Setter Property="Background" Value="Transparent" />
+                            </Style>
                         </Style>
                         <Style Selector="ctxt|CHyperlink">
-                            <Setter Property="Foreground" Value="DarkGreen" />
                             <Setter Property="HoverForeground" Value="#C03000"/>
+                            <Style Selector="^ ctxt|CRun">
+                                <Setter Property="Foreground" Value="#400060" />
+                            </Style>
+                            
                         </Style>
                     </md:MarkdownScrollViewer.Styles>
                 </md:MarkdownScrollViewer>

@@ -25,7 +25,9 @@ using Avalonia.Platform;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Input.Platform;
+using Avalonia.Threading;
 using Nightmare_Editor_AUI;
+using Nightmare_Editor_AUI.Controls;
 
 
 namespace Nightmare_Editor
@@ -36,9 +38,10 @@ namespace Nightmare_Editor
     public partial class Editor : Window
     {
         // "Game Archive files (*.rbin)|*.rbin|Texture files(*.ctt)|*.ctt|Layout 2D files(*.l2d)|*.l2d|Effect Files(*.fep)|*.fep|Model files(*.pmo)|*.pmo|Map files(*.pmp)|*.pmp|All files (*.*)|*.*";
-        private TextBox selectedTextBox;
-        private TextBox selectedTextBox2;
-        private TextBox selectedTextBox3;
+        private EditorFile selectedRbin;
+        private EditorFile selectedFile;
+        private EditorFile selectedEmbeddedFile;
+        private EditorFile requestedContextMenu;
 
         private List<string> flaggedFiles = new List<string>();
         private List<string> flaggedFiles2 = new List<string>();
@@ -48,16 +51,23 @@ namespace Nightmare_Editor
         private bool windowStore = false;
 
         private bool textureSwap = false;
+        private string displayedTextureName;
 
         private List<string> allfiles = new List<string>();
 
         private List<string[]> textureLinks = new List<string[]>();
+        
+        private List<EditorFile> unfiltered = new List<EditorFile>();
+        private List<EditorFile> filtered = new List<EditorFile>();
 
-        private readonly string linkPath = Misc.Jsons.textures;
+        private int runningOperations = 0;
 
-        private List<TextBox> tempList = new List<TextBox>();
-        private List<TextBox> unfiltered = new List<TextBox>();
-        private List<TextBox> filtered = new List<TextBox>();
+        private enum Column
+        {
+            Rbin = 1,
+            File = 2,
+            EmbeddedFile = 3
+        }
 
         public bool rexIsVisible = true;
         public bool replaceIsVisible = true;
@@ -66,6 +76,56 @@ namespace Nightmare_Editor
         public bool flag2IsVisible = true;
         public bool flag3IsVisible = true;
         
+        private string GetSelectedFilePath(Column target, bool useContextMenuRequester = false)
+        {
+            string returnValue = Path.GetFileNameWithoutExtension(selectedRbin.Text);
+            string file2 = useContextMenuRequester && target == Column.File ? (requestedContextMenu ??= new EditorFile()).Name : (selectedFile ??= new EditorFile()).Name;
+            string folder2 = Path.GetFileNameWithoutExtension(file2);
+            string file3 = useContextMenuRequester && target == Column.EmbeddedFile ? (requestedContextMenu ??= new EditorFile()).Text : (selectedEmbeddedFile ??= new EditorFile()).Text;
+            if (string.IsNullOrWhiteSpace(file2)) file2 = "notapplicable";
+            if (string.IsNullOrWhiteSpace(folder2)) folder2 = "notapplicable";
+            if (string.IsNullOrWhiteSpace(file3)) file3 = "notapplicable";
+            switch (target)
+            {
+                case Column.Rbin:
+                    returnValue = useContextMenuRequester ? requestedContextMenu.Text : selectedRbin.Text;
+                    break;
+                case Column.File:
+                    returnValue = Path.Combine(returnValue, file2);
+                    break;
+                case Column.EmbeddedFile:
+                    returnValue = Path.Combine(returnValue, folder2, file3);
+                    break;
+                default:
+                    break;
+            }
+            return returnValue;
+        }
+
+        private string GetSelecedFilePathFolder(Column target)
+        {
+            string returnValue = Path.GetFileNameWithoutExtension(selectedRbin.Text);
+            string file2 = (selectedFile ??= new EditorFile()).Name;
+            string folder2 = Path.GetFileNameWithoutExtension(file2);
+            string file3 = (selectedEmbeddedFile ??= new EditorFile()).Text;
+            if (string.IsNullOrWhiteSpace(file2)) file2 = "notapplicable";
+            if (string.IsNullOrWhiteSpace(folder2)) folder2 = "notapplicable";
+            if (string.IsNullOrWhiteSpace(file3)) file3 = "notapplicable";
+            switch (target)
+            {
+                case Column.Rbin:
+                    break;
+                case Column.File:
+                    break;
+                case Column.EmbeddedFile:
+                    returnValue = Path.Combine(returnValue, folder2);
+                    break;
+                default:
+                    break;
+            }
+            return returnValue;
+        }
+
 
         public Editor()
         {
@@ -79,15 +139,24 @@ namespace Nightmare_Editor
             Directory.CreateDirectory(Misc.Paths.basePath);
             Directory.CreateDirectory(Path.Combine(Misc.Paths.basePath, "User-Added"));
             string[] files = Directory.GetFiles(Misc.Paths.current, "*.*", SearchOption.AllDirectories);
+            List<EditorFile> tempList = new List<EditorFile>();
             foreach (string file in files)
             {
                 string filetrim = file.Replace(Misc.Paths.current + Path.DirectorySeparatorChar, "");
-                AddFile(filetrim, 1);
+                tempList = AddFile(tempList, filetrim, Column.Rbin, filetrim.Contains("User-Added.rbin"));
             }
-            if (!File.Exists(linkPath))
+            tempList = tempList.OrderBy(ef => ef.Name).ToList();
+            foreach (var editorFile in tempList)
+            {
+                Files.Children.Add(editorFile);
+            }
+            if (!File.Exists(Misc.Jsons.textures))
             {
                 QuickJson(true);
             }
+
+            Closing += OnClosing;
+
             QuickJson(false);
         }
 
@@ -102,7 +171,7 @@ namespace Nightmare_Editor
                 TextureList texturelist = new TextureList();
                 texturelist.Textures = textureLinks;
                 string jsonString = JsonSerializer.Serialize<TextureList>(texturelist, jsonoptions);
-                File.WriteAllText(linkPath, jsonString);
+                File.WriteAllText(Misc.Jsons.textures, jsonString);
             }
             else
             {
@@ -110,7 +179,7 @@ namespace Nightmare_Editor
                 {
                     WriteIndented = true
                 };
-                string jsonString = File.ReadAllText(linkPath);
+                string jsonString = File.ReadAllText(Misc.Jsons.textures);
                 textureLinks = JsonSerializer.Deserialize<TextureList>(jsonString, jsonoptions).Textures;
             }
         }
@@ -140,6 +209,7 @@ namespace Nightmare_Editor
                 string destSubDir = Path.Combine(destDir, Path.GetFileName(dir));
                 BetterDirCopy(dir, destSubDir, false, ow);
             }
+
             if (delete)
             {
                 Directory.Delete(sourceDir, true);
@@ -167,33 +237,51 @@ namespace Nightmare_Editor
                     {
                         try
                         {
-                            File.Copy(files[0].Path.LocalPath, Path.Combine(Misc.Paths.current, Path.GetFileName(files[0].Path.LocalPath)));
-                            AddFile(Path.GetFileName(files[0].Path.LocalPath), 1);
-                            RBIN.Load(files[0].Path.LocalPath);
+                            File.Copy(files[0].Path.LocalPath,
+                                Path.Combine(Misc.Paths.current, Path.GetFileName(files[0].Path.LocalPath)));
+                            
+                            EditorFile newFile = MakeEditorFile(Path.GetFileName(files[0].Path.LocalPath), Column.Rbin, false);
+                            Files.Children.Add(newFile);
+
+                            await ExtractRbinWithUI(newFile, files[0].Path.LocalPath);
                         }
                         catch
                         {
-                            Log.Text = "You attempted to open a file that already exists. Use \"Replace\" if this was your intention.";
+                            Log.Text =
+                                "You attempted to open a file that already exists. Use \"Replace\" if this was your intention.";
                         }
                     }
                     else if (Path.GetExtension(files[0].Path.LocalPath) == ".ctt")
                     {
-                        string[] files2 = Directory.GetFiles(Path.Combine(Misc.Paths.work, "User-Added"), "*.*", SearchOption.AllDirectories);
-                        File.Copy(files[0].Path.LocalPath, Path.Combine(Misc.Paths.work, "User-Added", $"{files2.Length}-{Path.GetFileName(files[0].Path.LocalPath)}"), true);
-                        CTT.Decode(Path.Combine(Misc.Paths.work, "User-Added", $"{files2.Length}-{Path.GetFileName(files[0].Path.LocalPath)}"));
+                        string[] files2 = Directory.GetFiles(Path.Combine(Misc.Paths.work, "User-Added"), "*.*",
+                            SearchOption.AllDirectories);
+                        File.Copy(files[0].Path.LocalPath,
+                            Path.Combine(Misc.Paths.work, "User-Added",
+                                $"{files2.Length}-{Path.GetFileName(files[0].Path.LocalPath)}"), true);
+                        CTT.Decode(Path.Combine(Misc.Paths.work, "User-Added",
+                            $"{files2.Length}-{Path.GetFileName(files[0].Path.LocalPath)}"));
                     }
                     else if (Containers.IsArc(files[0].Path.LocalPath))
                     {
-                        string[] files2 = Directory.GetFiles(Path.Combine(Misc.Paths.work, "User-Added"), "*.*", SearchOption.AllDirectories);
-                        File.Copy(files[0].Path.LocalPath, Path.Combine(Misc.Paths.work, "User-Added", $"{files2.Length}-{Path.GetFileName(files[0].Path.LocalPath)}"), true);
-                        Containers.Generic.Unpack(Path.Combine(Misc.Paths.work, "User-Added", $"{files2.Length}-{Path.GetFileName(files[0].Path.LocalPath)}"));
+                        string[] files2 = Directory.GetFiles(Path.Combine(Misc.Paths.work, "User-Added"), "*.*",
+                            SearchOption.AllDirectories);
+                        File.Copy(files[0].Path.LocalPath,
+                            Path.Combine(Misc.Paths.work, "User-Added",
+                                $"{files2.Length}-{Path.GetFileName(files[0].Path.LocalPath)}"), true);
+                        Containers.Generic.Unpack(Path.Combine(Misc.Paths.work, "User-Added",
+                            $"{files2.Length}-{Path.GetFileName(files[0].Path.LocalPath)}"));
                     }
                     else
                     {
-                        string[] files2 = Directory.GetFiles(Path.Combine(Misc.Paths.work, "User-Added"), "*.*", SearchOption.AllDirectories);
-                        File.Copy(files[0].Path.LocalPath, Path.Combine(Misc.Paths.work, "User-Added", $"{files2.Length}-{Path.GetFileName(files[0].Path.LocalPath)}"), true);
+                        string[] files2 = Directory.GetFiles(Path.Combine(Misc.Paths.work, "User-Added"), "*.*",
+                            SearchOption.AllDirectories);
+                        File.Copy(files[0].Path.LocalPath,
+                            Path.Combine(Misc.Paths.work, "User-Added",
+                                $"{files2.Length}-{Path.GetFileName(files[0].Path.LocalPath)}"), true);
                     }
-                    if (Path.GetExtension(files[0].Path.LocalPath) != ".rbin" && !File.Exists(Path.Combine(Misc.Paths.current, "User-Added.rbin")))
+
+                    if (Path.GetExtension(files[0].Path.LocalPath) != ".rbin" &&
+                        !File.Exists(Path.Combine(Misc.Paths.current, "User-Added.rbin")))
                     {
                         File.WriteAllText(Path.Combine(Misc.Paths.current, "User-Added.rbin"), "");
                     }
@@ -205,7 +293,27 @@ namespace Nightmare_Editor
             }
         }
 
-        private ContextMenu Cont1()
+        private async Task ExtractRbinWithUI(EditorFile ef, string extractPath)
+        {
+            
+            runningOperations++;
+            ef.IsHitTestVisible = false;
+            ef.ProgressBar.IsVisible = true;
+            var progress = new Progress<(int current, int total, string message)>(message =>
+            {
+                ef.ProgressBar.Value = (double)message.current / (double)message.total;
+                Log.Text = message.message;
+            });
+            await Task.Run(() =>
+            {
+                RBIN.Load(extractPath, progress: progress);
+            });
+            ef.IsHitTestVisible = true;
+            ef.ProgressBar.IsVisible = false;
+            runningOperations--;
+        }
+
+        private ContextMenu Cont1(bool isUserAdded)
         {
             var contextMenu = new ContextMenu();
             var open = new MenuItem
@@ -215,31 +323,34 @@ namespace Nightmare_Editor
             open.Click += OpenFolder_Click;
             contextMenu.Items.Add(open);
 
-            var rex = new MenuItem
+            if (!isUserAdded)
             {
-                Header = "Re-extract",
-            };
-            rex.Bind(Avalonia.Controls.MenuItem.IsVisibleProperty, new Avalonia.Data.Binding
-            {
-                Source = this,
-                Path = "rexIsVisible",
-                Mode = Avalonia.Data.BindingMode.OneWay
-            });
-            rex.Click += Again_Click;
-            contextMenu.Items.Add(rex);
+                var rex = new MenuItem
+                {
+                    Header = "Re-extract",
+                };
+                rex.Bind(Avalonia.Controls.MenuItem.IsVisibleProperty, new Avalonia.Data.Binding
+                {
+                    Source = this,
+                    Path = "rexIsVisible",
+                    Mode = Avalonia.Data.BindingMode.OneWay
+                });
+                rex.Click += Again_Click;
+                contextMenu.Items.Add(rex);
 
-            var replace = new MenuItem
-            {
-                Header = "Replace",
-            };
-            replace.Bind(Avalonia.Controls.MenuItem.IsVisibleProperty, new Avalonia.Data.Binding
-            {
-                Source = this,
-                Path = "replaceIsVisible",
-                Mode = Avalonia.Data.BindingMode.OneWay
-            });
-            replace.Click += Replace_Click;
-            contextMenu.Items.Add(replace);
+                var replace = new MenuItem
+                {
+                    Header = "Replace",
+                };
+                replace.Bind(Avalonia.Controls.MenuItem.IsVisibleProperty, new Avalonia.Data.Binding
+                {
+                    Source = this,
+                    Path = "replaceIsVisible",
+                    Mode = Avalonia.Data.BindingMode.OneWay
+                });
+                replace.Click += Replace_Click;
+                contextMenu.Items.Add(replace);
+            }
 
             var remove = new MenuItem
             {
@@ -257,7 +368,7 @@ namespace Nightmare_Editor
             return contextMenu;
         }
 
-        private ContextMenu Cont2()
+        private ContextMenu Cont2(bool isUserAdded)
         {
             var contextMenu = new ContextMenu();
             var open = new MenuItem()
@@ -281,31 +392,37 @@ namespace Nightmare_Editor
             pack.Click += Pack2_Click;
             contextMenu.Items.Add(pack);
 
-            var remove = new MenuItem()
+            if (isUserAdded)
             {
-                Header = "Remove File"
-            };
-            remove.Click += RemoveFile2;
-            remove.Bind(Avalonia.Controls.MenuItem.IsVisibleProperty, new Avalonia.Data.Binding
+                var remove = new MenuItem()
+                {
+                    Header = "Remove File"
+                };
+                remove.Click += RemoveFile2;
+                remove.Bind(Avalonia.Controls.MenuItem.IsVisibleProperty, new Avalonia.Data.Binding
+                {
+                    Source = this,
+                    Path = "remove2IsVisible",
+                    Mode = Avalonia.Data.BindingMode.OneWay
+                });
+                contextMenu.Items.Add(remove);
+            }
+            else
             {
-                Source = this,
-                Path = "remove2IsVisible",
-                Mode = Avalonia.Data.BindingMode.OneWay
-            });
-            contextMenu.Items.Add(remove);
+                var flag = new MenuItem()
+                {
+                    Header = "Queue/Unqueue Pack"
+                };
+                flag.Click += Flag2;
+                flag.Bind(Avalonia.Controls.MenuItem.IsVisibleProperty, new Avalonia.Data.Binding
+                {
+                    Source = this,
+                    Path = "flag2IsVisible",
+                    Mode = Avalonia.Data.BindingMode.OneWay
+                });
+                contextMenu.Items.Add(flag);
 
-            var flag = new MenuItem()
-            {
-                Header = "Queue/Unqueue Pack"
-            };
-            flag.Click += Flag2;
-            flag.Bind(Avalonia.Controls.MenuItem.IsVisibleProperty, new Avalonia.Data.Binding
-            {
-                Source = this,
-                Path = "flag2IsVisible",
-                Mode = Avalonia.Data.BindingMode.OneWay
-            });
-            contextMenu.Items.Add(flag);
+            }
 
             return contextMenu;
         }
@@ -349,369 +466,347 @@ namespace Nightmare_Editor
             return contextMenu;
         }
 
-        private void AddFile(string filename, int column, bool toTempList = false)
+        private void ChangeSelection(EditorFile newFile, Column column)
         {
-            TextBox newTextBox = new TextBox
-            {
-                Text = filename,
-                IsReadOnly = true,
-                Width = 200,
-                Height = 20,
-                FontSize = 12,
-                HorizontalAlignment = HorizontalAlignment.Left,
-                VerticalAlignment = VerticalAlignment.Center,
-                VerticalContentAlignment = VerticalAlignment.Center,
-                Background = new SolidColorBrush(Avalonia.Media.Color.Parse("#202020")),
-                BorderBrush = new SolidColorBrush(Avalonia.Media.Color.Parse("#424242")),
-                Foreground = new SolidColorBrush(Avalonia.Media.Color.Parse("#f2f2f2")),
-                Cursor = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
-                Focusable = false,
-            };
-            newTextBox.Classes.Add("NoHover");
-
-            if (column == 1)
-            {
-                var contextMenu = Cont1();
-                contextMenu.Opened += (s, e) => {
-                    TextBox_PreviewMouseLeftButtonDown(newTextBox, null);
-                };
-                newTextBox.ContextMenu = contextMenu; 
-                newTextBox.PointerReleased += TextBox_Click;
-                newTextBox.PointerPressed += TextBox_PreviewMouseLeftButtonDown;
-                Files.Children.Add(newTextBox);
-            }
-
-            if (column == 2)
-            {
-                newTextBox.Name = filename;
-                newTextBox.Text = Misc.RemoveAtFirst(filename, '-');
-                
-                var contextMenu = Cont2();
-                contextMenu.Opened += (s, e) => {
-                    TextBox2_PreviewMouseLeftButtonDown(newTextBox, null);
-                };
-                newTextBox.ContextMenu = contextMenu;
-                newTextBox.PointerReleased += TextBox2_Click;
-                newTextBox.PointerPressed += TextBox2_PreviewMouseLeftButtonDown;
-                if (toTempList)
-                {
-                    tempList.Add(newTextBox);
-                }
-                else
-                {
-                    Files2.Children.Add(newTextBox);
-                }
-            }
-            
-            if (column == 3)
-            {
-                newTextBox.Name = filename;
-                newTextBox.Text = filename;
-                
-                var contextMenu = Cont3();
-                contextMenu.Opened += (s, e) => {
-                    TextBox3_PreviewMouseLeftButtonDown(newTextBox, null);
-                };
-                newTextBox.ContextMenu = contextMenu;
-                newTextBox.PointerReleased += TextBox3_Click;
-                newTextBox.PointerPressed += TextBox3_PreviewMouseLeftButtonDown;
-                Files3.Children.Add(newTextBox);
-                if (Files3.Children.Count == 1)
-                {
-                    TextBox3_PreviewMouseLeftButtonDown(newTextBox, null);
-                    TextBox3_Click(newTextBox, null);
-                }
-            }
-        }
-        
-        private void TextBox_PreviewMouseLeftButtonDown(object sender, RoutedEventArgs e)
-        {
-            if (sender is TextBox tb)
-            {
-                selectedTextBox = tb;
-                tb.Background = new SolidColorBrush(Avalonia.Media.Color.Parse("#F04080"));
-                Log.Text = $"Selected: {tb.Text}";
-                if (tb.Text == "User-Added.rbin")
-                {
-                    rexIsVisible = false;
-                    removeIsVisible = false;
-                    replaceIsVisible = false;
-                    flag2IsVisible = false;
-                    flag3IsVisible = false;
-                    remove2IsVisible = true;
-                }
-                else
-                {
-                    rexIsVisible = true;
-                    removeIsVisible = true;
-                    replaceIsVisible = true;
-                    flag2IsVisible = true;
-                    flag3IsVisible = true;
-                    remove2IsVisible = false;
-                }
-            }
-            foreach (TextBox textbox in Files.Children)
-            {
-                if (textbox != selectedTextBox)
-                    textbox.Background = new SolidColorBrush(Avalonia.Media.Color.Parse("#202020"));
-            }
-        }
-
-        private void TextBox_Click(object sender, PointerReleasedEventArgs e)
-        {
-            TextBox_PreviewMouseLeftButtonDown(sender, null);
             try
             {
-                Files2_Scroll.ScrollToHome();
+                switch (column)
+                {
+                    case Column.Rbin:
+                        selectedRbin.IsSelected = false;
+                        break;
+                    case Column.File:
+                        selectedFile.IsSelected = false;
+                        break;
+                    case Column.EmbeddedFile:
+                        selectedEmbeddedFile.IsSelected = false;
+                        break;
+                    default:
+                        break;
+                }
             }
             catch { }
+            switch (column)
+            {
+                case Column.Rbin:
+                    selectedRbin = newFile;
+                    selectedRbin.IsSelected = true;
+                    break;
+                case Column.File:
+                    selectedFile = newFile;
+                    selectedFile.IsSelected = true;
+                    break;
+                case Column.EmbeddedFile:
+                    selectedEmbeddedFile = newFile;
+                    selectedEmbeddedFile.IsSelected = true;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private EditorFile MakeEditorFile(string filename, Column column, bool isUserAdded)
+        {
+            List<EditorFile> tempList = new List<EditorFile>();
+            tempList = AddFile(tempList, filename, column, isUserAdded);
+            return tempList[0];
+        }
+        private List<EditorFile> AddFile(List<EditorFile> list, string filename, Column column, bool isUserAdded)
+        {
+            if (filename == "User-Added.rbin") isUserAdded = true;
+            EditorFile newFile = new EditorFile
+            {
+                Name = filename,
+                Text = filename,
+                IsUserAdded = isUserAdded,
+            };
+
+            if (column == Column.Rbin)
+            {
+                var contextMenu = Cont1(isUserAdded);
+                newFile.ContextMenu = contextMenu;
+                newFile.Click += EditorFile_Rbin_Click;
+            }
+
+            if (column == Column.File)
+            {
+                newFile.Name = filename;
+                newFile.Text = Misc.RemoveAtFirst(filename, '-');
+
+                var contextMenu = Cont2(isUserAdded);
+                newFile.ContextMenu = contextMenu;
+                newFile.Click += EditorFile_File_Click;
+            }
+
+            if (column == Column.EmbeddedFile)
+            {
+                var contextMenu = Cont3();
+                newFile.ContextMenu = contextMenu;
+                newFile.Click += EditorFile_EmbeddedFile_Click;
+            }
+
+            newFile.AddHandler(ContextRequestedEvent, EditorFile_ContextRequested, RoutingStrategies.Tunnel);
+
+            list.Add(newFile);
+
+            return list;
+        }
+        
+        private void EditorFile_ContextRequested(object? sender, ContextRequestedEventArgs e)
+        {
+            if (sender is EditorFile ef)
+            {
+                try
+                {
+                    requestedContextMenu.RequestedContext = false;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                requestedContextMenu = ef;
+                requestedContextMenu.RequestedContext = true;
+            }
+        }
+
+        private async void EditorFile_Rbin_Click(object? sender, EventArgs e)
+        {
+            File_Click(sender, Column.Rbin);
+        }
+        private async void EditorFile_File_Click(object? sender, EventArgs e)
+        {
+            File_Click(sender, Column.File);
+        }
+        private async void EditorFile_EmbeddedFile_Click(object? sender, EventArgs e)
+        {
+            File_Click(sender, Column.EmbeddedFile);
+        }
+        
+        
+        private async void File_Click(object? sender, Column source)
+        {
+            sender ??= new object();
+            if (sender is EditorFile tempef) ChangeSelection(tempef, source);
+            Column destination = (Column)((int)source + 1);
+            var sourceColumn = source switch
+            {
+                Column.Rbin => Files.Children,
+                Column.File => Files2.Children,
+                Column.EmbeddedFile => Files3.Children,
+                _ => Files.Children
+            };
+            var destinationColumn = destination switch
+            {
+                Column.Rbin => Files.Children,
+                Column.File => Files2.Children,
+                Column.EmbeddedFile => Files3.Children,
+                _ => Files2.Children
+            };
+            
+            if (Directory.Exists(Path.Combine(Misc.Paths.work, GetSelecedFilePathFolder(destination))) && Enum.IsDefined(destination))
+            {
+                await ListFiles(sender, destination, sourceColumn, destinationColumn);
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    if (destination == Column.EmbeddedFile && Files3.Children.Count > 0)
+                    {
+                        EditorFile_EmbeddedFile_Click(Files3.Children[0], null);
+                    }
+                });
+            }
+            else
+            {
+                AttemptDisplay(source);
+            }
+
+            InfoWindow.IsVisible = source == Column.File || source == Column.EmbeddedFile;
+        }
+
+        private async Task ListFiles(object sender, Column destination, Controls sourceColumn, Controls destinationColumn)
+        {
+            try
+            {
+                switch (destination)
+                {
+                    case Column.Rbin:
+                        Files_Scroll.ScrollToHome();
+                        break;
+                    case Column.File:
+                        Files2_Scroll.ScrollToHome();
+                        break;
+                    case Column.EmbeddedFile:
+                        Files3_Scroll.ScrollToHome();
+                        break;
+                    default:
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            
             Sort.SelectedIndex = 0;
             InfoWindow.IsVisible = false;
             HexWindow.IsVisible = false;
-            foreach (var child in Files.Children)
+            List<EditorFile> tempList = new List<EditorFile>();
+            bool isUserAdded = false;
+            EditorFile usedFile = new EditorFile();
+            var progress = new Progress<(int current, int total)>();
+            foreach (var child in sourceColumn)
             {
-                Files2.Children.Clear();
-                tempList.Clear();
-                Log.Text = "Loading...";
-                if (child is TextBox textBox && textBox == selectedTextBox)
+                if (child is EditorFile ef && ef.IsSelected)
                 {
-                    if (Directory.Exists(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(textBox.Text))))
+                    usedFile = ef;
+                    await Dispatcher.UIThread.InvokeAsync(() =>
                     {
-                        Log.Text = $"Files in {textBox.Text}";
-                        List<string> Paths = new List<string>();
-                        // Get all files in the folder
-                        string[] files = Directory.GetFiles(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(textBox.Text)), "*.*", SearchOption.AllDirectories);
-
-                        // Iterate and print each file path
+                        ef.ChangeCursor(StandardCursorType.Wait);
+                    });
+                    await Dispatcher.UIThread.InvokeAsync(
+                        () => { }, DispatcherPriority.Background);
+                    await Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        IsHitTestVisible = false;
+                    });
+                    isUserAdded = ef.Text == "User-Added.rbin";
+                    destinationColumn.Clear();
+                    tempList.Clear();
+                    Log.Text = "Loading...";
+                    ef.ProgressBar.IsVisible = true;
+                    progress = new Progress<(int current, int total)>(message =>
+                    {
+                        ef.ProgressBar.Value = (double)message.current / (double)message.total;
+                    });
+                    string searchDir = Path.Combine(Misc.Paths.work, GetSelecedFilePathFolder(destination));
+                    string logText = $"Files in {ef.Text}";
+                    if (Directory.Exists(searchDir))
+                    {
+                        Log.Text = logText;
+                        string[] files = Directory.GetFiles(
+                            searchDir, "*.*",
+                            SearchOption.AllDirectories);
+                        int i = 0;
                         foreach (string file in files)
                         {
-                            string filetrim = file.Replace(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(textBox.Text)) + Path.DirectorySeparatorChar, "");
-                            if (!filetrim.Contains(Path.DirectorySeparatorChar) && 
-                                !filetrim.Contains(".bmp") && 
-                                !filetrim.Contains(".png") && 
-                                !filetrim.Contains(".txt") && 
-                                !filetrim.Contains(".json") && 
-                                !filetrim.Contains(".pnt"))
+                            string filetrim = file.Replace(searchDir + Path.DirectorySeparatorChar, "");
+                            switch (destination)
                             {
-                                AddFile(filetrim, 2, true);
+                                case Column.Rbin:
+                                    Files_Scroll.ScrollToHome();
+                                    break;
+                                case Column.File:
+                                    if (!filetrim.Contains(Path.DirectorySeparatorChar) &&
+                                        !filetrim.Contains(".bmp") &&
+                                        !filetrim.Contains(".png") &&
+                                        !filetrim.Contains(".txt") &&
+                                        !filetrim.Contains(".json") &&
+                                        !filetrim.Contains(".pnt"))
+                                    {
+                                        tempList = AddFile(tempList, filetrim, destination, isUserAdded);
+                                    }
+
+                                    break;
+                                case Column.EmbeddedFile:
+                                    if (!filetrim.Contains(Path.DirectorySeparatorChar) &&
+                                        !filetrim.Contains(".bmp") &&
+                                        !filetrim.Contains(".png") &&
+                                        !filetrim.Contains(".txt") &&
+                                        !filetrim.Contains(".json") &&
+                                        !filetrim.Contains(".pnt"))
+                                    {
+                                        tempList = AddFile(tempList, filetrim, destination, isUserAdded);
+                                    }
+                                    break;
+                                default:
+                                    break;
                             }
+
+                            i++;
+                            if (progress is IProgress<(int current, int total)> iprogress)
+                                await Dispatcher.UIThread.InvokeAsync(() =>
+                                {
+                                    iprogress.Report((i + 1, files.Length));
+                                });
                         }
                     }
                     break;
                 }
             }
-
-            if (!(sender is TextBox tb1 && tb1.Text == "User-Added.rbin"))
+            
+            List<EditorFile> sorted;
+            
+            if (!isUserAdded && destination == Column.File)
             {
-                var sorted = tempList
-                    .OrderBy(tb => int.Parse(tb.Name.Split('-')[0]))
+                sorted = tempList
+                    .OrderBy(ef => int.Parse(ef.Name.Split('-')[0]))
                     .ToList();
-
-                Files2.Children.Clear();
-                tempList.Clear();
-                unfiltered.Clear();
-
-                foreach (var textBox in sorted)
-                {
-                    Files2.Children.Add(textBox);
-                    unfiltered.Add(textBox);
-                }
             }
             else
             {
-                var sorted = tempList
-                    .OrderBy(tb => tb.Name)
+                sorted = tempList
+                    .OrderBy(ef => ef.Name)
                     .ToList();
+            }
+            
+            destinationColumn.Clear();
+            tempList.Clear();
+            if (destination == Column.File) unfiltered.Clear();
 
-                Files2.Children.Clear();
-                tempList.Clear();
-                unfiltered.Clear();
-
-                foreach (var textBox in sorted)
+            int j = 0;
+            foreach (var editorFile in sorted)
+            {
+                await Dispatcher.UIThread.InvokeAsync(() =>
                 {
-                    Files2.Children.Add(textBox);
-                    unfiltered.Add(textBox);
-                }
+                    destinationColumn.Add(editorFile);
+                    j++;
+                    if (progress is IProgress<(int current, int total)> iprogress)
+                        iprogress.Report((j + 1, sorted.Count));
+                }, DispatcherPriority.Background);
+                if (destination == Column.File) unfiltered.Add(editorFile);
             }
-        }
-        private void TextBox2_PreviewMouseLeftButtonDown(object sender, PointerPressedEventArgs e)
-        {
-            if (sender is TextBox tb)
+            
+            usedFile.ProgressBar.IsVisible = false;
+            await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                selectedTextBox2 = tb;
-                tb.Background = new SolidColorBrush(Avalonia.Media.Color.Parse("#F04080"));
-                Log.Text = $"Selected: {tb.Text}";
-            }
-            foreach (TextBox textbox in Files2.Children)
-            {
-                if (textbox != selectedTextBox2)
-                    textbox.Background = new SolidColorBrush(Avalonia.Media.Color.Parse("#202020"));
-            }
+                usedFile.RestoreCursor();
+                IsHitTestVisible = true;
+            });
         }
 
-        private void TextBox2_Click(object sender, PointerReleasedEventArgs e)
+        private void AttemptDisplay(Column source)
         {
-            TextBox2_PreviewMouseLeftButtonDown(sender, null);
-            try
+            string filepath = GetSelectedFilePath(source);
+            EditorFile ef = source switch
             {
-                Files3_Scroll.ScrollToHome();
-            }
-            catch { }
-            InfoWindow.IsVisible = false;
-            HexWindow.IsVisible = false;
-            foreach (var child in Files2.Children)
+                Column.File => selectedFile,
+                Column.EmbeddedFile => selectedEmbeddedFile,
+                _ => selectedFile
+            };
+            string filename = ef.Name ??= "";
+            if (filename.EndsWith(".ctt"))
             {
-                Files3.Children.Clear();
-                Log.Text = "Loading...";
-                if (child is TextBox textBox && textBox == selectedTextBox2)
-                {
-                    string filepath = Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text) + Path.DirectorySeparatorChar, textBox.Name);
-                    if (!textBox.Name.Contains(Path.DirectorySeparatorChar) && textBox.Name.EndsWith(".ctt"))
-                    {
-                        Log.Text = $"Displaying {textBox.Text}";
-                        AssignImage(filepath, 2);
-                    }
-                    else if (textBox.Name.EndsWith(".txa"))
-                    {
-                        AnimWindow anim = new AnimWindow(filepath);
-                        anim.Show();
-                        Log.Text = $"Opened {textBox.Text} in Nightmare Animation Studio";
-                    }
-                    else if (Directory.Exists(Path.Combine(Path.GetDirectoryName(filepath), Path.GetFileNameWithoutExtension(filepath))))
-                    {
-                        Log.Text = $"Files in {textBox.Name}";
-                        List<string> Paths = new List<string>();
-                        // Get all files in the folder
-                        string[] files = Directory.GetFiles(Path.Combine(Path.GetDirectoryName(filepath), Path.GetFileNameWithoutExtension(filepath)), "*.*", SearchOption.AllDirectories);
-                        Array.Sort(files);
-                        // Iterate and print each file path
-                        foreach (string file in files)
-                        {
-                            string filetrim = file.Replace(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), Path.GetFileNameWithoutExtension(textBox.Name) + Path.DirectorySeparatorChar), "");
-                            if (!filetrim.Contains(Path.DirectorySeparatorChar) && 
-                                !filetrim.Contains(".bmp") && 
-                                !filetrim.Contains(".png") && 
-                                !filetrim.Contains(".txt") && 
-                                !filetrim.Contains(".json") && 
-                                !filetrim.Contains(".pnt"))
-                            {
-                                AddFile(filetrim, 3);
-                            }
-                        }
-                        var sorted = Files3.Children
-                            .OfType<TextBox>()
-                            .OrderBy(tb => tb.Name)
-                            .ToList();
-
-                        Files3.Children.Clear();
-                        foreach (var textBox2 in sorted)
-                        {
-                            Files3.Children.Add(textBox2);
-                        }
-                        InfoWindow.IsVisible = true;
-                    }
-                    else
-                    {
-                        Log.Text = $"The file \"{textBox.Name}\" cannot be displayed.";
-                        byte[] fileData = File.ReadAllBytes(filepath);
-
-                        HexBytePanel.Foreground = new SolidColorBrush(Avalonia.Media.Color.Parse($"#F04080"));
-                        HexBytePanel.FontFamily = new FontFamily("avares://Nightmare Editor AUI/Assets/fonts#JetBrains Mono");
-                        HexBytePanel.Margin = new Thickness(5, 0);
-                        for (int i = 0; i < fileData.Length; i++)
-                        {
-                            if (i != 0 && i % 16 == 0)
-                            {
-                                HexBytePanel.Text += "\n";
-                            }
-
-                            string text = fileData[i].ToString("X");
-                            if (text.Length < 2)
-                            {
-                                text = "0" + text;
-                            }
-                            HexBytePanel.Text += text;
-                            if (i % 16 != 15)
-                            {
-                                HexBytePanel.Text += " ";
-                            }
-                        }
-                        HexFileName.Text = filepath.Replace(Misc.Paths.work + Path.DirectorySeparatorChar, "");
-                        HexWindow.IsVisible = true;
-                    }
-                    break;
-                }
+                Log.Text = $"Displaying {ef.Text}";
+                AssignImage(filepath, source);
             }
-        }
-
-        private void TextBox3_PreviewMouseLeftButtonDown(object sender, PointerPressedEventArgs e)
-        {
-            if (sender is TextBox tb)
+            else if (filename.EndsWith(".txa"))
             {
-                selectedTextBox3 = tb;
-                tb.Background = new SolidColorBrush(Avalonia.Media.Color.Parse("#F04080"));
-                Log.Text = $"Selected: {tb.Text}";
+                AnimWindow anim = new AnimWindow(Path.Combine(Misc.Paths.work, filepath));
+                anim.Show();
+                Log.Text = $"Opened {ef.Text} in Nightmare Animation Studio";
             }
-            foreach (TextBox textbox in Files3.Children)
-            {
-                if (textbox != selectedTextBox3)
-                    textbox.Background = new SolidColorBrush(Avalonia.Media.Color.Parse("#202020"));
-            }
-        }
 
-        private void TextBox3_Click(object sender, PointerReleasedEventArgs e)
-        {
-            TextBox3_PreviewMouseLeftButtonDown(sender, null);
-            foreach (var child in Files3.Children)
-            {
-                InfoWindow.IsVisible = false;
-                Log.Text = "Loading...";
-                if (child is TextBox textBox && textBox == selectedTextBox3)
-                {
-                    string filepath = Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), Path.GetFileNameWithoutExtension(selectedTextBox2.Name));
-                    Log.Text = $"The file \"{textBox.Text}\" cannot be displayed.";
-                    if (Directory.Exists(filepath))
-                    {
-                        List<string> Paths = new List<string>();
-                        // Get all files in the folder
-                        string[] files = Directory.GetFiles(filepath, "*.*", SearchOption.AllDirectories);
-
-                        // Iterate and print each file path
-                        foreach (string file in files)
-                        {
-                            string filetrim = file.Replace(filepath + Path.DirectorySeparatorChar, "");
-                            if (!filetrim.Contains(Path.DirectorySeparatorChar) && filetrim.EndsWith(".ctt"))
-                            {
-                                Log.Text = $"Displaying {textBox.Text}";
-                                AssignImage(file, 3);
-                            }
-                        }
-                    }
-                    break;
-                }
-            }
+            Files3.IsVisible = source == Column.EmbeddedFile;
         }
         
-        private async void AssignImage(string file, int from)
+        private async void AssignImage(string file, Column source)
         {
-            string path = ""; 
+            string path = Path.Combine(Misc.Paths.work, file);
+            displayedTextureName = Path.GetFileNameWithoutExtension(path);
             HexWindow.IsVisible = false;
-            if (Path.GetFileName(file) == selectedTextBox2.Name)
-            {
-                path = Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), file);
-            }
-            else if (Path.GetFileName(file) == selectedTextBox3.Text)
-            {
-                path = Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text),
-                    Path.GetFileNameWithoutExtension(selectedTextBox2.Name), file);
-            }
-            else
-            {
-                return;
-            }
+            
             FileFormat.Text = ((CTT.Format)File.ReadAllBytes(path)[0x1C]).ToString();;
             MemoryStream ms = new MemoryStream();
-            NewTools.CTT.Decode(file, false).SaveAsPng(ms);
+            NewTools.CTT.Decode(path, false).SaveAsPng(ms);
             ms.Seek(0, SeekOrigin.Begin);
             Bitmap bitmap = new Bitmap(ms);
             Bitmap bitmap2;
@@ -782,106 +877,85 @@ namespace Nightmare_Editor
 
         private async void RemoveFile(object sender, RoutedEventArgs e)
         {
-            foreach (var child in Files.Children)
+            var box = MessageBoxManager.GetMessageBoxStandard(
+                $"Delete {requestedContextMenu.Text}",
+                $"Do you wish to delete {requestedContextMenu.Text}?",
+                ButtonEnum.YesNo,
+                MsBox.Avalonia.Enums.Icon.Question
+            );
+            var result = await box.ShowAsPopupAsync(this);
+            if (result == ButtonResult.Yes)
             {
-                if (child is TextBox textBox && textBox == selectedTextBox)
+                try
                 {
-                    var box = MessageBoxManager.GetMessageBoxStandard(
-                        $"Delete {textBox.Text}",
-                        $"Do you wish to delete {textBox.Text}?",
-                        ButtonEnum.YesNo,
-                        MsBox.Avalonia.Enums.Icon.Question
-                    );
-                    var result = await box.ShowAsPopupAsync(this);
-                    if (result == ButtonResult.Yes)
-                    {
-                        try
-                        {
-                            Directory.Delete(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(textBox.Text)), true);
-                        }
-                        catch (Exception exception)
-                        {
-                            Console.WriteLine(exception);
-                        }
-                        try
-                        {
-                            Directory.Delete(Path.Combine(Misc.Paths.basePath, Path.GetFileNameWithoutExtension(textBox.Text)), true);
-                        }
-                        catch (Exception exception)
-                        {
-                            Console.WriteLine(exception);
-                        }
-                        try
-                        {
-                            File.Delete(Path.Combine(Misc.Paths.current, textBox.Text));
-                        }
-                        catch (Exception exception)
-                        {
-                            Console.WriteLine(exception);
-                        }
-                        try
-                        {
-                            Files.Children.Remove(textBox);
-                        }
-                        catch (Exception exception)
-                        {
-                            Console.WriteLine(exception);
-                        }
-                        break;
-                    }
+                    Directory.Delete(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(requestedContextMenu.Text)), true);
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine(exception);
+                }
+                try
+                {
+                    Directory.Delete(Path.Combine(Misc.Paths.basePath, Path.GetFileNameWithoutExtension(requestedContextMenu.Text)), true);
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine(exception);
+                }
+                try
+                {
+                    File.Delete(Path.Combine(Misc.Paths.current, requestedContextMenu.Text));
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine(exception);
+                }
+                try
+                {
+                    Files.Children.Remove(requestedContextMenu);
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine(exception);
                 }
             }
         }
         private async void RemoveFile2(object sender, RoutedEventArgs e)
         {
-            foreach (var child in Files2.Children)
+            var box = MessageBoxManager.GetMessageBoxStandard(
+                $"Delete {requestedContextMenu.Text}",
+                $"Do you wish to delete {requestedContextMenu.Text}?",
+                ButtonEnum.YesNo,
+                MsBox.Avalonia.Enums.Icon.Question
+            );
+            var result = await box.ShowAsPopupAsync(this);
+            if (result == ButtonResult.Yes)
             {
-                if (child is TextBox textBox && textBox == selectedTextBox2)
-                {
-                    var box = MessageBoxManager.GetMessageBoxStandard(
-                        $"Delete {textBox.Text}",
-                        $"Do you wish to delete {textBox.Text}?",
-                        ButtonEnum.YesNo,
-                        MsBox.Avalonia.Enums.Icon.Question
-                    );
-                    var result = await box.ShowAsPopupAsync(this);
-                    if (result == ButtonResult.Yes)
-                    {
-                        if (Directory.Exists(Path.Combine(Misc.Paths.work, "User-Added", Path.GetFileNameWithoutExtension(textBox.Text))));
-                            Directory.Delete(Path.Combine(Misc.Paths.work, "User-Added", Path.GetFileNameWithoutExtension(textBox.Text)), true);
-                        File.Delete(Path.Combine(Misc.Paths.work, "User-Added", textBox.Text));
-                        Files2.Children.Remove(textBox);
-                        break;
-                    }
-                }
+                if (Directory.Exists(Path.Combine(Misc.Paths.work, "User-Added", Path.GetFileNameWithoutExtension(requestedContextMenu.Text))));
+                Directory.Delete(Path.Combine(Misc.Paths.work, "User-Added", Path.GetFileNameWithoutExtension(requestedContextMenu.Text)), true);
+                File.Delete(Path.Combine(Misc.Paths.work, "User-Added", requestedContextMenu.Text));
+                Files2.Children.Remove(requestedContextMenu);
             }
         }
 
         private async void Again_Click(object sender, RoutedEventArgs e)
         {
-            foreach (var child in Files.Children)
+            var box = MessageBoxManager.GetMessageBoxStandard(
+                $"Re-Extract {requestedContextMenu.Text}",
+                $"Do wish to extract {requestedContextMenu.Text} again? This will replace all files inside.",
+                ButtonEnum.YesNo,
+                MsBox.Avalonia.Enums.Icon.Question
+            );
+            var result = await box.ShowAsPopupAsync(this);
+            if (result == ButtonResult.Yes)
             {
-                if (child is TextBox textBox && textBox == selectedTextBox)
-                {
-                    var box = MessageBoxManager.GetMessageBoxStandard(
-                        $"Re-Extract {textBox.Text}",
-                        $"Do wish to extract {textBox.Text} again? This will replace all files inside.",
-                        ButtonEnum.YesNo,
-                        MsBox.Avalonia.Enums.Icon.Question
-                    );
-                    var result = await box.ShowAsPopupAsync(this);
-                    if (result == ButtonResult.Yes)
-                    {
-                        RBIN.Load(Path.Combine(Misc.Paths.current, textBox.Text));
-                    }
-                    break;
-                }
+                await ExtractRbinWithUI(requestedContextMenu, Path.Combine(Misc.Paths.current, requestedContextMenu.Text));
             }
         }
 
         private void OpenFolder_Click(object sender, RoutedEventArgs e)
         {
-            if (File.Exists(Path.Combine(Misc.Paths.current, selectedTextBox.Text)))
+            if (File.Exists(Path.Combine(Misc.Paths.current, requestedContextMenu.Text)))
             {
                 ProcessStartInfo StartInformation = new ProcessStartInfo();
                 StartInformation.FileName = Misc.Paths.current;
@@ -892,11 +966,11 @@ namespace Nightmare_Editor
 
         private void OpenFolder2_Click(object sender, RoutedEventArgs e)
         {
-            if (File.Exists(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), selectedTextBox2.Name)))
+            if (File.Exists(Path.Combine(Misc.Paths.work, GetSelectedFilePath(Column.File, true))))
             {
-                string file = Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), selectedTextBox2.Name);
+                string file = Path.Combine(Misc.Paths.work, GetSelectedFilePath(Column.File, true));
                 ProcessStartInfo StartInformation = new ProcessStartInfo();
-                StartInformation.FileName = Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text));
+                StartInformation.FileName = Path.Combine(Misc.Paths.work, GetSelecedFilePathFolder(Column.File));
                 StartInformation.UseShellExecute = true;
                 Process process = Process.Start(StartInformation);
             }
@@ -904,11 +978,11 @@ namespace Nightmare_Editor
 
         private void OpenFolder3_Click(object sender, RoutedEventArgs e)
         {
-            if (File.Exists(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), Path.GetFileNameWithoutExtension(selectedTextBox2.Name), selectedTextBox3.Text)))
+            if (File.Exists(Path.Combine(Misc.Paths.work, GetSelectedFilePath(Column.EmbeddedFile, true))))
             {
-                string file = Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), Path.GetFileNameWithoutExtension(selectedTextBox2.Name), selectedTextBox3.Text);
+                string file = Path.Combine(Misc.Paths.work, GetSelectedFilePath(Column.EmbeddedFile, true));
                 ProcessStartInfo StartInformation = new ProcessStartInfo();
-                StartInformation.FileName = Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), Path.GetFileNameWithoutExtension(selectedTextBox2.Name));
+                StartInformation.FileName = Path.Combine(Misc.Paths.work, GetSelecedFilePathFolder(Column.EmbeddedFile));
                 StartInformation.UseShellExecute = true;
                 Process process = Process.Start(StartInformation);
             }
@@ -939,7 +1013,7 @@ namespace Nightmare_Editor
             {
                 if (!string.IsNullOrWhiteSpace(file[0].Path.LocalPath))
                 {
-                    File.Copy(file[0].Path.LocalPath, Path.Combine(Misc.Paths.current, selectedTextBox.Text), true);
+                    File.Copy(file[0].Path.LocalPath, Path.Combine(Misc.Paths.current, requestedContextMenu.Text), true);
                     RBIN.Load(file[0].Path.LocalPath);
                 }
             }
@@ -953,24 +1027,17 @@ namespace Nightmare_Editor
         {
             var filter = new List<FilePickerFileType>();
 
-            foreach (var child in Files2.Children)
+            FilePickerFileType type = MatchFilter(requestedContextMenu.Text);
+            if (type != null)
             {
-                if (child is TextBox textBox && textBox == selectedTextBox2)
+                filter.Add(type);
+            }
+            else
+            {
+                filter.Add(new FilePickerFileType($"{Path.GetExtension(requestedContextMenu.Text)} files")
                 {
-                    FilePickerFileType type = MatchFilter(textBox.Text);
-                    if (type != null)
-                    {
-                        filter.Add(type);
-                    }
-                    else
-                    {
-                        filter.Add(new FilePickerFileType($"{Path.GetExtension(textBox.Text)} files")
-                        {
-                            Patterns = new List<string> { $"*{Path.GetExtension(textBox.Text)}" }
-                        });
-                    }
-                    break;
-                }
+                    Patterns = new List<string> { $"*{Path.GetExtension(requestedContextMenu.Text)}" }
+                });
             }
             var file = await this.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
             {
@@ -986,20 +1053,20 @@ namespace Nightmare_Editor
                     {
                         if (Path.GetExtension(file[0].Path.LocalPath) == ".ctt")
                         {
-                            string path = Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), selectedTextBox2.Name);
+                            string path = Path.Combine(Misc.Paths.work, GetSelectedFilePath(Column.File, true));
                             File.Copy(file[0].Path.LocalPath, path, true);
                             CTT.Decode(path);
                         }
                         else if (Containers.IsArc(file[0].Path.LocalPath))
                         {
-                            string path = Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), selectedTextBox2.Name);
+                            string path = Path.Combine(Misc.Paths.work, GetSelectedFilePath(Column.File, true));
                             File.Copy(file[0].Path.LocalPath, path, true);
                             Containers.Generic.Unpack(path);
                             
                         }
                         else
                         {
-                            File.Copy(file[0].Path.LocalPath, Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), selectedTextBox2.Name), true);
+                            File.Copy(file[0].Path.LocalPath, Path.Combine(Misc.Paths.work, GetSelectedFilePath(Column.File, true)), true);
                         }
                     }
                     catch (Exception ex)
@@ -1016,73 +1083,65 @@ namespace Nightmare_Editor
 
         private void Pack2_Click(object sender, RoutedEventArgs e)
         {
-            foreach (var child in Files2.Children)
+            if (requestedContextMenu.Text.EndsWith(".ctt"))
             {
-                if (child is TextBox textBox && textBox == selectedTextBox2)
+                string file2 = "";
+                bool found = false;
+                foreach (var arr in textureLinks)
                 {
-                    if (textBox.Text.EndsWith(".ctt"))
+                    if (arr.Length >= 2 && arr[0] == selectedRbin.Text + Path.DirectorySeparatorChar + selectedFile.Name)
                     {
-                        string file2 = "";
-                        bool found = false;
-                        foreach (var arr in textureLinks)
-                        {
-                            if (arr.Length >= 2 && arr[0] == FileName.Text)
-                            {
-                                file2 = arr[1];
-                                found = true;
-                                break;
-                            }
-                        }
-                        if (!found)
-                        {
-                            NewTools.CTT.Decode(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), Path.GetFileName(selectedTextBox2.Name)), true);
-                            string[] files2 = Directory.GetFiles(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text)), $"{selectedTextBox2.Name}.*.png", SearchOption.AllDirectories);
-                            file2 = files2[0];
-                        }
-                        FileName.Text = selectedTextBox.Text + Path.DirectorySeparatorChar + selectedTextBox2.Name;
-                        Log.Text = "Packing...";
-                        NewTools.CTT.Encode(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), textBox.Name), file2);
-                        Log.Text = $"Packed {textBox.Text}!";
+                        file2 = arr[1];
+                        found = true;
+                        break;
                     }
-                    
-                    else if (Containers.IsArc(textBox.Text) && Directory.Exists(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), Path.GetFileNameWithoutExtension(textBox.Name))))
-                    {
-                        ShowGenericWarning();
-                        Containers.Generic.Pack(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), textBox.Name));
-                        Log.Text = $"Packed {textBox.Text}!";
-                    }
-                    else
-                    {
-                        Log.Text = $"{textBox.Text} is not an archive nor texture file, and cannot be packed.";
-                    }    
-                    break;
                 }
-
+                if (!found)
+                {
+                    NewTools.CTT.Decode(Path.Combine(Misc.Paths.work, GetSelectedFilePath(Column.File, true)), true);
+                    string[] files2 = Directory.GetFiles(Path.Combine(Misc.Paths.work, GetSelecedFilePathFolder(Column.File)), $"{requestedContextMenu.Name}.*.png", SearchOption.AllDirectories);
+                    if (files2.Length < 1)
+                    {
+                        Log.Text = "Couldn't find a texture to pack.";
+                        return;
+                    }
+                    file2 = files2[0];
+                    
+                }
+                
+                Log.Text = "Packing...";
+                NewTools.CTT.Encode(Path.Combine(Misc.Paths.work, GetSelectedFilePath(Column.File, true)), file2);
+                Log.Text = $"Packed {requestedContextMenu.Text}!";
             }
+            
+            else if (Containers.IsArc(requestedContextMenu.Text) && Directory.Exists(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedRbin.Text), Path.GetFileNameWithoutExtension(requestedContextMenu.Name))))
+            {
+                ShowGenericWarning();
+                Containers.Generic.Pack(Path.Combine(Misc.Paths.work, GetSelectedFilePath(Column.File, true)));
+                Log.Text = $"Packed {requestedContextMenu.Text}!";
+            }
+            else
+            {
+                Log.Text = $"{requestedContextMenu.Text} is not an archive nor texture file, and cannot be packed.";
+            }    
         }
         private async void Replace3_Click(object sender, RoutedEventArgs e)
         {
             var filter = new List<FilePickerFileType>();
 
-            foreach (var child in Files2.Children)
+            FilePickerFileType type = MatchFilter(requestedContextMenu.Text);
+            if (type != null)
             {
-                if (child is TextBox textBox && textBox == selectedTextBox2)
-                {
-                    FilePickerFileType type = MatchFilter(textBox.Text);
-                    if (type != null)
-                    {
-                        filter.Add(type);
-                    }
-                    else
-                    {
-                        filter.Add(new FilePickerFileType($"{Path.GetExtension(textBox.Text)} files")
-                        {
-                            Patterns = new List<string> { $"*{Path.GetExtension(textBox.Text)}" }
-                        });
-                    }
-                    break;
-                }
+                filter.Add(type);
             }
+            else
+            {
+                filter.Add(new FilePickerFileType($"{Path.GetExtension(requestedContextMenu.Text)} files")
+                {
+                    Patterns = new List<string> { $"*{Path.GetExtension(requestedContextMenu.Text)}" }
+                });
+            }
+            
             var file = await this.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
             {
                 Title = "Select a file to open...",
@@ -1097,14 +1156,14 @@ namespace Nightmare_Editor
                     {
                         if (Path.GetExtension(file[0].Path.LocalPath) == ".ctt")
                         {
-                            File.Copy(file[0].Path.LocalPath, Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), Path.GetFileNameWithoutExtension(selectedTextBox2.Name), selectedTextBox3.Text), true);
-                            File.Copy(file[0].Path.LocalPath, Path.Combine(Misc.Paths.toolkit, selectedTextBox3.Text), true);
-                            CTT.Decode(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), Path.GetFileNameWithoutExtension(selectedTextBox2.Name), Path.GetFileName(selectedTextBox3.Text)));
+                            File.Copy(file[0].Path.LocalPath, Path.Combine(Misc.Paths.work, GetSelectedFilePath(Column.EmbeddedFile, true)), true);
+                            File.Copy(file[0].Path.LocalPath, Path.Combine(Misc.Paths.toolkit, requestedContextMenu.Text), true);
+                            CTT.Decode(Path.Combine(Misc.Paths.work, GetSelectedFilePath(Column.EmbeddedFile, true)));
 
                         }
                         else
                         {
-                            File.Copy(file[0].Path.LocalPath, Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), Path.GetFileNameWithoutExtension(selectedTextBox2.Name), selectedTextBox3.Text), true);
+                            File.Copy(file[0].Path.LocalPath, Path.Combine(Misc.Paths.work, GetSelectedFilePath(Column.EmbeddedFile, true)), true);
                         }
                     }
                     catch (Exception ex)
@@ -1121,50 +1180,41 @@ namespace Nightmare_Editor
 
         private void Pack3_Click(object sender, RoutedEventArgs e)
         {
-            foreach (var child in Files3.Children)
+            if (requestedContextMenu.Text.EndsWith(".ctt"))
             {
-                if (child is TextBox textBox && textBox == selectedTextBox3)
+                string file2 = "";
+                bool found = false;
+                foreach (var arr in textureLinks)
                 {
-                    if (textBox.Text.EndsWith(".ctt"))
+                    if (arr.Length >= 2 && arr[0] == selectedRbin.Text + Path.DirectorySeparatorChar + selectedFile.Name + Path.DirectorySeparatorChar + requestedContextMenu.Text)
                     {
-                        string file2 = "";
-                        bool found = false;
-                        foreach (var arr in textureLinks)
-                        {
-                            if (arr.Length >= 2 && arr[0] == FileName.Text)
-                            {
-                                file2 = arr[1];
-                                found = true;
-                                break;
-                            }
-                        }
-                        if (!found)
-                        {
-                            NewTools.CTT.Decode(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), Path.GetFileNameWithoutExtension(selectedTextBox2.Name), Path.GetFileName(selectedTextBox3.Text)), true);
-                            string[] files2 = Directory.GetFiles(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), Path.GetFileNameWithoutExtension(selectedTextBox2.Name)), $"{selectedTextBox3.Text}.*.png", SearchOption.AllDirectories);
-                            file2 = files2[0];
-                        }
-                        FileName.Text = selectedTextBox.Text + Path.DirectorySeparatorChar + selectedTextBox2.Name + Path.DirectorySeparatorChar + selectedTextBox3.Text;
-                        Log.Text = "Packing...";
-                        NewTools.CTT.Encode(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), Path.GetFileNameWithoutExtension(selectedTextBox2.Name), textBox.Text), file2);
-                        Log.Text = $"Packed {textBox.Text}!";
+                        file2 = arr[1];
+                        found = true;
+                        break;
                     }
-                    else if (Containers.IsArc(textBox.Text) && Directory.Exists(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), Path.GetFileNameWithoutExtension(selectedTextBox2.Name), Path.GetFileNameWithoutExtension(textBox.Text))))
-                    {
-                        ShowGenericWarning();
-                        Containers.Generic.Pack(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedTextBox.Text), Path.GetFileNameWithoutExtension(selectedTextBox2.Name), textBox.Text));
-                        Log.Text = $"Packed {textBox.Text}!";
-                    }
-                    break;
                 }
+                if (!found)
+                {
+                    NewTools.CTT.Decode(Path.Combine(Misc.Paths.work, GetSelectedFilePath(Column.EmbeddedFile, true)), true);
+                    string[] files2 = Directory.GetFiles(Path.Combine(Misc.Paths.work, GetSelecedFilePathFolder(Column.EmbeddedFile)), $"{requestedContextMenu.Text}.*.png", SearchOption.AllDirectories);
+                    if (files2.Length < 1)
+                    {
+                        Log.Text = "Couldn't find a texture to pack.";
+                        return;
+                    }
+                    file2 = files2[0];
+                }
+                Log.Text = "Packing...";
+                NewTools.CTT.Encode(Path.Combine(Misc.Paths.work, GetSelectedFilePath(Column.EmbeddedFile, true)), file2);
+                Log.Text = $"Packed {requestedContextMenu.Text}!";
             }
         }
         private void Flag2(object sender, RoutedEventArgs e)
         {
-            string file1 = selectedTextBox.Text;
-            string file2 = Path.Combine(Path.GetFileNameWithoutExtension(selectedTextBox.Text), selectedTextBox2.Name);
+            string file1 = GetSelectedFilePath(Column.Rbin, false);
+            string file2 = GetSelectedFilePath(Column.File, true);
             bool isin = false;
-            if (!flaggedFiles.Contains(file1) && !selectedTextBox.Text.Contains("User-Added.rbin"))
+            if (!flaggedFiles.Contains(file1) && !selectedRbin.Text.Contains("User-Added.rbin"))
             {
                 flaggedFiles.Add(file1);
             }
@@ -1176,7 +1226,7 @@ namespace Nightmare_Editor
             {
                 foreach (string fileref in flaggedFiles3)
                 {
-                    if (fileref.Contains(Path.GetFileNameWithoutExtension(selectedTextBox2.Name) + Path.DirectorySeparatorChar))
+                    if (fileref.Contains(Path.GetFileNameWithoutExtension(requestedContextMenu.Name) + Path.DirectorySeparatorChar))
                     {
                         isin = true;
                         break;
@@ -1194,7 +1244,7 @@ namespace Nightmare_Editor
             isin = false;
             foreach (string fileref in flaggedFiles2)
             {
-                if (fileref.Contains(Path.GetFileNameWithoutExtension(selectedTextBox.Text) + Path.DirectorySeparatorChar))
+                if (fileref.Contains(Path.GetFileNameWithoutExtension(selectedRbin.Text) + Path.DirectorySeparatorChar))
                 {
                     isin = true;
                     break;
@@ -1202,17 +1252,17 @@ namespace Nightmare_Editor
             }
             if (!isin)
             {
-                Log.Text = $"No flagged file references {selectedTextBox.Text}, removing from flagged list.";
+                Log.Text = $"No flagged file references {selectedRbin.Text}, removing from flagged list.";
                 flaggedFiles.Remove(file1);
             }
 
         }
         private void Flag3(object sender, RoutedEventArgs e)
         {
-            string file1 = selectedTextBox.Text;
-            string file2 = Path.Combine(Path.GetFileNameWithoutExtension(selectedTextBox.Text), selectedTextBox2.Name);
-            string file3 = Path.Combine(Path.GetFileNameWithoutExtension(selectedTextBox.Text), Path.GetFileNameWithoutExtension(selectedTextBox2.Name), selectedTextBox3.Text);
-            if (!flaggedFiles.Contains(file1) && !selectedTextBox.Text.Contains("User-Added.rbin"))
+            string file1 = GetSelectedFilePath(Column.Rbin, false);
+            string file2 = GetSelectedFilePath(Column.File, false);
+            string file3 = GetSelectedFilePath(Column.EmbeddedFile, true);
+            if (!flaggedFiles.Contains(file1) && !selectedRbin.Text.Contains("User-Added.rbin"))
             {
                 flaggedFiles.Add(file1);
             }
@@ -1646,7 +1696,7 @@ namespace Nightmare_Editor
                 }
                 foreach (var textbox in unfiltered)
                 {
-                    if (textbox.Text.Contains(filter) && (textbox.Text.StartsWith(Search.Text) || string.IsNullOrWhiteSpace(Search.Text)))
+                    if (textbox.Text.EndsWith(filter) && (textbox.Text.Contains(Search.Text) || string.IsNullOrWhiteSpace(Search.Text)))
                     {
                         Files2.Children.Add(textbox);
                     }
@@ -1657,18 +1707,20 @@ namespace Nightmare_Editor
 
         private void Reverse_Rebirth(object sender, RoutedEventArgs e)
         {
-            if (Nightmare_Editor_AUI.Managers.Standard.MainSettings.UI == 0)
+            if (!(runningOperations > 0))
             {
-                Manager mw = new Manager();
-                mw.Show();
-                Close();
+                if (Nightmare_Editor_AUI.Managers.Standard.MainSettings.UI == 0)
+                {
+                    Manager mw = new Manager();
+                    mw.Show();
+                }
+                else
+                {
+                    NewManager nmw = new NewManager();
+                    nmw.Show();
+                }
             }
-            else
-            {
-                NewManager nmw = new NewManager();
-                nmw.Show();
-                Close();
-            }
+            Close();
         }
 
         private async void ZipMod(Meta meta)
@@ -1733,7 +1785,8 @@ namespace Nightmare_Editor
                         {
                             Patterns = new List<string> { "*.png" }
                         }
-                    }
+                    },
+                    SuggestedFileName = displayedTextureName
                 });
                 if (!string.IsNullOrWhiteSpace(save.Path.LocalPath) && save != null)
                 {
@@ -1757,6 +1810,22 @@ namespace Nightmare_Editor
                 MsBox.Avalonia.Enums.Icon.Info
             );
             await box2.ShowAsPopupAsync(this);
+        }
+        
+        protected void OnClosing(object sender, WindowClosingEventArgs e)
+        {
+            if (runningOperations > 0)
+            {
+                e.Cancel = true;
+                
+                var box2 = MessageBoxManager.GetMessageBoxStandard(
+                    "Cannot Close",
+                    "There is still ongoing extraction, so the program cannot close.",
+                    MsBox.Avalonia.Enums.ButtonEnum.Ok,
+                    MsBox.Avalonia.Enums.Icon.Info
+                );
+                box2.ShowAsPopupAsync(this);
+            }
         }
     }
 }

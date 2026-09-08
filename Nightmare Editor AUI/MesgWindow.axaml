@@ -7,7 +7,7 @@
         xmlns:controls="clr-namespace:Nightmare_Editor_AUI.Controls"
         xmlns:skia="clr-namespace:Avalonia.Svg.Skia;assembly=Svg.Controls.Skia.Avalonia"
         x:Class="Nightmare_Editor_AUI.MesgWindow"
-        Title="MesgWindow" WindowDecorations="None" Height="320" Width="684" Background="Transparent" TransparencyLevelHint="Transparent">
+        Title="MesgWindow" SystemDecorations="None" Height="320" Width="684" Background="Transparent" TransparencyLevelHint="Transparent">
     <Window.Resources>
         <controls:PixelWidthCustom x:Key="PixelWidth"/>
         <controls:PixelMarginCustom x:Key="PixelMargin"/>

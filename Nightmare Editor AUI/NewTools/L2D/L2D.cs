@@ -137,7 +137,7 @@ namespace Nightmare_Editor.NewTools.L2D
                 byte[] ctt = new byte[total];
                 for (int p = 0; p < ctt.Length; p++)
                 {
-                    ctt[p] = data[0x80 + j++];
+                    ctt[p] = data[j++];
                 }
                 ctt = CTT.MeldHeader(ctt_header, ctt);
                 textures.Add(ctt);

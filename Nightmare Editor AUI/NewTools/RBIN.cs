@@ -359,6 +359,7 @@ public class RBIN
                         Patterns = new List<string> { "*.rbin" }
                     }
                 }
+                
             });
             if (!string.IsNullOrWhiteSpace(save.Path.LocalPath))
             {
