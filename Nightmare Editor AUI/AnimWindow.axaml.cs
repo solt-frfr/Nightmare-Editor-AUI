@@ -1403,5 +1403,15 @@ namespace Nightmare_Editor
                 main = TXA.ReDecodeTextures(main);
             }
         }
+
+        private async void Pack_OnClick(object? sender, PointerReleasedEventArgs e)
+        {
+            byte[] file = TXA.Create(main);
+            
+            if (!string.IsNullOrWhiteSpace(openedFile))
+            {
+                System.IO.File.WriteAllBytes(openedFile, file);
+            }
+        }
     }
 }

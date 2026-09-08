@@ -20,10 +20,15 @@
                 <TextBox Text="Import TXA" PointerReleased="Import_Click" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Row="1" Grid.Column="1" IsReadOnly="True" Focusable="False" Cursor="Hand"/>
             </Grid>
         </StackPanel>
-        <Grid ColumnDefinitions="4*,5*,2*" Grid.ColumnSpan="2">
-            <TextBox Text="Save" PointerReleased="Save_Click" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Row="0" Grid.Column="0" IsReadOnly="True" Focusable="False" Cursor="Hand" FontSize="25"/>
-            <TextBox Text="Export" PointerReleased="Export_Click" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Row="0" Grid.Column="1" IsReadOnly="True" Focusable="False" Cursor="Hand" FontSize="25"/>
-            <Button Grid.Column="2" Click="Reverse_Rebirth" Background="Transparent" BorderBrush="Transparent" Cursor="Hand" ToolTip.Tip="Go to Exam Editor"><!--This is my program and I can call the functions whatever I want nihihihihi >:)-->
+        <Grid ColumnDefinitions="10*,2*" Grid.ColumnSpan="2">
+            <StackPanel Grid.Column="0">
+                <TextBox Text="Save as Animation Studio Project" PointerReleased="Save_Click" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" IsReadOnly="True" Focusable="False" Cursor="Hand"/>
+                <Grid ColumnDefinitions="2*, *">
+                    <TextBox Grid.Column="0" Text="Export as TXA File" FontSize="18" PointerReleased="Export_Click" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" IsReadOnly="True" Focusable="False" Cursor="Hand"/>
+                    <TextBox Grid.Column="1" Text="Pack" FontSize="18" PointerReleased="Pack_OnClick" Foreground="White" FontWeight='Black' BorderBrush="Gray" Background="#323b4a" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" IsReadOnly="True" Focusable="False" Cursor="Hand" ToolTip.Tip="Export the file directly back into where it came from."/>
+                </Grid>
+            </StackPanel>
+            <Button Grid.Column="2" HorizontalAlignment="Right" Click="Reverse_Rebirth" Background="Transparent" BorderBrush="Transparent" Cursor="Hand" ToolTip.Tip="Go to Exam Editor"><!--This is my program and I can call the functions whatever I want nihihihihi >:)-->
                 <Image Source="/Images/return.png" Width="40" Height="40" RenderOptions.BitmapInterpolationMode="HighQuality"/>
             </Button>
         </Grid>
