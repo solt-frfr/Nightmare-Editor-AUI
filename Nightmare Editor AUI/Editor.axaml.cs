@@ -52,8 +52,45 @@ namespace Nightmare_Editor
 
         private bool textureSwap = false;
         private string displayedTextureName;
-
-        private List<string> allfiles = new List<string>();
+        
+        private List<string> allfiles
+        {
+            get
+            {
+                List<string> returnValue = new List<string>();
+                returnValue.Clear();
+                returnValue.AddRange(flaggedFiles);
+                returnValue.AddRange(flaggedFiles2);
+                returnValue.AddRange(flaggedFiles3);
+                returnValue.Sort();
+                returnValue.Reverse();
+                return returnValue;
+            }
+            set
+            {
+                flaggedFiles.Clear();
+                flaggedFiles2.Clear();
+                flaggedFiles3.Clear();
+                value.Reverse();
+                foreach (var file in value)
+                {
+                    switch (file.Split(Path.DirectorySeparatorChar).Length)
+                    {
+                        case 1:
+                            flaggedFiles.Add(file);
+                            break;
+                        case 2:
+                            flaggedFiles2.Add(file);
+                            break;
+                        case 3:
+                            flaggedFiles3.Add(file);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
 
         private List<string[]> textureLinks = new List<string[]>();
         
@@ -154,10 +191,36 @@ namespace Nightmare_Editor
             {
                 QuickJson(true);
             }
-
             Closing += OnClosing;
-
             QuickJson(false);
+            Dispatcher.UIThread.Post(() => TryGetQueue());
+            
+        }
+        
+        private async void TryGetQueue()
+        {
+            if (File.Exists(Misc.Jsons.queue))
+            {
+                var jsonoptions = new JsonSerializerOptions
+                {
+                    WriteIndented = true
+                };
+                var queueList = JsonSerializer.Deserialize<List<string>>(File.ReadAllText(Misc.Jsons.queue), jsonoptions);
+                if (queueList.Count > 1)
+                {
+                    var box = MessageBoxManager.GetMessageBoxStandard(
+                        $"Restore Queue",
+                        "A file queue was found from last session. Would you like to restore it?",
+                        ButtonEnum.YesNo,
+                        MsBox.Avalonia.Enums.Icon.Question
+                    );
+                    var result = await box.ShowAsPopupAsync(this);
+                    if (result == ButtonResult.Yes)
+                    {
+                        allfiles = queueList;
+                    }
+                }
+            }
         }
 
         private void QuickJson(bool write)
@@ -1418,12 +1481,6 @@ namespace Nightmare_Editor
         private void WindowSwap(object sender, RoutedEventArgs e)
         {
             windowSwap = !windowSwap;
-            allfiles.Clear();
-            allfiles.AddRange(flaggedFiles);
-            allfiles.AddRange(flaggedFiles2);
-            allfiles.AddRange(flaggedFiles3);
-            allfiles.Sort();
-            allfiles.Reverse();
             Queued.Children.Clear();
             foreach (string file in allfiles)
             {
@@ -1825,6 +1882,15 @@ namespace Nightmare_Editor
                     MsBox.Avalonia.Enums.Icon.Info
                 );
                 box2.ShowAsPopupAsync(this);
+            }
+            else
+            {
+                var jsonoptions = new JsonSerializerOptions
+                {
+                    WriteIndented = true
+                };
+                string jsonString = JsonSerializer.Serialize<List<string>>(allfiles, jsonoptions);
+                File.WriteAllText(Misc.Jsons.queue, jsonString);
             }
         }
     }

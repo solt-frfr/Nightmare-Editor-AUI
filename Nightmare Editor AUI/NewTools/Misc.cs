@@ -82,6 +82,7 @@ namespace Nightmare_Editor.NewTools
             public static readonly string textures = Path.Combine(Paths.program, "textures.json");
             public static readonly string temp = Path.Combine(Paths.program, "temp.json");
             public static readonly string theme = Path.Combine(Paths.program, "theme.json");
+            public static readonly string queue = Path.Combine(Paths.program, "queue.json");
         }
 
         public enum FileTypes
