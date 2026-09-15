@@ -190,8 +190,8 @@
     "Filename": "bgm_039.bcstm"
   },
   {
-    "Track": "bgm_040",
-    "Description": "desc",
+    "Track": "Cheers for the Brave",
+    "Description": "Plays when Mickey, Donald, and Goofy are made Musketeers.",
     "Filename": "bgm_040.bcstm"
   },
   {
@@ -200,18 +200,18 @@
     "Filename": "bgm_041.bcstm"
   },
   {
-    "Track": "bgm_042",
-    "Description": "desc",
+    "Track": "Drops of Poison",
+    "Description": "An event theme used in scenes involving villains and their schemes.",
     "Filename": "bgm_042.bcstm"
   },
   {
-    "Track": "bgm_043",
-    "Description": "desc",
+    "Track": "Tears of the Light",
+    "Description": "An event theme used for scenes of sadness and mourning.",
     "Filename": "bgm_043.bcstm"
   },
   {
-    "Track": "bgm_044",
-    "Description": "desc",
+    "Track": "Shaded Truths",
+    "Description": "An event theme used for mysterious and unsettling moments.",
     "Filename": "bgm_044.bcstm"
   },
   {
@@ -230,8 +230,8 @@
     "Filename": "bgm_047.bcstm"
   },
   {
-    "Track": "bgm_048",
-    "Description": "desc",
+    "Track": "Riku",
+    "Description": "Riku's character theme.",
     "Filename": "bgm_048.bcstm"
   },
   {
@@ -245,8 +245,8 @@
     "Filename": "bgm_051.bcstm"
   },
   {
-    "Track": "bgm_052",
-    "Description": "desc",
+    "Track": "Strange Whispers",
+    "Description": "A event theme associated with antagonists and unfortunate developments.",
     "Filename": "bgm_052.bcstm"
   },
   {
@@ -255,18 +255,18 @@
     "Filename": "bgm_053.bcstm"
   },
   {
-    "Track": "bgm_059",
-    "Description": "desc",
+    "Track": "The Key of Light",
+    "Description": "Plays when Sora and Riku fall into the sleeping worlds after defeating Phantom Ursula.",
     "Filename": "bgm_059.bcstm"
   },
   {
-    "Track": "bgm_060",
-    "Description": "desc",
+    "Track": "The Key of Darkness",
+    "Description": "An event track used in climactic moments related to darkness.",
     "Filename": "bgm_060.bcstm"
   },
   {
-    "Track": "bgm_061",
-    "Description": "desc",
+    "Track": "Xehanort",
+    "Description": "Xehanort's character theme.",
     "Filename": "bgm_061.bcstm"
   },
   {
@@ -285,8 +285,8 @@
     "Filename": "bgm_065.bcstm"
   },
   {
-    "Track": "bgm_066",
-    "Description": "desc",
+    "Track": "Destiny's Union",
+    "Description": "An event theme used to represent the bonds between friends.",
     "Filename": "bgm_066.bcstm"
   },
   {
@@ -315,28 +315,28 @@
     "Filename": "bgm_071.bcstm"
   },
   {
-    "Track": "bgm_072",
-    "Description": "desc",
+    "Track": "L'Apprenti Sorcier (Alternate)",
+    "Description": "Plays during some cutscenes.",
     "Filename": "bgm_072.bcstm"
   },
   {
-    "Track": "bgm_073",
-    "Description": "desc",
+    "Track": "L'Apprenti Sorcier (Alternate 2)",
+    "Description": "Plays during some cutscenes.",
     "Filename": "bgm_073.bcstm"
   },
   {
-    "Track": "bgm_074",
-    "Description": "desc",
+    "Track": "L'Apprenti Sorcier (Alternate 3)",
+    "Description": "Plays during some cutscenes.",
     "Filename": "bgm_074.bcstm"
   },
   {
-    "Track": "bgm_075",
-    "Description": "desc",
+    "Track": "The Dream",
+    "Description": "An event track associated with dreams.",
     "Filename": "bgm_075.bcstm"
   },
   {
-    "Track": "bgm_076",
-    "Description": "desc",
+    "Track": "The Nightmare",
+    "Description": "An event track associated with nightmares.",
     "Filename": "bgm_076.bcstm"
   },
   {
@@ -395,8 +395,8 @@
     "Filename": "bgm_093.bcstm"
   },
   {
-    "Track": "bgm_094",
-    "Description": "desc",
+    "Track": "The Dread of Night",
+    "Description": "The boss theme of the Anti Black Coat.",
     "Filename": "bgm_094.bcstm"
   },
   {
@@ -405,8 +405,8 @@
     "Filename": "bgm_095.bcstm"
   },
   {
-    "Track": "bgm_097",
-    "Description": "desc",
+    "Track": "Oopsy-Daisy",
+    "Description": "Plays when you lose a match in Flick Rush.",
     "Filename": "bgm_097.bcstm"
   },
   {
@@ -420,53 +420,53 @@
     "Filename": "bgm_099.bcstm"
   },
   {
-    "Track": "bgm_100",
-    "Description": "desc",
+    "Track": "Symphony No. 6 \"Pastoral\" Op. 68 (Reality Shift)",
+    "Description": "Plays during Sora's Melody Catcher inside Symphony of Sorcery.",
     "Filename": "bgm_100.bcstm"
   },
   {
-    "Track": "bgm_101",
-    "Description": "desc",
+    "Track": "Symphony No. 6 \"Pastoral\" Op. 68 (Riff)",
+    "Description": "Plays during Sora's Melody Catcher when the button is pressed on time.",
     "Filename": "bgm_101.bcstm"
   },
   {
-    "Track": "bgm_102",
-    "Description": "desc",
+    "Track": "Symphony No. 6 \"Pastoral\" Op. 68 (Riff 2)",
+    "Description": "Plays during Sora's Melody Catcher when the button is pressed on time.",
     "Filename": "bgm_102.bcstm"
   },
   {
-    "Track": "bgm_103",
-    "Description": "desc",
+    "Track": "The Nutcracker Suite Op. 71 (Reality Shift)",
+    "Description": "Plays during Riku's Melody Catcher inside Symphony of Sorcery.",
     "Filename": "bgm_103.bcstm"
   },
   {
-    "Track": "bgm_104",
-    "Description": "desc",
+    "Track": "The Nutcracker Suite Op. 71 (Riff)",
+    "Description": "Plays during Riku's Melody Catcher when the button is pressed on time.",
     "Filename": "bgm_104.bcstm"
   },
   {
-    "Track": "bgm_106",
-    "Description": "desc",
+    "Track": "L'Apprenti Sorcier (Reality Shift)",
+    "Description": "Plays during the Melody Catcher outside the Mysterious Tower.",
     "Filename": "bgm_106.bcstm"
   },
   {
-    "Track": "bgm_107",
-    "Description": "desc",
+    "Track": "L'Apprenti Sorcier (Riff)",
+    "Description": "Plays during the Melody Catcher outside the Mysterious Tower when the button is pressed on time.",
     "Filename": "bgm_107.bcstm"
   },
   {
-    "Track": "bgm_109",
-    "Description": "desc",
+    "Track": "The Nutcracker Suite Op. 71 (Reality Shift 2)",
+    "Description": "Plays during Riku's Melody Catcher inside Symphony of Sorcery.",
     "Filename": "bgm_109.bcstm"
   },
   {
-    "Track": "bgm_110",
-    "Description": "desc",
+    "Track": "The Nutcracker Suite Op. 71 (Riff 2)",
+    "Description": "Plays during Riku's Melody Catcher when the button is pressed on time.",
     "Filename": "bgm_110.bcstm"
   },
   {
-    "Track": "bgm_111",
-    "Description": "desc",
+    "Track": "The Nutcracker Suite Op. 71 (Riff 3)",
+    "Description": "Plays during Riku's Melody Catcher when the button is pressed on time.",
     "Filename": "bgm_111.bcstm"
   },
   {
@@ -490,8 +490,8 @@
     "Filename": "bgm_115.bcstm"
   },
   {
-    "Track": "bgm_116",
-    "Description": "desc",
+    "Track": "Rinzler Recompiled",
+    "Description": "The boss theme of Rinzler.",
     "Filename": "bgm_116.bcstm"
   }
 ]
