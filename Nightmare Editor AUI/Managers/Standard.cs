@@ -382,7 +382,6 @@ public static class Standard
                 }
             }
         }
-        Directory.CreateDirectory(musicpath);
         return (Misc.ErrorCode.Success, "");
     }
 }
