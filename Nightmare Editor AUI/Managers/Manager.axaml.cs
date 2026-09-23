@@ -25,6 +25,7 @@ using Avalonia.Media.Immutable;
 using SharpCompress;
 using Avalonia.Platform.Storage;
 using Avalonia.Styling;
+using Avalonia.Threading;
 using SharpCompress.Archives;
 using SharpCompress.Common;
 using MsBox.Avalonia.Enums;
@@ -47,7 +48,7 @@ namespace Nightmare_Editor
         /// This is largely copied from Pulsar. It's software also developed by me.
         private List<string> enabledmods = new List<string>();
         private bool isInitialized = false;
-        private List<string[]> music = new List<string[]>();
+        private List<MusicEntry[]> music = new List<MusicEntry[]>();
         private MainWindowViewModel viewModel = new MainWindowViewModel();
         private static Themes.Theme theme = CurrentTheme.Theme;
 
@@ -154,26 +155,28 @@ namespace Nightmare_Editor
             }
         }
 
-        public string CreateLinkImage(string link)
+        public Bitmap CreateLinkImage(string link)
         {
+            string resource = "";
             try
             {
                 if (link.Contains("gamebanana.com"))
                 {
-                    return "Images/Gamebanana.png";
+                    resource = "Images/Gamebanana.png";
                 }
                 else if (link.Contains("github.com"))
                 {
-                    return "Images/Github.png";
+                    resource = "Images/Github.png";
                 }
                 else if (!string.IsNullOrWhiteSpace(link))
                 {
-                    return "Images/Web.png";
+                    resource = "Images/Web.png";
                 }
                 else
                 {
                     return null;
                 }
+                return new Bitmap(AssetLoader.Open(new Uri($"avares://Nightmare Editor AUI/{resource}", UriKind.RelativeOrAbsolute)));
             }
             catch { return null; }
         }
@@ -190,22 +193,37 @@ namespace Nightmare_Editor
                 enabledmods = QuickJson(false, enabledmods, "enabledmods.json");
             }
             catch { }
+            try
+            {
+                try
+                {
+                    music.Clear();
+                }
+                catch { }
+                QuickMusicJson(false);
+            }
+            catch { }
             viewModel.AllMods.Clear();
             string[] griditems = CountFolders(Misc.Paths.mods);
             Settings settings = new Settings();
             List<string> blacklist = new List<string>();
-            var jsonoptions = new JsonSerializerOptions
-            {
-                WriteIndented = true
-            };
-            List<MusicEntry> musicEntries = JsonSerializer.Deserialize<List<MusicEntry>>(AssetLoader.Open(new Uri($"avares://Nightmare Editor AUI/Music/database.json", UriKind.RelativeOrAbsolute)), jsonoptions);
+            List<MusicEntry> musicEntries = JsonSerializer.Deserialize<List<MusicEntry>>(AssetLoader.Open(new Uri($"avares://Nightmare Editor AUI/Music/database.json", UriKind.RelativeOrAbsolute)), WriteIndented);
             MusicInputBox.Items.Clear();
+            MusicDescPanel.IsVisible = false;
             for (int i = 0; i < musicEntries.Count; i++)
             {
                 MusicInputBox.Items.Add(musicEntries[i].Track);
             }
-
+            List<MusicEntry> musicOutEntries = JsonSerializer.Deserialize<List<MusicEntry>>(AssetLoader.Open(new Uri($"avares://Nightmare Editor AUI/Music/replacedb.json", UriKind.RelativeOrAbsolute)), WriteIndented);
+            MusicOutputBox.Items.Clear();
+            MusicOutputBox.Items.Add("Custom File");
+            for (int i = 0; i < musicOutEntries.Count; i++)
+            {
+                MusicOutputBox.Items.Add(musicOutEntries[i].Track);
+            }
+            
             MusicInputBox.SelectedIndex = 0;
+            MusicOutputBox.SelectedIndex = 1;
             
             if (System.IO.File.Exists(Misc.Jsons.settings))
             {
@@ -221,6 +239,7 @@ namespace Nightmare_Editor
                     settings.DefaultImage = 0;
                 }
                 Preview.Source = new Bitmap(AssetLoader.Open(new Uri($"avares://Nightmare Editor AUI/Images/Preview{settings.DefaultImage}.png", UriKind.RelativeOrAbsolute)));
+                MusicCheckBox.IsChecked = settings.UseMusicReplacements;
             }
 
             foreach (string modpath in griditems)
@@ -232,13 +251,13 @@ namespace Nightmare_Editor
                     string genid = modpath.Replace(Misc.Paths.mods, "");
                     mod.Name = mod.ID = genid = genid.TrimStart(Path.DirectorySeparatorChar);
                     mod.Description = mod.Authors = "";
-                    string jsonString = JsonSerializer.Serialize(mod, jsonoptions);
+                    string jsonString = JsonSerializer.Serialize(mod, WriteIndented);
                     System.IO.File.WriteAllText(filepath, jsonString);
                 }
                 if (System.IO.File.Exists(filepath))
                 {
                     string jsonString = System.IO.File.ReadAllText(filepath);
-                    mod = JsonSerializer.Deserialize<Meta>(jsonString, jsonoptions);
+                    mod = JsonSerializer.Deserialize<Meta>(jsonString, WriteIndented);
                     if (!viewModel.AllMods.Contains(mod))
                     {
                         if (enabledmods.Contains(mod.ID))
@@ -258,6 +277,7 @@ namespace Nightmare_Editor
             }
             this.DataContext = viewModel;
         }
+        
         private void New_OnClick(object sender, EventArgs e)
         {
             if (ProgressBar.IsVisible)
@@ -375,7 +395,9 @@ namespace Nightmare_Editor
             if (DefPrevBox.SelectedIndex < 0)
             {
                 DefPrevBox.SelectedIndex = 0;
+                if (DefPrevBox.SelectedItem != DefPrevBox.Items[0]) DefPrevBox.SelectedItem = DefPrevBox.Items[0];
             }
+            MusicDescPanel.IsVisible = false;
             try
             {
                 if (string.IsNullOrWhiteSpace(row.Description) || row == null)
@@ -439,6 +461,7 @@ namespace Nightmare_Editor
             ModsWindow(true);
             MusicWindow.IsVisible = false;
             SettingsWindow.IsVisible = false;
+            MusicDescPanel.IsVisible = false;
         }
         private void Settings_Click(object sender, RoutedEventArgs e)
         {
@@ -459,7 +482,7 @@ namespace Nightmare_Editor
             SettingsWindow.IsVisible = false;
         }
 
-        private void Download_Click(object sender, RoutedEventArgs e)
+        private void Download_Click(object sender, EventArgs e)
         {
             OpenGamebanana();
         }
@@ -558,9 +581,9 @@ namespace Nightmare_Editor
             if (!isInitialized) return;
             Settings settings = GetSettings();
             settings.DeployPath = PathBox.Text;
-            settings.DefaultImage = DefPrevBox.SelectedIndex;
-            settings.Region = RegionBox.SelectedIndex;
-            settings.ETC1Encoder = ETCBox.SelectedIndex;
+            if (DefPrevBox.SelectedIndex >= 0) settings.DefaultImage = DefPrevBox.SelectedIndex;
+            if (RegionBox.SelectedIndex >= 0) settings.Region = RegionBox.SelectedIndex;
+            if (ETCBox.SelectedIndex >= 0) settings.ETC1Encoder = ETCBox.SelectedIndex;
             if (UsingEmulator.IsChecked == true)
             {
                 settings.Emulator = true;
@@ -583,9 +606,9 @@ namespace Nightmare_Editor
             InstallArchive(this);
         }
 
-        private void OpenLink_Click(object sender, RoutedEventArgs e)
+        private void OpenLink_Click(object sender, EventArgs e)
         {
-            if (sender is Button button && button.CommandParameter is string url)
+            if (sender is Nightmare_Editor_AUI.Controls.ImageButton button && button.Description is string url)
             {
                 try
                 {
@@ -754,10 +777,6 @@ namespace Nightmare_Editor
         
         private void QuickMusicJson(bool write)
         {
-            if (!isInitialized)
-            {
-                return;
-            }
             if (write)
             {
                 var jsonoptions = new JsonSerializerOptions
@@ -831,14 +850,47 @@ namespace Nightmare_Editor
         {
             if (sender is ComboBox comboBox && comboBox.SelectedIndex != null && comboBox.SelectedValue != null)
             {
-                var jsonoptions = new JsonSerializerOptions
-                {
-                    WriteIndented = true
-                };
-                List<MusicEntry> musicEntries = JsonSerializer.Deserialize<List<MusicEntry>>(AssetLoader.Open(new Uri($"avares://Nightmare Editor AUI/Music/database.json", UriKind.RelativeOrAbsolute)), jsonoptions);
+                List<MusicEntry> musicEntries = JsonSerializer.Deserialize<List<MusicEntry>>(AssetLoader.Open(new Uri($"avares://Nightmare Editor AUI/Music/database.json", UriKind.RelativeOrAbsolute)), WriteIndented);
                 var correct = musicEntries.FirstOrDefault(me => me.Track == comboBox.SelectedValue.ToString());
                 MusicInfoBox1.Text = correct.Description;
                 MusicInfoBox2.Text = correct.Filename;
+            }
+        }
+        
+        private async void MusicOutputBox_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+        {
+            if (sender is ComboBox comboBox && comboBox.SelectedIndex != null && comboBox.SelectedValue != null)
+            {
+                if (comboBox.SelectedValue.ToString() == "Custom File")
+                {
+                    MusicOutInfoBox.Text = "Use a file provided in the box below.";
+                    if (string.IsNullOrWhiteSpace(MusicPathBox.Text))
+                    {
+                        var files = await this.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions()
+                        {
+                            Title = "Select a music file.",
+                            AllowMultiple = false,
+                            FileTypeFilter = Misc.FileFilters.bcstm
+                        });
+                        if (files.Count == 1)
+                        {
+                            if (!string.IsNullOrWhiteSpace(files[0].Path.LocalPath))
+                            {
+                                MusicPathBox.Text = files[0].Path.LocalPath;
+                            }
+                        }                        
+                        if (string.IsNullOrWhiteSpace(MusicPathBox.Text))
+                        {
+                            comboBox.SelectedIndex = 1;
+                        }
+                    }
+                }
+                else
+                {
+                    List<MusicEntry> musicEntries = JsonSerializer.Deserialize<List<MusicEntry>>(AssetLoader.Open(new Uri($"avares://Nightmare Editor AUI/Music/replacedb.json", UriKind.RelativeOrAbsolute)), WriteIndented);
+                    var correct = musicEntries.FirstOrDefault(me => me.Track == comboBox.SelectedValue.ToString());
+                    MusicOutInfoBox.Text = correct.Description;
+                }
             }
         }
 
@@ -855,14 +907,45 @@ namespace Nightmare_Editor
                 if (!string.IsNullOrWhiteSpace(files[0].Path.LocalPath))
                 {
                     MusicPathBox.Text = files[0].Path.LocalPath;
+                    MusicOutputBox.SelectedIndex = 0;
                 }
             }
         }
 
         private void MusicReplaceButton_OnClick(object? sender, RoutedEventArgs e)
         {
-            SwapTheme(int.Parse(Console.ReadLine()));
-            //throw new NotImplementedException();
+            List<MusicEntry> musicEntries = JsonSerializer.Deserialize<List<MusicEntry>>(AssetLoader.Open(new Uri($"avares://Nightmare Editor AUI/Music/database.json", UriKind.RelativeOrAbsolute)), WriteIndented);
+            var correct = musicEntries.FirstOrDefault(me => me.Track == MusicInputBox.SelectedValue.ToString());
+            MusicEntry replace;
+            if (MusicOutputBox.SelectedIndex == 0)
+            {
+                replace = new MusicEntry
+                {
+                    Track = "Custom Track",
+                    Description = "A custom track selected by the user.",
+                    Filename = MusicPathBox.Text,
+                    IsInternalFile = false
+                };
+            }
+            else
+            {
+                List<MusicEntry> musicOutEntries = JsonSerializer.Deserialize<List<MusicEntry>>(AssetLoader.Open(new Uri($"avares://Nightmare Editor AUI/Music/replacedb.json", UriKind.RelativeOrAbsolute)), WriteIndented);
+                replace = musicOutEntries.FirstOrDefault(me => me.Track == MusicOutputBox.SelectedValue.ToString());
+                replace.IsInternalFile = true;
+            }
+
+            for (int i = 0; i < music.Count; i++)
+            {
+                if (music[i][0].Track == correct.Track)
+                {
+                    music[i][0] = correct;
+                    music[i][1] = replace;
+                    QuickMusicJson(true);
+                    return;
+                }
+            }
+            music.Add(new MusicEntry[] { correct, replace });
+            QuickMusicJson(true);
         }
 
         private void SwitchUI_OnClick(object? sender, RoutedEventArgs e)
@@ -953,10 +1036,12 @@ namespace Nightmare_Editor
             if (_grid_gray <= 0x90)
             {
                 oddStyle.Setters.Add(new Setter(ForegroundProperty, Brushes.White));
+                MusicCheckBoxText.Foreground = Brushes.White;
             }
             else
             {
                 oddStyle.Setters.Add(new Setter(ForegroundProperty, Brushes.Black));
+                MusicCheckBoxText.Foreground = Brushes.Black;
             }
             
             var evenStyle = new Style(x => x.OfType<DataGridRow>().NthChild(2, 0))
@@ -1020,21 +1105,35 @@ namespace Nightmare_Editor
             gitButtonHoverStyle.Setters.Add(new Setter(OpacityProperty, 0.75));
             gitButtonHoverStyle.Setters.Add(new Setter(CursorProperty, new Cursor(StandardCursorType.Hand)));
             
+            var descButtonStyle = new Style(x => x.OfType<Button>());
+            var descButtonHoverStyle = new Style(x => x.OfType<Button>().Class(":pointerover"));
+            
             if (_desc_gray <= 0x90)
             {
                 DescBox.Foreground = Brushes.White;
+                descButtonStyle.Setters.Add(new Setter(ForegroundProperty, Brushes.White));
+                descButtonStyle.Setters.Add(new Setter(BackgroundProperty, new SolidColorBrush(Color.Parse("#4FFF"))));
             }
             else
             {
                 DescBox.Foreground = Brushes.Black;
+                descButtonStyle.Setters.Add(new Setter(ForegroundProperty, Brushes.Black));
+                descButtonStyle.Setters.Add(new Setter(BackgroundProperty, new SolidColorBrush(Color.Parse("#4000"))));
             }
+            descButtonHoverStyle.Setters.Add(RemoveButtonHover());
+            descButtonHoverStyle.Setters.Add(new Setter(OpacityProperty, 0.75));
+            descButtonHoverStyle.Setters.Add(new Setter(CursorProperty, new Cursor(StandardCursorType.Hand)));
 
             SettingsWindow.Background = new SolidColorBrush(_settings_color);
             DescBox.Background = new SolidColorBrush(_desc_color);
+            MusicDescPanel.Styles.Add(descButtonStyle);
+            MusicDescPanel.Styles.Add(descButtonHoverStyle);
             
             ModDataGrid.Styles.Add(headerStyle);
             ModDataGrid.Styles.Add(oddStyle);
             ModDataGrid.Styles.Add(evenStyle);
+
+            MusicCheckBoxGrid.Background = new SolidColorBrush(_grid_color);
             
             SettingsWindow.Styles.Clear();
             SettingsWindow.Styles.Add(settingsWindowTextBlockStyle);
@@ -1045,12 +1144,15 @@ namespace Nightmare_Editor
             GitStackPanel.Styles.Add(gitButtonStyle);
             GitStackPanel.Styles.Add(gitButtonHoverStyle);
             
-            DeployButton.Color = new ImmutableSolidColorBrush(Color.Parse(theme.ButtonColor));
-            RefreshButton.Color = new ImmutableSolidColorBrush(Color.Parse(theme.ButtonColor));
-            OpenFolderButton.Color = new ImmutableSolidColorBrush(Color.Parse(theme.ButtonColor));
-            InstallArchiveButton.Color = new ImmutableSolidColorBrush(Color.Parse(theme.ButtonColor));
+            var buttonBrush = new ImmutableSolidColorBrush(Color.Parse(theme.ButtonColor));
+
+            DeployButton.Color = buttonBrush;
+            RefreshButton.Color = buttonBrush;
+            OpenFolderButton.Color = buttonBrush;
+            InstallArchiveButton.Color = buttonBrush;
+            NewButton.Color = buttonBrush;
+            DownloadButton.Color = buttonBrush;
             
-            DownloadButton.Content = MainButtonContent(false, "Download");
             ModsButton.Content = MainButtonContent(IsMenuButtonEnabled(ModsButton), "Mods");
             SettingsButton.Content = MainButtonContent(IsMenuButtonEnabled(SettingsButton), "Settings");
             MusicButton.Content = MainButtonContent(IsMenuButtonEnabled(MusicButton), "Music");
@@ -1144,6 +1246,53 @@ namespace Nightmare_Editor
             {
                 SwapTheme(files[0].Path.LocalPath);
             }
+        }
+
+        private void MusicCheckBox_Checked(object? sender, RoutedEventArgs e)
+        {
+            if (sender is CheckBox checkBox)
+            {
+                var settings = GetSettings();
+                settings.UseMusicReplacements ^= true;
+                SetSettings(settings);
+
+                checkBox.IsChecked = settings.UseMusicReplacements;
+            }
+        }
+
+        private void MusicCheckBoxGrid_OnPointerPressed(object? sender, PointerPressedEventArgs e)
+        {
+            MusicDescPanel.Children.Clear();
+            for (int i = 0; i < music.Count; i++)
+            {
+                var display = new Nightmare_Editor_AUI.Controls.RemovableMusic
+                {
+                    MusicEntries = music[i],
+                    Margin = new Thickness(10, 0),
+                };
+                display.Click += MusicRemovalRequested;
+                MusicDescPanel.Children.Add(display);
+            }
+            MusicDescPanel.IsVisible = true;
+        }
+
+        private void MusicRemovalRequested(object? sender,
+            Nightmare_Editor_AUI.Controls.RemovableMusic.MusicRemoveEventArgs e)
+        {
+            int index = -1;
+            for (int i = 0; i < music.Count; i++)
+            {
+                if (music[i][0].Track == e.musicEntries[0].Track)
+                {
+                    index = i;
+                    break;
+                }
+            }
+
+            if (index == -1) return;
+            music.RemoveAt(index);
+            QuickMusicJson(true);
+            MusicCheckBoxGrid_OnPointerPressed(null, null);
         }
     }
 }

@@ -1,0 +1,137 @@
+[
+  {
+    "Track": "Traverse Town",
+    "Description": "The field theme of Traverse Town from KH1.",
+    "Filename": "traverseintrance/traversetown_sd.bcstm"
+  },
+  {
+    "Track": "Traverse Town (HD)",
+    "Description": "The field theme of Traverse Town from HD 1.5 ReMIX.",
+    "Filename": "traverseintrance/traversetown_hd.bcstm"
+  },
+  {
+    "Track": "Traverse Town (CoM)",
+    "Description": "The field theme of Traverse Town from GBA CoM.",
+    "Filename": "traverseintrance/traversetown_com.bcstm"
+  },
+  {
+    "Track": "Traverse Town (coded)",
+    "Description": "The field theme of Traverse Town from coded.",
+    "Filename": "traverseintrance/traversetown_coded.bcstm"
+  },
+  {
+    "Track": "Traverse Town (Re:coded)",
+    "Description": "The field theme of Traverse Town from Re:coded.",
+    "Filename": "traverseintrance/traversetown_recoded.bcstm"
+  },
+  {
+    "Track": "Hand in Hand",
+    "Description": "The battle theme of Traverse Town from KH1.",
+    "Filename": "handtohand/handinhand_sd.bcstm"
+  },
+  {
+    "Track": "Hand in Hand (HD)",
+    "Description": "The battle theme of Traverse Town from HD 1.5 ReMIX.",
+    "Filename": "handtohand/handinhand_hd.bcstm"
+  },
+  {
+    "Track": "Hand in Hand (CoM)",
+    "Description": "The battle theme of Traverse Town from Re:coded.",
+    "Filename": "handtohand/handinhand_com.bcstm"
+  },
+  {
+    "Track": "Night of Fate",
+    "Description": "The battle theme of Traverse Town's first visit from KH1.",
+    "Filename": "handtohand/nightoffate_sd.bcstm"
+  },
+  {
+    "Track": "Night of Fate (HD)",
+    "Description": "The battle theme of Traverse Town's first visit from HD 1.5 ReMIX.",
+    "Filename": "handtohand/nightoffate_hd.bcstm"
+  },
+  {
+    "Track": "Night of Fate (coded)",
+    "Description": "The battle theme of Traverse Town from Re:coded.",
+    "Filename": "handtohand/nightoffate_coded.bcstm"
+  },
+  {
+    "Track": "Night of Fate (Re:coded)",
+    "Description": "The battle theme of Traverse Town from Re:coded.",
+    "Filename": "handtohand/nightoffate_recoded.bcstm"
+  },
+  {
+    "Track": "Space Paranoids",
+    "Description": "The field theme of Space Paranoids from KH2.",
+    "Filename": "accessthegrid/spaceparanoids_sd.bcstm"
+  },
+  {
+    "Track": "Space Paranoids (HD)",
+    "Description": "The field theme of Space Paranoids from HD 2.5 ReMIX.",
+    "Filename": "accessthegrid/spaceparanoids_hd.bcstm"
+  },
+  {
+    "Track": "Byte Bashing",
+    "Description": "The battle theme of Space Paranoids from KH2.",
+    "Filename": "digitaldomination/bytebashing_sd.bcstm"
+  },
+  {
+    "Track": "Byte Bashing (HD)",
+    "Description": "The battle theme of Space Paranoids from HD 2.5 ReMIX.",
+    "Filename": "digitaldomination/bytebashing_hd.bcstm"
+  },
+  {
+    "Track": "Byte Striking",
+    "Description": "The alternate battle theme of Space Paranoids from HD 2.5 ReMIX.",
+    "Filename": "digitaldomination/bytestriking.bcstm"
+  },
+  {
+    "Track": "Sacred Moon",
+    "Description": "The field theme of The World That Never Was from KH2.",
+    "Filename": "sacreddistance/sacredmoon_sd.bcstm"
+  },
+  {
+    "Track": "Sacred Moon (HD)",
+    "Description": "The field theme of The World That Never Was from HD 2.5 ReMIX.",
+    "Filename": "sacreddistance/sacredmoon_hd.bcstm"
+  },
+  {
+    "Track": "Sacred Moon (Days)",
+    "Description": "The theme of the Gray Room in 358/2 Days",
+    "Filename": "sacreddistance/sacredmoon_days_sd.bcstm"
+  },
+  {
+    "Track": "Sacred Moon (Days CD)",
+    "Description": "The theme of the Gray Room in 358/2 Days' CD",
+    "Filename": "sacreddistance/sacredmoon_days_hd.bcstm"
+  },
+  {
+    "Track": "Mystic Moon",
+    "Description": "The theme of Roxas' escape in 358/2 Days",
+    "Filename": "sacreddistance/mysticmoon_sd.bcstm"
+  },
+  {
+    "Track": "Mystic Moon (CD)",
+    "Description": "The theme of Roxas' escape in 358/2 Days' CD",
+    "Filename": "sacreddistance/mysticmoon_hd.bcstm"
+  },
+  {
+    "Track": "Deep Drive",
+    "Description": "The battle theme of The World That Never Was from KH2.",
+    "Filename": "deepdrop/deepdrive_sd.bcstm"
+  },
+  {
+    "Track": "Deep Drive (HD)",
+    "Description": "The battle theme of The World That Never Was from HD 2.5 ReMIX.",
+    "Filename": "deepdrop/deepdrive_hd.bcstm"
+  },
+  {
+    "Track": "Critical Drive",
+    "Description": "The theme of Roxas' vengeance mission in 358/2 Days",
+    "Filename": "deepdrop/criticaldrive_sd.bcstm"
+  },
+  {
+    "Track": "Critical Drive (CD)",
+    "Description": "The theme of Roxas' vengeance mission in 358/2 Days' CD",
+    "Filename": "deepdrop/criticaldrive_hd.bcstm"
+  }
+]

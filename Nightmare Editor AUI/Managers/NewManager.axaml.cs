@@ -47,6 +47,8 @@ public partial class NewManager : Window
         Refresh();
     }
     
+    
+    
     private void Menu_Mods_OnClick(object? sender, EventArgs e)
     {
         MenuButtonsPanel.IsVisible = false;
@@ -64,6 +66,8 @@ public partial class NewManager : Window
             BottomRightText.Text = cs.Description;
         if (sender is Nightmare_Editor_AUI.Controls.ImageButton ib)
             BottomRightText.Text = ib.Description;
+        if (sender is Nightmare_Editor_AUI.Controls.MusicSlot mus)
+            BottomRightText.Text = mus.MusicEntry.Description + "\nLocation: " + mus.MusicEntry.Filename;
         if (sender is Nightmare_Editor_AUI.Controls.ModSlot ms)
         {
             BottomRightText.Text = ms.ModMeta.Description;
@@ -165,6 +169,7 @@ public partial class NewManager : Window
         SettingsWindow.IsVisible = true;
         SettingsPanel.IsVisible = true;
         ThemePanel.IsVisible = false;
+        MusicPanel.IsVisible = false;
         MainText.Text = "Settings";
         BottomLeftTextLower.Text = "Return";
         BottomLeftTextLower2.Text = "Back";
@@ -193,6 +198,7 @@ public partial class NewManager : Window
         MenuButtonsPanel.IsVisible = false;
         SettingsWindow.IsVisible = true;
         SettingsPanel.IsVisible = false;
+        MusicPanel.IsVisible = false;
         ThemePanel.IsVisible = true;
         MainText.Text = "Themes";
         BottomLeftTextLower.Text = "Return";
@@ -243,6 +249,11 @@ public partial class NewManager : Window
             default:
                 ETCConfig.RightText = "Unknown";
                 break;
+        }
+        EnableMusicReplacementSlot.RightText = "Disabled";
+        if (MainSettings.UseMusicReplacements)
+        {
+            EnableMusicReplacementSlot.RightText = "Enabled";
         }
 
         DefaultThemeSlot.RightText = theme.Name;
@@ -442,6 +453,17 @@ public partial class NewManager : Window
                 MainText.Text = "Exam Editor";
                 BottomLeftTextLower.Text = "Made By";
                 BottomLeftTextLower2.Text = "Solt11";
+            }
+            if (MusicWindow.IsVisible)
+            {
+                MusicWindow.IsVisible = false;
+                SettingsWindow.IsVisible = true;
+                SettingsPanel.IsVisible = false;
+                ThemePanel.IsVisible = false;
+                MusicPanel.IsVisible = true;
+                MainText.Text = "Music";
+                BottomLeftTextLower.Text = "Return";
+                BottomLeftTextLower2.Text = "Back";
             }
         }
 
@@ -895,5 +917,39 @@ public partial class NewManager : Window
         {
             SwapTheme(files[0].Path.LocalPath);
         }
+    }
+
+    private void Menu_Music_OnClick(object? sender, EventArgs e)
+    {
+        MenuButtonsPanel.IsVisible = false;
+        SettingsWindow.IsVisible = true;
+        SettingsPanel.IsVisible = false;
+        ThemePanel.IsVisible = false;
+        MusicPanel.IsVisible = true;
+        MainText.Text = "Music";
+        BottomLeftTextLower.Text = "Return";
+        BottomLeftTextLower2.Text = "Back";
+    }
+
+    private void MusicLibrary_OnClick(object? sender, EventArgs e)
+    {
+        SettingsWindow.IsVisible = false;
+        MusicWindow.IsVisible = true;
+        MainText.Text = "Library";
+        BottomLeftTextLower.Text = "Return";
+        BottomLeftTextLower2.Text = "Back";
+    }
+
+    private void EnableMusicReplacement_OnClick(object? sender, EventArgs e)
+    {
+        Settings settings = MainSettings;
+        settings.UseMusicReplacements = !settings.UseMusicReplacements;
+        SetSettings(settings);
+        Refresh();
+    }
+
+    private void MusicWindowMenu_OnReportDescription(object? sender, EventArgs e)
+    {
+        if (sender is string s) BottomRightText.Text = s;
     }
 }

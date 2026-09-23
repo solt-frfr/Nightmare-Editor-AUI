@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using Avalonia.Controls;
+using Avalonia.Platform;
 using Avalonia.Platform.Storage;
 using Nightmare_Editor;
 using Nightmare_Editor.NewTools;
@@ -37,6 +38,7 @@ public static class Standard
             settings.Emulator = false;
             settings.ETC1Encoder = 2;
             settings.UI = 1;
+            settings.UseMusicReplacements = false;
             string jsonString = JsonSerializer.Serialize<Settings>(settings, WriteIndented);
             System.IO.File.WriteAllText(Misc.Jsons.settings, jsonString);
         }
@@ -45,6 +47,10 @@ public static class Standard
     
     public static void SetSettings(Settings newSettings)
     {
+        if (newSettings.UI < 0) newSettings.UI = 0;
+        if (newSettings.ETC1Encoder < 0) newSettings.ETC1Encoder = 0;
+        if (newSettings.Region < 0) newSettings.Region = 0;
+        if (newSettings.DefaultImage < 0) newSettings.DefaultImage = 0;
         string jsonString = JsonSerializer.Serialize<Settings>(newSettings, WriteIndented);
         System.IO.File.WriteAllText(Misc.Jsons.settings, jsonString);
     }
@@ -350,16 +356,33 @@ public static class Standard
             Editor.BetterDirCopy(Path.Combine(Misc.Paths.basePath, rbin), Path.Combine(Misc.Paths.pack, rbin), false, false);
             RBIN.Pack(Path.Combine(Misc.Paths.pack, file), true);
         }
-        string musicpath = Path.Combine(deploypath, "sound", "en", "output", "stream");
-        if (settings.Emulator)
+
+        if (settings.UseMusicReplacements)
         {
-            musicpath = Path.Combine(deploypath, "mods", GetTitleIDFromRegion(settings.Region), "romfs", "sound", "en", "output", "stream");
+            string musicpath = Path.Combine(deploypath, "sound", "en", "output", "stream");
+            if (settings.Emulator)
+            {
+                musicpath = Path.Combine(deploypath, "mods", GetTitleIDFromRegion(settings.Region), "romfs", "sound", "en", "output", "stream");
+            }
+            Directory.CreateDirectory(musicpath);
+            string jsonString = File.ReadAllText(Misc.Jsons.music);
+            List<MusicEntry[]> music = JsonSerializer.Deserialize<MusicList>(jsonString, WriteIndented).Music;
+            foreach (MusicEntry[] track in music)
+            {
+                if (track[1].IsInternalFile)
+                {
+                    MemoryStream ms = new MemoryStream();
+                    AssetLoader.Open(new Uri($"avares://Nightmare Editor AUI/Music/{track[1].Filename}", UriKind.RelativeOrAbsolute)).CopyTo(ms);
+                    byte[] bcstm = ms.ToArray();
+                    File.WriteAllBytes(Path.Combine(musicpath, track[0].Filename), bcstm);
+                }
+                else
+                {
+                    File.Copy(track[1].Filename, Path.Combine(musicpath, track[0].Filename));
+                }
+            }
         }
         Directory.CreateDirectory(musicpath);
-        //foreach (string[] track in music)
-        //{
-        //    File.Copy(Path.Combine(Misc.Paths.program, track[0]), Path.Combine(musicpath, track[1]));
-        //}
         return (Misc.ErrorCode.Success, "");
     }
 }

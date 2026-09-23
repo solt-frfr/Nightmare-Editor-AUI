@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Avalonia;
 using Avalonia.Data.Converters;
+using Avalonia.Media.Imaging;
 
 namespace Nightmare_Editor
 {
@@ -18,7 +19,7 @@ namespace Nightmare_Editor
 
     public class MusicList
     {
-        public List<string[]> Music { get; set; }
+        public List<MusicEntry[]> Music { get; set; }
     }
     
     public class MusicEntry
@@ -26,6 +27,7 @@ namespace Nightmare_Editor
         public string Track { get; set; }
         public string Description { get; set; }
         public string Filename { get; set; }
+        public bool IsInternalFile { get; set; }
     }
 
     public class Meta
@@ -38,7 +40,7 @@ namespace Nightmare_Editor
         [JsonIgnore]
         public bool IsChecked { get; set; }
         [JsonIgnore]
-        public string LinkImage { get; set; }
+        public Bitmap LinkImage { get; set; }
         [JsonIgnore]
         public bool ArchiveImage { get; set; }
         public string Prefix { get; set; }
@@ -52,5 +54,6 @@ namespace Nightmare_Editor
         public int Region { get; set; }
         public int ETC1Encoder { get; set; }
         public int UI { get; set; }
+        public bool UseMusicReplacements { get; set; }
     }
 }

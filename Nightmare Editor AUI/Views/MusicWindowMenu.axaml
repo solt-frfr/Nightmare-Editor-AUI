@@ -1,0 +1,34 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="200"
+             x:Class="Nightmare_Editor_AUI.Views.MusicWindowMenu"
+             xmlns:rewrite="clr-namespace:Nightmare_Editor_AUI"
+             xmlns:controls="clr-namespace:Nightmare_Editor_AUI.Controls"
+             xmlns:skia="clr-namespace:Avalonia.Svg.Skia;assembly=Svg.Controls.Skia.Avalonia"
+             Initialized="Window_OnInitialized">
+    <Grid RowDefinitions="*, Auto, Auto" ColumnDefinitions="*,*">
+        <ScrollViewer>
+            <ItemsControl Name="MusicInputPanel" Margin="0,3,0,2">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </ScrollViewer>
+        <ScrollViewer Grid.Column="1">
+            <ItemsControl Name="MusicOutputPanel" Margin="0,3,0,2">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </ScrollViewer>
+        <controls:MusicSlot Grid.Row="1" Grid.Column="0" Name="InputSlot" CanHighlight="False" Margin="10,2,5,2"/>
+        <controls:MusicSlot Grid.Row="1" Grid.Column="1" Name="OutputSlot" CanHighlight="False" IsPurple="True" Margin="5,2,10,2"/>
+        <controls:ConfigSlot Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center"/>
+    </Grid>
+</UserControl>

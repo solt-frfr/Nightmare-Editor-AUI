@@ -14,6 +14,9 @@
         <entry key="Nightmare Editor AUI/Controls/KH3DText.axaml" value="Nightmare Editor AUI/Nightmare Editor AUI.csproj" />
         <entry key="Nightmare Editor AUI/Controls/MenuButton.axaml" value="Nightmare Editor AUI/Nightmare Editor AUI.csproj" />
         <entry key="Nightmare Editor AUI/Controls/ModSlot.axaml" value="Nightmare Editor AUI/Nightmare Editor AUI.csproj" />
+        <entry key="Nightmare Editor AUI/Controls/MusicEntry.axaml" value="Nightmare Editor AUI/Nightmare Editor AUI.csproj" />
+        <entry key="Nightmare Editor AUI/Controls/MusicSlot.axaml" value="Nightmare Editor AUI/Nightmare Editor AUI.csproj" />
+        <entry key="Nightmare Editor AUI/Controls/RemovableMusic.axaml" value="Nightmare Editor AUI/Nightmare Editor AUI.csproj" />
         <entry key="Nightmare Editor AUI/Editor.axaml" value="Nightmare Editor AUI/Nightmare Editor AUI.csproj" />
         <entry key="Nightmare Editor AUI/Help.axaml" value="Nightmare Editor AUI/Nightmare Editor AUI.csproj" />
         <entry key="Nightmare Editor AUI/KH3DText.axaml" value="Nightmare Editor AUI/Nightmare Editor AUI.csproj" />
@@ -24,6 +27,8 @@
         <entry key="Nightmare Editor AUI/MesgWindow.axaml" value="Nightmare Editor AUI/Nightmare Editor AUI.csproj" />
         <entry key="Nightmare Editor AUI/NewManager.axaml" value="Nightmare Editor AUI/Nightmare Editor AUI.csproj" />
         <entry key="Nightmare Editor AUI/PickText.axaml" value="Nightmare Editor AUI/Nightmare Editor AUI.csproj" />
+        <entry key="Nightmare Editor AUI/Views/MusicWindowMenu.axaml" value="Nightmare Editor AUI/Nightmare Editor AUI.csproj" />
+        <entry key="Nightmare Editor AUI/pleasedont.axaml" value="Nightmare Editor AUI/Nightmare Editor AUI.csproj" />
       </map>
     </option>
   </component>

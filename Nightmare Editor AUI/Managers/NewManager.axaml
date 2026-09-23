@@ -5,6 +5,7 @@
         xmlns:local="clr-namespace:Nightmare_Editor"
         xmlns:rewrite="clr-namespace:Nightmare_Editor_AUI"
         xmlns:controls="clr-namespace:Nightmare_Editor_AUI.Controls"
+        xmlns:views="clr-namespace:Nightmare_Editor_AUI.Views"
         xmlns:skia="clr-namespace:Avalonia.Svg.Skia;assembly=Svg.Controls.Skia.Avalonia"
         x:Class="Nightmare_Editor_AUI.NewManager"
         Title="Exam Editor - Menu Edition" Height="480" Width="800" Icon="/Assets/dreameater.ico"
@@ -31,9 +32,9 @@
         
         <!-- Middle Section -->
         <Grid Grid.Row="1">
-            <StackPanel Name="MenuButtonsPanel" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=10|8}">
+            <StackPanel Name="MenuButtonsPanel" IsVisible="True" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=10|8}">
                 <controls:MenuButton Name="Menu_Mods" Click="Menu_Mods_OnClick" PointerEntered="MenuButton_Hover" Text="Mods" Description="Explore the mods that you've downloaded." HorizontalAlignment="Left" VerticalAlignment="Top" Scale="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|0|-1}"/>
-                <controls:MenuButton Name="Menu_Music" PointerEntered="MenuButton_Hover" Text="Music" Description="Replace the game's music tracks with others or your own." HorizontalAlignment="Left" VerticalAlignment="Top" Scale="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|0|-1}"/>
+                <controls:MenuButton Name="Menu_Music" Click="Menu_Music_OnClick" PointerEntered="MenuButton_Hover" Text="Music" Description="Replace the game's music tracks with others or your own." HorizontalAlignment="Left" VerticalAlignment="Top" Scale="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|0|-1}"/>
                 <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Width="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=140}" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=18}"  Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=-5|0|0|0}">
                     <controls:MenuButton Name="Menu_NE" Click="Menu_NE_OnClick" PointerEntered="MenuButton_Hover" Text="Nightmare Editor" Description="Open Nightmare Editor, the tool for making new mods." HorizontalAlignment="Left" VerticalAlignment="Top" Scale="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=5|0|0|-1}"/>
                     <ProgressBar Name="ProgressBar" IsVisible="False" Background="#4FFF" Minimum="0" Maximum="1" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Grid}}" Width="{Binding Width, RelativeSource={RelativeSource AncestorType=Grid}}"/> 
@@ -99,6 +100,13 @@
                     <StackPanel Name="ThemePanel">
                         <controls:ConfigSlot Name="DefaultThemeSlot" LeftText="Default Themes" RightText="Default" Click="ChangeTheme_OnClick" PointerEntered="MenuButton_Hover" Description="Cycle to the next default theme." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16,6,16,1"/>
                         <controls:ConfigSlot Name="ImportThemeSlot" LeftText="Import Theme" RightText="Browse" Click="ImportTheme_OnClick" PointerEntered="MenuButton_Hover" Description="Import a theme from a file." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16,0"/>
+                    </StackPanel>
+                    <StackPanel Name="MusicPanel" IsVisible="False">
+                        <controls:ConfigSlot Name="AddMusicEntrySlot" LeftText="Add Track" RightText="View Library" Click="MusicLibrary_OnClick" PointerEntered="MenuButton_Hover" Description="Add a music track replacement from the library available, or provide your own." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16,6,16,1"/>
+                        <controls:ConfigSlot Name="EnableMusicReplacementSlot" LeftText="Enable Replacements" RightText="Enabled" Click="EnableMusicReplacement_OnClick" PointerEntered="MenuButton_Hover" Description="Enable or Disable the replacing of music tracks." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16,0"/>
+                        <ScrollViewer>
+                            <StackPanel Name="MusicRemovePanel"/>
+                        </ScrollViewer>
                     </StackPanel>
                 </Grid>
             </Viewbox>
@@ -269,6 +277,17 @@
                             <controls:KH3DText Text="ID" Font="SmallAccurate" Color="#fcfc01" VerticalAlignment="Bottom" Margin="10,0,0,2"/>
                             <controls:KH3DText Grid.Column="1" Name="IDKH3DText" Text="" Font="SmallAccurate" Color="White" VerticalAlignment="Bottom" Margin="4,0,0,2"/>
                         </Grid>
+                    </Grid>
+                </LayoutTransformControl>
+            </Grid>
+            
+            <Grid Name="MusicWindow" IsVisible="False">
+                <LayoutTransformControl Grid.Column="1">
+                    <LayoutTransformControl.LayoutTransform>
+                        <ScaleTransform ScaleX="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" ScaleY="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}"/>
+                    </LayoutTransformControl.LayoutTransform>
+                    <Grid>
+                        <views:MusicWindowMenu ReportDescription="MusicWindowMenu_OnReportDescription"/>
                     </Grid>
                 </LayoutTransformControl>
             </Grid>

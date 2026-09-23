@@ -15,6 +15,62 @@
 	  <AvaloniaResource Include="Images\**" />
       <AvaloniaResource Include="Help\**" />
       <AvaloniaResource Include="Music\database.json" />
+      <None Remove="Music\replacedb.json" />
+      <AvaloniaResource Include="Music\replacedb.json" />
+      <None Remove="Music\traverseintrance\traversetown_sd.bcstm" />
+      <AvaloniaResource Include="Music\traverseintrance\traversetown_sd.bcstm" />
+      <None Remove="Music\traverseintrance\traversetown_recoded.bcstm" />
+      <AvaloniaResource Include="Music\traverseintrance\traversetown_recoded.bcstm" />
+      <None Remove="Music\traverseintrance\traversetown_hd.bcstm" />
+      <AvaloniaResource Include="Music\traverseintrance\traversetown_hd.bcstm" />
+      <None Remove="Music\traverseintrance\traversetown_com.bcstm" />
+      <AvaloniaResource Include="Music\traverseintrance\traversetown_com.bcstm" />
+      <None Remove="Music\traverseintrance\traversetown_coded.bcstm" />
+      <AvaloniaResource Include="Music\traverseintrance\traversetown_coded.bcstm" />
+      <None Remove="Music\sacreddistance\sacredmoon_sd.bcstm" />
+      <AvaloniaResource Include="Music\sacreddistance\sacredmoon_sd.bcstm" />
+      <None Remove="Music\sacreddistance\sacredmoon_hd.bcstm" />
+      <AvaloniaResource Include="Music\sacreddistance\sacredmoon_hd.bcstm" />
+      <None Remove="Music\sacreddistance\sacredmoon_days_sd.bcstm" />
+      <AvaloniaResource Include="Music\sacreddistance\sacredmoon_days_sd.bcstm" />
+      <None Remove="Music\sacreddistance\sacredmoon_days_hd.bcstm" />
+      <AvaloniaResource Include="Music\sacreddistance\sacredmoon_days_hd.bcstm" />
+      <None Remove="Music\sacreddistance\mysticmoon_sd.bcstm" />
+      <AvaloniaResource Include="Music\sacreddistance\mysticmoon_sd.bcstm" />
+      <None Remove="Music\sacreddistance\mysticmoon_hd.bcstm" />
+      <AvaloniaResource Include="Music\sacreddistance\mysticmoon_hd.bcstm" />
+      <None Remove="Music\handtohand\handinhand_com.bcstm" />
+      <AvaloniaResource Include="Music\handtohand\handinhand_com.bcstm" />
+      <None Remove="Music\handtohand\handinhand_hd.bcstm" />
+      <AvaloniaResource Include="Music\handtohand\handinhand_hd.bcstm" />
+      <None Remove="Music\handtohand\handinhand_sd.bcstm" />
+      <AvaloniaResource Include="Music\handtohand\handinhand_sd.bcstm" />
+      <None Remove="Music\handtohand\nightoffate_hd.bcstm" />
+      <AvaloniaResource Include="Music\handtohand\nightoffate_hd.bcstm" />
+      <None Remove="Music\handtohand\nightoffate_coded.bcstm" />
+      <AvaloniaResource Include="Music\handtohand\nightoffate_coded.bcstm" />
+      <None Remove="Music\handtohand\nightoffate_recoded.bcstm" />
+      <AvaloniaResource Include="Music\handtohand\nightoffate_recoded.bcstm" />
+      <None Remove="Music\handtohand\nightoffate_sd.bcstm" />
+      <AvaloniaResource Include="Music\handtohand\nightoffate_sd.bcstm" />
+      <None Remove="Music\digitaldomination\bytestriking.bcstm" />
+      <AvaloniaResource Include="Music\digitaldomination\bytestriking.bcstm" />
+      <None Remove="Music\digitaldomination\bytebashing_hd.bcstm" />
+      <AvaloniaResource Include="Music\digitaldomination\bytebashing_hd.bcstm" />
+      <None Remove="Music\digitaldomination\bytebashing_sd.bcstm" />
+      <AvaloniaResource Include="Music\digitaldomination\bytebashing_sd.bcstm" />
+      <None Remove="Music\deepdrop\deepdrive_sd.bcstm" />
+      <AvaloniaResource Include="Music\deepdrop\deepdrive_sd.bcstm" />
+      <None Remove="Music\deepdrop\criticaldrive_sd.bcstm" />
+      <AvaloniaResource Include="Music\deepdrop\criticaldrive_sd.bcstm" />
+      <None Remove="Music\deepdrop\criticaldrive_hd.bcstm" />
+      <AvaloniaResource Include="Music\deepdrop\criticaldrive_hd.bcstm" />
+      <None Remove="Music\deepdrop\deepdrive_hd.bcstm" />
+      <AvaloniaResource Include="Music\deepdrop\deepdrive_hd.bcstm" />
+      <None Remove="Music\accessthegrid\spaceparanoids_sd.bcstm" />
+      <AvaloniaResource Include="Music\accessthegrid\spaceparanoids_sd.bcstm" />
+      <None Remove="Music\accessthegrid\spaceparanoids_hd.bcstm" />
+      <AvaloniaResource Include="Music\accessthegrid\spaceparanoids_hd.bcstm" />
   </ItemGroup>
 
   <ItemGroup>
@@ -179,6 +235,10 @@
     </Compile>
     <Compile Update="Controls\ImageButton.axaml.cs">
       <DependentUpon>ImageButton.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Controls\MusicSlot.axaml.cs">
+      <DependentUpon>MusicSlot.axaml</DependentUpon>
+      <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
 </Project>
