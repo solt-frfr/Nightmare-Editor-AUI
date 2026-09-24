@@ -25,10 +25,11 @@
                         <VirtualizingStackPanel/>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
+                <controls:MusicSlot Name="CustomTrackSlot" Click="CustomTrackSlot_Click" CanHighlight="True" IsPurple="True" Margin="5, 2, 10, 3"/>
             </ItemsControl>
         </ScrollViewer>
         <controls:MusicSlot Grid.Row="1" Grid.Column="0" Name="InputSlot" CanHighlight="False" Margin="10,2,5,2"/>
         <controls:MusicSlot Grid.Row="1" Grid.Column="1" Name="OutputSlot" CanHighlight="False" IsPurple="True" Margin="5,2,10,2"/>
-        <controls:ConfigSlot Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center"/>
+        <controls:ConfigSlot Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Name="ReplaceButton" PointerEntered="ReplaceButton_Hover" Click="ReplaceButton_Click" LeftText="Select an Input" RightText="Add Replacement" HorizontalAlignment="Center" Opacity="0.5"/>
     </Grid>
 </UserControl>

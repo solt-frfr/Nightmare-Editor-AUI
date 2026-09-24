@@ -287,7 +287,7 @@
                         <ScaleTransform ScaleX="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" ScaleY="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}"/>
                     </LayoutTransformControl.LayoutTransform>
                     <Grid>
-                        <views:MusicWindowMenu ReportDescription="MusicWindowMenu_OnReportDescription"/>
+                        <views:MusicWindowMenu RequestRefresh="MusicWindowMenu_OnRequestRefresh" ReportDescription="MusicWindowMenu_OnReportDescription"/>
                     </Grid>
                 </LayoutTransformControl>
             </Grid>

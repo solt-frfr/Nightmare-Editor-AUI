@@ -83,7 +83,6 @@
                         </Style>
                         <Setter Property="MinWidth" Value="0"/>
                         <Setter Property="MinHeight" Value="0"/>
-                        
                     </Style>
                 </Grid.Styles>
                 <DataGrid Name="ModDataGrid"  Grid.Column="0" Grid.Row="0" ColumnHeaderHeight="20"

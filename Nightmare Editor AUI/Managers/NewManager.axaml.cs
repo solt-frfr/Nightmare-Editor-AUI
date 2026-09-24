@@ -294,6 +294,22 @@ public partial class NewManager : Window
             ModsPanel.Children.Add(slot);
         }
 
+        MusicRemovePanel.Children.Clear();
+        List<MusicEntry[]> music = JsonSerializer.Deserialize<MusicList>(File.ReadAllText(Misc.Jsons.music), Managers.Standard.WriteIndented).Music;
+        for (int i = 0; i < music.Count; i++)
+        {
+            ConfigSlot musicRemoveSlot = new ConfigSlot
+            {
+                LeftText = music[i][0].Track,
+                RightText = "Remove",
+                Description =
+                    $"Replace {music[i][0].Track} with {music[i][1].Track}. Click Remove to remove the replacement."
+            };
+            musicRemoveSlot.Click += MusicReplaceSlot_Click;
+            musicRemoveSlot.PointerEntered += MenuButton_Hover;
+            MusicRemovePanel.Children.Add(musicRemoveSlot);
+        }
+
         BottomLeftTextUpper2.Text = griditems.Length.ToString();
 
         ThemeChange();
@@ -951,5 +967,33 @@ public partial class NewManager : Window
     private void MusicWindowMenu_OnReportDescription(object? sender, EventArgs e)
     {
         if (sender is string s) BottomRightText.Text = s;
+    }
+
+    private void MusicWindowMenu_OnRequestRefresh(object? sender, EventArgs e)
+    {
+        Refresh();
+    }
+
+    private void MusicReplaceSlot_Click(object? sender, EventArgs e)
+    {
+        MusicList musiclist = JsonSerializer.Deserialize<MusicList>(File.ReadAllText(Misc.Jsons.music), Managers.Standard.WriteIndented);
+        if (sender is ConfigSlot mrs)
+        {
+            int index = -1;
+            for (int i = 0; i < musiclist.Music.Count; i++)
+            {
+                if (musiclist.Music[i][0].Track == mrs.LeftText)
+                {
+                    index = i;
+                    break;
+                }
+            }
+
+            if (index == -1) return;
+            musiclist.Music.RemoveAt(index);
+            string jsonString = JsonSerializer.Serialize<MusicList>(musiclist, Managers.Standard.WriteIndented);
+            File.WriteAllText(Misc.Jsons.music, jsonString);
+            Refresh();
+        }
     }
 }

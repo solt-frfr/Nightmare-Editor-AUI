@@ -5,6 +5,7 @@ using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Reactive;
+using Avalonia.Styling;
 using Avalonia.Svg.Skia;
 using Avalonia.Threading;
 using Nightmare_Editor;
@@ -14,14 +15,17 @@ namespace Nightmare_Editor_AUI.Controls;
 public partial class MusicSlot : UserControl
 {
     public static readonly StyledProperty<MusicEntry> MusicEntryProperty =
-        AvaloniaProperty.Register<RemovableMusic, MusicEntry>(nameof(MusicEntry));
+        AvaloniaProperty.Register<MusicSlot, MusicEntry>(nameof(MusicEntry));
     public static readonly StyledProperty<bool> IsPurpleProperty =
-        AvaloniaProperty.Register<RemovableMusic, bool>(nameof(IsPurple));
+        AvaloniaProperty.Register<MusicSlot, bool>(nameof(IsPurple));
     public static readonly StyledProperty<bool> CanHighlightProperty =
-        AvaloniaProperty.Register<RemovableMusic, bool>(nameof(CanHighlight), defaultValue: true);
-
+        AvaloniaProperty.Register<MusicSlot, bool>(nameof(CanHighlight), defaultValue: true);
+    public static readonly StyledProperty<bool> EnableBlueHighlightProperty =
+        AvaloniaProperty.Register<MusicSlot, bool>(nameof(EnableBlueHighlight));
+        
     private bool IsPressed = false;
-    public event EventHandler? Click;
+    private Styles? pathStyles;
+    public event EventHandler<PointerEventArgs>? Click;
     
     
     public MusicEntry MusicEntry
@@ -41,6 +45,12 @@ public partial class MusicSlot : UserControl
         get => GetValue(CanHighlightProperty);
         set => SetValue(CanHighlightProperty, value);
     }
+    
+    public bool EnableBlueHighlight
+    {
+        get => GetValue(EnableBlueHighlightProperty);
+        set => SetValue(EnableBlueHighlightProperty, value);
+    }
 
     public MusicSlot()
     {
@@ -51,6 +61,8 @@ public partial class MusicSlot : UserControl
             .Subscribe(new AnonymousObserver<Rect>(e => Update()));
         this.GetObservable(IsPurpleProperty)
             .Subscribe(new AnonymousObserver<bool>(e => Update()));
+        this.GetObservable(EnableBlueHighlightProperty)
+            .Subscribe(new AnonymousObserver<bool>(e => ChangeHighlight()));
     }
     
     private async void Update()
@@ -117,28 +129,68 @@ public partial class MusicSlot : UserControl
             };
         }
     }
+
+    private void ChangeHighlight()
+    {
+        if (EnableBlueHighlight)
+        {
+            if (pathStyles is null)
+            {
+                pathStyles = new Styles();
+                pathStyles.AddRange(InternalPath.Styles);
+                InternalPath.Styles.Clear();
+            }
+            InternalPath.Stroke = new SolidColorBrush(Color.Parse("#34ffff"));
+            InternalPath.IsVisible = true;
+        }
+        else
+        {
+            if (!(pathStyles is null))
+            {
+                InternalPath.Styles.AddRange(pathStyles);
+                pathStyles = null;
+            }
+            InternalPath.Stroke = new SolidColorBrush(Color.Parse("#cbc91f"));
+        }
+    }
     
     private void Pointer_EndHover(object? sender, PointerEventArgs e)
     {
         IsPressed = false;
-        InternalPath.IsVisible = false;
+        InternalPath.IsVisible = EnableBlueHighlight;
+        if (!(pathStyles is null) && !EnableBlueHighlight)
+        {
+            InternalPath.Styles.AddRange(pathStyles);
+            pathStyles = null;
+        }
     }
 
     private void Pointer_Press(object? sender, PointerPressedEventArgs e)
     {
         IsPressed = true;
+        if (pathStyles is null)
+        {
+            pathStyles = new Styles();
+            pathStyles.AddRange(InternalPath.Styles);
+            InternalPath.Styles.Clear();
+        }
     }
 
     private void Pointer_Release(object? sender, PointerReleasedEventArgs e)
     {
         if (IsPressed)
         {
-            Click?.Invoke(this, EventArgs.Empty);
+            Click?.Invoke(this, e);
+        }
+        if (!(pathStyles is null) && !EnableBlueHighlight)
+        {
+            InternalPath.Styles.AddRange(pathStyles);
+            pathStyles = null;
         }
     }
 
     private void Pointer_Hover(object? sender, PointerEventArgs e)
     {
-        InternalPath.IsVisible = CanHighlight;
+        if (!EnableBlueHighlight) InternalPath.IsVisible = CanHighlight;
     }
 }
