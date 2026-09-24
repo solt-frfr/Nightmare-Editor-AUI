@@ -9,11 +9,11 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
-using Nightmare_Editor.NewTools;
+using NightmareLibrary;
 using SixLabors.ImageSharp;
-using static Nightmare_Editor.NewTools.TXA;
+using static NightmareLibrary.TXA;
 
-namespace Nightmare_Editor
+namespace NightmareEditor
 {
     /// <summary>
     /// Interaction logic for PickText.xaml

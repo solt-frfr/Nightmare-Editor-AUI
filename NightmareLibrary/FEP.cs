@@ -1,6 +1,6 @@
 /*using System;
 
-namespace Nightmare_Editor.NewTools;
+namespace Nightmare_Editor;
 
 public static class FEP
 {

@@ -7,11 +7,7 @@ using System.Threading.Tasks;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Avalonia.Controls;
-using Avalonia.Platform.Storage;
-using Avalonia.Styling;
-using Nightmare_Editor;
-using Nightmare_Editor.NewTools;
+using NightmareLibrary;
 using SixLabors.ImageSharp;
 
 string[] AllPaths = File.ReadAllLines(Path.Combine(AppContext.BaseDirectory, "filelist.txt")).Distinct().ToArray();
@@ -79,7 +75,7 @@ Make your choice : ");
     {
         try
         {
-            RBIN.Pack(args[0], true, null, args[0]);
+            File.WriteAllBytes(args[0], RBIN.Pack(args[0]));
         }
         catch (Exception e)
         {
@@ -261,33 +257,3 @@ else
     Console.ReadKey();
 }
 return;
-
-
-void HashTest()
-{
-    string rbin = "";
-    string filename = "";
-    foreach (string file in AllPaths)
-    {
-        string[] sub = file.Split('/');
-        if (file.StartsWith("chara"))
-        {
-            rbin = sub[0] + "_" + sub[1];
-        }
-        else
-        {
-            rbin = sub[0];
-        }
-
-        filename = sub[^1];
-        (string hashPath, bool handled) = RBIN.HashPath(rbin, filename);
-        if (handled)
-        {
-            if (file != hashPath)
-            {
-                Console.WriteLine("Correct: " + file + "\n" + "Outputs: " + hashPath + "\n");
-            }
-        }
-    }
-    Console.WriteLine("Done.");
-}

@@ -1,4 +1,4 @@
-namespace Nightmare_Editor.NewTools.L2D;
+namespace NightmareLibrary.L2D;
 
 public class LY2
 {

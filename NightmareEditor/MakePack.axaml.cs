@@ -11,14 +11,14 @@ using System.IO;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Webp;
 using System.Diagnostics;
-using Nightmare_Editor;
+using NightmareEditor;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Input;
-using Nightmare_Editor.NewTools;
+using NightmareLibrary;
 using Avalonia.Platform.Storage;
 
-namespace Nightmare_Editor
+namespace NightmareEditor
 {
     /// <summary>
     /// Interaction logic for MakePack.xaml
@@ -93,19 +93,19 @@ namespace Nightmare_Editor
 
         private void Confirm_Click(object sender, RoutedEventArgs e)
         {
-            string folder = Path.Combine(Misc.Paths.mods, IDBox.Text);
+            string folder = Path.Combine(Paths.Folders.mods, IDBox.Text);
             try
             {
-                folder = Nightmare_Editor_AUI.Managers.Standard.GetModFolder(modmetadata.ID);
+                folder = NightmareEditor.Managers.Standard.GetModFolder(modmetadata.ID);
             }
             catch (Exception exception)
             {
-                folder = Path.Combine(Misc.Paths.mods, IDBox.Text);
+                folder = Path.Combine(Paths.Folders.mods, IDBox.Text);
             }
 
             if (string.IsNullOrWhiteSpace(folder))
             {
-                folder = Path.Combine(Misc.Paths.mods, IDBox.Text);
+                folder = Path.Combine(Paths.Folders.mods, IDBox.Text);
             }
             modmetadata.Name = NameBox.Text;
             modmetadata.Description = DescBox.Text;
@@ -125,7 +125,7 @@ namespace Nightmare_Editor
                 string filepath = Path.Combine(folder, "meta.json");
                 Directory.CreateDirectory(folder);
                 File.WriteAllText(filepath, jsonString);
-                File.WriteAllText(Misc.Jsons.temp, jsonString);
+                File.WriteAllText(Paths.Jsons.temp, jsonString);
                 filepath = Path.Combine(folder, "preview.webp");
                 if (File.Exists(PreviewBox.Text))
                 {

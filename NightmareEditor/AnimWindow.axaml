@@ -1,9 +1,9 @@
-﻿<Window x:Class="Nightmare_Editor.AnimWindow"
+﻿<Window x:Class="NightmareEditor.AnimWindow"
         xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Nightmare_Editor"
+        xmlns:local="clr-namespace:NightmareEditor"
         mc:Ignorable="d"
         Title="Nightmare Animation Studio" Height="550" Width="950" Background="Black">
     

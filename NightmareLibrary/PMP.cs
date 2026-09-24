@@ -5,7 +5,7 @@ using System.Linq;
 using System.Numerics;
 using SixLabors.ImageSharp;
 
-namespace Nightmare_Editor.NewTools;
+namespace NightmareLibrary;
 
 public static class PMP
 {

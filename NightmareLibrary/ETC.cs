@@ -13,10 +13,9 @@ using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Processing.Processors;
 using SixLabors.ImageSharp.Processing.Processors.Quantization;
 using SixLabors.ImageSharp.Drawing.Processing;
-using Color = ExCSS.Color;
-using static Nightmare_Editor.NewTools.CTT;
+using static NightmareLibrary.CTT;
 
-namespace Nightmare_Editor.NewTools
+namespace NightmareLibrary
 {
 
     public static class ETC

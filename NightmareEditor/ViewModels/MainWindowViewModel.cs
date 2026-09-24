@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.ObjectModel;
-using Nightmare_Editor;
+using NightmareEditor;
 
-namespace Nightmare_Editor_AUI.ViewModels
+namespace NightmareEditor.ViewModels
 {
     public partial class MainWindowViewModel : ViewModelBase
     {

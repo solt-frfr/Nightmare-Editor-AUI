@@ -9,7 +9,10 @@
     <ApplicationIcon>Assets\nightmare.ico</ApplicationIcon>
     <DebugType Condition=" '$(Configuration)' == 'Release' ">None</DebugType>
   </PropertyGroup>
-  
+
+  <ItemGroup>
+    <ProjectReference Include="..\NightmareLibrary\NightmareLibrary.csproj" />
+  </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Models\" />

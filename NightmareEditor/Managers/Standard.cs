@@ -7,12 +7,12 @@ using System.Text.Json;
 using Avalonia.Controls;
 using Avalonia.Platform;
 using Avalonia.Platform.Storage;
-using Nightmare_Editor;
-using Nightmare_Editor.NewTools;
+using NightmareEditor;
+using NightmareLibrary;
 using SharpCompress.Archives;
 using SharpCompress.Common;
 
-namespace Nightmare_Editor_AUI.Managers;
+namespace NightmareEditor.Managers;
 
 public static class Standard
 {
@@ -29,7 +29,7 @@ public static class Standard
     
     public static Settings GetSettings()
     {
-        if (!File.Exists(Misc.Jsons.settings))
+        if (!File.Exists(Paths.Jsons.settings))
         {
             Settings settings = new Settings();
             settings.DeployPath = "";
@@ -40,9 +40,9 @@ public static class Standard
             settings.UI = 1;
             settings.UseMusicReplacements = false;
             string jsonString = JsonSerializer.Serialize<Settings>(settings, WriteIndented);
-            System.IO.File.WriteAllText(Misc.Jsons.settings, jsonString);
+            System.IO.File.WriteAllText(Paths.Jsons.settings, jsonString);
         }
-        return JsonSerializer.Deserialize<Settings>(File.ReadAllText(Misc.Jsons.settings), WriteIndented);
+        return JsonSerializer.Deserialize<Settings>(File.ReadAllText(Paths.Jsons.settings), WriteIndented);
     }
     
     public static void SetSettings(Settings newSettings)
@@ -52,7 +52,7 @@ public static class Standard
         if (newSettings.Region < 0) newSettings.Region = 0;
         if (newSettings.DefaultImage < 0) newSettings.DefaultImage = 0;
         string jsonString = JsonSerializer.Serialize<Settings>(newSettings, WriteIndented);
-        System.IO.File.WriteAllText(Misc.Jsons.settings, jsonString);
+        System.IO.File.WriteAllText(Paths.Jsons.settings, jsonString);
     }
     
     public static List<string> EnabledMods
@@ -69,7 +69,7 @@ public static class Standard
     
     public static Themes.ThemeData GetTheme()
     {
-        if (!File.Exists(Misc.Jsons.theme))
+        if (!File.Exists(Paths.Jsons.theme))
         {
             Themes.ThemeData theme = new Themes.ThemeData
             {
@@ -77,32 +77,32 @@ public static class Standard
                 MenuTheme = Themes.MenuDefaults.FirstOrDefault(x => x.Name == "Default")
             };
             string jsonString = JsonSerializer.Serialize<Themes.ThemeData>(theme, WriteIndented);
-            System.IO.File.WriteAllText(Misc.Jsons.theme, jsonString);
+            System.IO.File.WriteAllText(Paths.Jsons.theme, jsonString);
         }
-        return JsonSerializer.Deserialize<Themes.ThemeData>(File.ReadAllText(Misc.Jsons.theme), WriteIndented);
+        return JsonSerializer.Deserialize<Themes.ThemeData>(File.ReadAllText(Paths.Jsons.theme), WriteIndented);
     }
     
     public static void SetTheme(Themes.ThemeData newTheme)
     {
         string jsonString = JsonSerializer.Serialize<Themes.ThemeData>(newTheme, WriteIndented);
-        System.IO.File.WriteAllText(Misc.Jsons.theme, jsonString);
+        System.IO.File.WriteAllText(Paths.Jsons.theme, jsonString);
     }
     
     public static List<string> GetEnabledMods()
     {
-        if (!File.Exists(Misc.Jsons.enabled))
+        if (!File.Exists(Paths.Jsons.enabled))
         {
             List<string> list = new List<string>();
             string jsonString = JsonSerializer.Serialize<List<string>>(list, WriteIndented);
-            System.IO.File.WriteAllText(Misc.Jsons.enabled, jsonString);
+            System.IO.File.WriteAllText(Paths.Jsons.enabled, jsonString);
         }
-        return JsonSerializer.Deserialize<List<string>>(File.ReadAllText(Misc.Jsons.enabled), WriteIndented);
+        return JsonSerializer.Deserialize<List<string>>(File.ReadAllText(Paths.Jsons.enabled), WriteIndented);
     }
     
     public static void SetEnabledMods(List<string> newEnabledMods)
     {
         string jsonString = JsonSerializer.Serialize<List<string>>(newEnabledMods, WriteIndented);
-        System.IO.File.WriteAllText(Misc.Jsons.enabled, jsonString);
+        System.IO.File.WriteAllText(Paths.Jsons.enabled, jsonString);
     }
     
     public static readonly string UStitleID = "000400000008D300";
@@ -136,7 +136,7 @@ public static class Standard
 
     public static string GetModFolder(string ID)
     {
-        string[] folders = Directory.GetDirectories(Misc.Paths.mods);
+        string[] folders = Directory.GetDirectories(Paths.Folders.mods);
         string realFolder = "";
         foreach (string folder in folders)
         {
@@ -159,10 +159,10 @@ public static class Standard
 
     public static void OpenModsFolder()
     {
-        if (Directory.Exists(Misc.Paths.mods))
+        if (Directory.Exists(Paths.Folders.mods))
         {
             ProcessStartInfo StartInformation = new ProcessStartInfo();
-            StartInformation.FileName = Misc.Paths.mods;
+            StartInformation.FileName = Paths.Folders.mods;
             StartInformation.UseShellExecute = true;
             Process process = Process.Start(StartInformation);
         }
@@ -193,7 +193,7 @@ public static class Standard
                 using var archive = ArchiveFactory.OpenArchive(files[0].Path.LocalPath);
                 foreach (var entry in archive.Entries.Where(entry => !entry.IsDirectory))
                 {
-                    entry.WriteToDirectory(Misc.Paths.mods, new ExtractionOptions()
+                    entry.WriteToDirectory(Paths.Folders.mods, new ExtractionOptions()
                     {
                         ExtractFullPath = true,
                         Overwrite = true
@@ -295,11 +295,11 @@ public static class Standard
                         Path.Combine(deploypath, "textures", GetTitleIDFromRegion(settings.Region),
                             "NightmareEditor", ID), false);
                 }
-                else if (!rbins.Contains(rbin) && Misc.accepted_rbins.Contains(rbin))
+                else if (!rbins.Contains(rbin) && Paths.accepted_rbins.Contains(rbin))
                 {
                     rbins.Add(rbin);
                 }
-                else if (Misc.accepted_folders.Contains(rbin))
+                else if (Paths.accepted_folders.Contains(rbin))
                 {
                     Directory.CreateDirectory(Path.Combine(deploypath, rbin));
                     if (settings.Emulator)
@@ -325,7 +325,7 @@ public static class Standard
         string failed_rbins = "";
         foreach (string rbin in rbins)
         {
-            if (!File.Exists(Path.Combine(Misc.Paths.current, $"{rbin}.rbin")) || !Directory.Exists(Path.Combine(Misc.Paths.basePath, rbin)))
+            if (!File.Exists(Path.Combine(Paths.Folders.current, $"{rbin}.rbin")) || !Directory.Exists(Path.Combine(Paths.Folders.basePath, rbin)))
             {
                 stop = true;
                 if (string.IsNullOrWhiteSpace(failed_rbins))
@@ -343,18 +343,28 @@ public static class Standard
             return (Misc.ErrorCode.MissingRbin, failed_rbins);
         }
 
-        Directory.CreateDirectory(Misc.Paths.pack);
-        Directory.Delete(Misc.Paths.pack, true);
-        Directory.CreateDirectory(Misc.Paths.pack);
+        Directory.CreateDirectory(Paths.Folders.pack);
+        Directory.Delete(Paths.Folders.pack, true);
+        Directory.CreateDirectory(Paths.Folders.pack);
         foreach (string folder in modFolders)
         {
-            Editor.BetterDirCopy(folder, Misc.Paths.pack, false);
+            Editor.BetterDirCopy(folder, Paths.Folders.pack, false);
         }
         foreach (string rbin in rbins)
         {
             string file = rbin + ".rbin";
-            Editor.BetterDirCopy(Path.Combine(Misc.Paths.basePath, rbin), Path.Combine(Misc.Paths.pack, rbin), false, false);
-            RBIN.Pack(Path.Combine(Misc.Paths.pack, file), true);
+            Editor.BetterDirCopy(Path.Combine(Paths.Folders.basePath, rbin), Path.Combine(Paths.Folders.pack, rbin), false, false);
+            byte[] rbinData = RBIN.Pack(Path.Combine(Paths.Folders.pack, file));
+            if (settings.Emulator)
+            {
+                Directory.CreateDirectory(Path.Combine(settings.DeployPath, "mods", GetTitleIDFromRegion(settings.Region), "romfs"));
+                File.WriteAllBytes(Path.Combine(settings.DeployPath, "mods", GetTitleIDFromRegion(settings.Region), "romfs", file), rbinData);
+            }
+            else
+            {
+                File.WriteAllBytes(Path.Combine(settings.DeployPath, file), rbinData);
+            }
+            
         }
 
         if (settings.UseMusicReplacements)
@@ -365,7 +375,7 @@ public static class Standard
                 musicpath = Path.Combine(deploypath, "mods", GetTitleIDFromRegion(settings.Region), "romfs", "sound", "en", "output", "stream");
             }
             Directory.CreateDirectory(musicpath);
-            string jsonString = File.ReadAllText(Misc.Jsons.music);
+            string jsonString = File.ReadAllText(Paths.Jsons.music);
             List<MusicEntry[]> music = JsonSerializer.Deserialize<MusicList>(jsonString, WriteIndented).Music;
             foreach (MusicEntry[] track in music)
             {

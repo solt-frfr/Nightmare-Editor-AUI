@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SixLabors.ImageSharp;
 
-namespace Nightmare_Editor.NewTools
+namespace NightmareLibrary
 {
     public static class PMO // Right now I'm just structuring everything to load the file, then I can adjust for texture and mesh data.
     {

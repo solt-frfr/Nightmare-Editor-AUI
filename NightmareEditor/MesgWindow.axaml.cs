@@ -2,9 +2,9 @@ using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using static Nightmare_Editor_AUI.Managers.Standard;
+using static NightmareEditor.Managers.Standard;
 
-namespace Nightmare_Editor_AUI;
+namespace NightmareEditor;
 
 public partial class MesgWindow : Window
 {
@@ -17,7 +17,7 @@ public partial class MesgWindow : Window
 
     private MsgBoxType _msgBoxType = MsgBoxType.Info;
     
-    public Nightmare_Editor.NewTools.Misc.ErrorCode Result { get; private set; }
+    public NightmareLibrary.Misc.ErrorCode Result { get; private set; }
     
     public MesgWindow() // Designer Only. Give it paramaters.
     {
@@ -57,7 +57,7 @@ public partial class MesgWindow : Window
         }
         else if (_msgBoxType == MsgBoxType.YesNo || _msgBoxType == MsgBoxType.Git)
         {
-            Result = Nightmare_Editor.NewTools.Misc.ErrorCode.Success;
+            Result = NightmareLibrary.Misc.ErrorCode.Success;
             Close();
         }
     }
@@ -66,7 +66,7 @@ public partial class MesgWindow : Window
     {
         if (_msgBoxType == MsgBoxType.YesNo || _msgBoxType == MsgBoxType.Git)
         {
-            Result = Nightmare_Editor.NewTools.Misc.ErrorCode.Cancelled;
+            Result = NightmareLibrary.Misc.ErrorCode.Cancelled;
             Close();
         }
     }

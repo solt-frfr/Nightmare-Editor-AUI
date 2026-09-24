@@ -18,15 +18,15 @@ using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
-using Nightmare_Editor_AUI.Controls;
-using Nightmare_Editor.NewTools;
-using Nightmare_Editor.NewTools.L2D;
+using NightmareEditor.Controls;
+using NightmareLibrary;
+using NightmareLibrary.L2D;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Webp;
 using SixLabors.ImageSharp.PixelFormats;
-using static Nightmare_Editor.NewTools.TXA;
+using static NightmareLibrary.TXA;
 
-namespace Nightmare_Editor
+namespace NightmareEditor
 {
     /// <summary>
     /// Interaction logic for AnimWindow.xaml
@@ -68,7 +68,7 @@ namespace Nightmare_Editor
 
         private async void Window_Opened(object sender, EventArgs e)
         {
-            if (openedFile.Contains(Misc.Paths.basePath))
+            if (openedFile.Contains(Paths.Folders.basePath))
             {
                 var box2 = MessageBoxManager.GetMessageBoxStandard(
                     "Holdup!",
@@ -80,7 +80,7 @@ namespace Nightmare_Editor
             }
             else
             {
-                var result = TXA.Load(openedFile);
+                var result = TXA.Load(openedFile, Paths.Folders.work);
                 TXAFile txa = result.TXAFile;
                 if (result.ErrorCode == Misc.ErrorCode.FailedFileFind)
                 {
@@ -561,32 +561,43 @@ namespace Nightmare_Editor
                 },
                     AllowMultiple = false
                 });
-                if (open != null)
+                if (!(open is null))
                 {
-                    if (open[0].Path.LocalPath.Contains(Misc.Paths.basePath))
+                    if (open[0].Path.LocalPath.Contains(Paths.Folders.basePath))
                     {
                         var box2 = MessageBoxManager.GetMessageBoxStandard(
                     "Holdup!",
                     "Woah there! Let's not edit our base files, those are important.",
                     MsBox.Avalonia.Enums.ButtonEnum.Ok,
                     MsBox.Avalonia.Enums.Icon.Info
-                );
+                    );
                         await box2.ShowAsPopupAsync(this);
                     }
                     else
                     {
-                        var txaresult = TXA.Load(open[0].Path.LocalPath);
+                        string path = open[0].Path.LocalPath;
+                        var txaresult = TXA.Load(path, Path.GetDirectoryName(path));
                         TXA.TXAFile txa = txaresult.TXAFile;
                         if (txaresult.ErrorCode == Misc.ErrorCode.FailedFileFind)
                         {
                             Console.WriteLine(txaresult.ErrorValue);
-                            var box2 = MessageBoxManager.GetMessageBoxStandard(
-                                $"Error",
-                                txaresult.ErrorValue,
-                                ButtonEnum.Ok,
-                                MsBox.Avalonia.Enums.Icon.Question
-                            );
-                            await box2.ShowAsPopupAsync(this);
+                            Console.WriteLine("Searching work directory...");
+                            txaresult = TXA.Load(path, Paths.Folders.work);
+                            txa = txaresult.TXAFile;
+                            if (txaresult.ErrorCode == Misc.ErrorCode.FailedFileFind)
+                            {
+                                var box2 = MessageBoxManager.GetMessageBoxStandard(
+                                    $"Error",
+                                    txaresult.ErrorValue,
+                                    ButtonEnum.Ok,
+                                    MsBox.Avalonia.Enums.Icon.Question
+                                );
+                                await box2.ShowAsPopupAsync(this);
+                            }
+                            else
+                            {
+                                main = txa;
+                            }
                         }
                         else
                         {
@@ -628,7 +639,7 @@ namespace Nightmare_Editor
         {
             byte[] file = TXA.Create(main);
             var startFolder = await this.StorageProvider.TryGetFolderFromPathAsync(
-                Misc.Paths.work
+                Paths.Folders.work
             );
 
             var save = await this.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
@@ -1103,7 +1114,7 @@ namespace Nightmare_Editor
 
                 if (result == ButtonResult.Yes)
                 {
-                    string[] files2 = Directory.GetFiles(Misc.Paths.work, $"*{Group_TextureBox.Text}.ctt", SearchOption.AllDirectories);
+                    string[] files2 = Directory.GetFiles(Paths.Folders.work, $"*{Group_TextureBox.Text}.ctt", SearchOption.AllDirectories);
                     if (files2.Length == 0)
                     {
                         var box2 = MessageBoxManager.GetMessageBoxStandard(

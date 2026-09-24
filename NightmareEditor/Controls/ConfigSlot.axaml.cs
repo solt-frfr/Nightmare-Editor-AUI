@@ -8,7 +8,7 @@ using Avalonia.Media;
 using Avalonia.Reactive;
 using Avalonia.Svg.Skia;
 
-namespace Nightmare_Editor_AUI.Controls;
+namespace NightmareEditor.Controls;
 
 public partial class ConfigSlot : UserControl
 {

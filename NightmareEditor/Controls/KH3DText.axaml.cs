@@ -14,7 +14,7 @@ using Avalonia.Reactive;
 using Avalonia.Svg.Skia;
 using Avalonia.Threading;
 
-namespace Nightmare_Editor_AUI.Controls;
+namespace NightmareEditor.Controls;
 
 public partial class KH3DText : UserControl
 {

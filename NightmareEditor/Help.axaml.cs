@@ -20,9 +20,9 @@ using Avalonia.Media;
 using Avalonia.Platform;
 using Avalonia.Reactive;
 using Avalonia.VisualTree;
-using Nightmare_Editor_AUI.Controls;
+using NightmareEditor.Controls;
 
-namespace Nightmare_Editor
+namespace NightmareEditor
 {
     /// <summary>
     /// Interaction logic for Help.xaml

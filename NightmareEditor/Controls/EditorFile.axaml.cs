@@ -6,7 +6,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Reactive;
 
-namespace Nightmare_Editor_AUI.Controls;
+namespace NightmareEditor.Controls;
 
 public partial class EditorFile : UserControl
 {

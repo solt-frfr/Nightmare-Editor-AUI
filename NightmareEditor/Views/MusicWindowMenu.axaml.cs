@@ -12,11 +12,11 @@ using Avalonia.Platform;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
-using Nightmare_Editor_AUI.Controls;
-using Nightmare_Editor;
-using Nightmare_Editor.NewTools;
+using NightmareEditor;
+using NightmareLibrary;
+using NightmareEditor.Controls;
 
-namespace Nightmare_Editor_AUI.Views;
+namespace NightmareEditor.Views;
 
 public partial class MusicWindowMenu : UserControl
 {
@@ -128,7 +128,7 @@ public partial class MusicWindowMenu : UserControl
             {
                 Title = "Select a music file.",
                 AllowMultiple = false,
-                FileTypeFilter = Misc.FileFilters.bcstm
+                FileTypeFilter = Paths.FileFilters.bcstm
             });
             if (files is null || files.Count == 0)
             {
@@ -151,7 +151,7 @@ public partial class MusicWindowMenu : UserControl
 
     private void ReplaceButton_Click(object? sender, EventArgs e)
     {
-        List<MusicEntry[]> music = JsonSerializer.Deserialize<MusicList>(File.ReadAllText(Misc.Jsons.music), Managers.Standard.WriteIndented).Music;
+        List<MusicEntry[]> music = JsonSerializer.Deserialize<MusicList>(File.ReadAllText(Paths.Jsons.music), Managers.Standard.WriteIndented).Music;
         MusicEntry replace = OutputSlot.MusicEntry;
         if (replace.Track == "Custom Track") replace.Description = "A custom track selected by the user.";
         for (int i = 0; i < music.Count; i++)
@@ -163,7 +163,7 @@ public partial class MusicWindowMenu : UserControl
                 MusicList musiclistEarly = new MusicList();
                 musiclistEarly.Music = music;
                 string jsonStringEarly = JsonSerializer.Serialize<MusicList>(musiclistEarly, Managers.Standard.WriteIndented);
-                File.WriteAllText(Misc.Jsons.music, jsonStringEarly);
+                File.WriteAllText(Paths.Jsons.music, jsonStringEarly);
                 return;
             }
         }
@@ -171,7 +171,7 @@ public partial class MusicWindowMenu : UserControl
         MusicList musiclist = new MusicList();
         musiclist.Music = music;
         string jsonString = JsonSerializer.Serialize<MusicList>(musiclist, Managers.Standard.WriteIndented);
-        File.WriteAllText(Misc.Jsons.music, jsonString);
+        File.WriteAllText(Paths.Jsons.music, jsonString);
         RequestRefresh?.Invoke(this, EventArgs.Empty);
         
     }

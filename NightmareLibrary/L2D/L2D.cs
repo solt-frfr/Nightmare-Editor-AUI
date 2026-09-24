@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SixLabors.ImageSharp;
 
-namespace Nightmare_Editor.NewTools.L2D
+namespace NightmareLibrary.L2D
 {
     public static class L2D
     {

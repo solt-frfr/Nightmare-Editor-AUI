@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Nightmare_Editor_AUI.Managers;
+namespace NightmareEditor.Managers;
 
 public static class Themes
 {

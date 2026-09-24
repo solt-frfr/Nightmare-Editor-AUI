@@ -27,15 +27,14 @@ using Avalonia.VisualTree;
 using LibGit2Sharp;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
-using Nightmare_Editor;
-using Nightmare_Editor_AUI;
-using Nightmare_Editor_AUI.Managers;
-using static Nightmare_Editor_AUI.Managers.Standard;
-using Nightmare_Editor_AUI.Controls;
-using Nightmare_Editor.NewTools;
+using static NightmareEditor.Managers.Standard;
+using NightmareLibrary;
+using NightmareEditor.Controls;
+using NightmareEditor.Managers;
 using SharpCompress.Archives;
+using Path = System.IO.Path;
 
-namespace Nightmare_Editor_AUI;
+namespace NightmareEditor;
 
 public partial class NewManager : Window
 {
@@ -43,7 +42,7 @@ public partial class NewManager : Window
     public NewManager()
     {
         InitializeComponent();
-        Directory.CreateDirectory(Misc.Paths.mods);
+        Directory.CreateDirectory(Paths.Folders.mods);
         Refresh();
     }
     
@@ -60,15 +59,15 @@ public partial class NewManager : Window
     
     private void MenuButton_Hover(object? sender, PointerEventArgs e)
     {
-        if (sender is Nightmare_Editor_AUI.Controls.MenuButton mb)
+        if (sender is MenuButton mb)
             BottomRightText.Text = mb.Description;
-        if (sender is Nightmare_Editor_AUI.Controls.ConfigSlot cs)
+        if (sender is ConfigSlot cs)
             BottomRightText.Text = cs.Description;
-        if (sender is Nightmare_Editor_AUI.Controls.ImageButton ib)
+        if (sender is ImageButton ib)
             BottomRightText.Text = ib.Description;
-        if (sender is Nightmare_Editor_AUI.Controls.MusicSlot mus)
+        if (sender is MusicSlot mus)
             BottomRightText.Text = mus.MusicEntry.Description + "\nLocation: " + mus.MusicEntry.Filename;
-        if (sender is Nightmare_Editor_AUI.Controls.ModSlot ms)
+        if (sender is ModSlot ms)
         {
             BottomRightText.Text = ms.ModMeta.Description;
             AuthorKH3DText.Text = ms.ModMeta.Authors;
@@ -126,9 +125,9 @@ public partial class NewManager : Window
                 Console.WriteLine(exception);
             }
             
-            if (System.IO.File.Exists(System.IO.Path.Combine(modpath, "preview.webp")))
+            if (System.IO.File.Exists(Path.Combine(modpath, "preview.webp")))
             {
-                string imagePath = System.IO.Path.Combine(modpath, "preview.webp");
+                string imagePath = Path.Combine(modpath, "preview.webp");
 
                 if (File.Exists(imagePath))
                 {
@@ -136,9 +135,9 @@ public partial class NewManager : Window
                     ModPreview.Source = new Bitmap(stream);
                 }
             }
-            else if (System.IO.File.Exists(System.IO.Path.Combine(modpath, "preview.png")))
+            else if (System.IO.File.Exists(Path.Combine(modpath, "preview.png")))
             {
-                string imagePath = System.IO.Path.Combine(modpath, "preview.png");
+                string imagePath = Path.Combine(modpath, "preview.png");
 
                 if (File.Exists(imagePath))
                 {
@@ -146,9 +145,9 @@ public partial class NewManager : Window
                     ModPreview.Source = new Bitmap(stream);
                 }
             }
-            else if (System.IO.File.Exists(System.IO.Path.Combine(modpath, "preview.jpg")))
+            else if (System.IO.File.Exists(Path.Combine(modpath, "preview.jpg")))
             {
-                string imagePath = System.IO.Path.Combine(modpath, "preview.jpg");
+                string imagePath = Path.Combine(modpath, "preview.jpg");
 
                 if (File.Exists(imagePath))
                 {
@@ -259,15 +258,15 @@ public partial class NewManager : Window
         DefaultThemeSlot.RightText = theme.Name;
         
         ModsPanel.Children.Clear();
-        string[] griditems = Directory.GetDirectories(Misc.Paths.mods);
+        string[] griditems = Directory.GetDirectories(Paths.Folders.mods);
         foreach (string modpath in griditems)
         {
             Meta mod = new Meta();
-            string filepath = System.IO.Path.Combine(modpath, "meta.json");
+            string filepath = Path.Combine(modpath, "meta.json");
             if (!System.IO.File.Exists(filepath))
             {
-                string genid = modpath.Replace(Misc.Paths.mods, "");
-                mod.Name = mod.ID = genid = genid.TrimStart(System.IO.Path.DirectorySeparatorChar);
+                string genid = modpath.Replace(Paths.Folders.mods, "");
+                mod.Name = mod.ID = genid = genid.TrimStart(Path.DirectorySeparatorChar);
                 mod.Description = mod.Authors = "";
                 string jsonString = JsonSerializer.Serialize(mod, WriteIndented);
                 System.IO.File.WriteAllText(filepath, jsonString);
@@ -295,7 +294,7 @@ public partial class NewManager : Window
         }
 
         MusicRemovePanel.Children.Clear();
-        List<MusicEntry[]> music = JsonSerializer.Deserialize<MusicList>(File.ReadAllText(Misc.Jsons.music), Managers.Standard.WriteIndented).Music;
+        List<MusicEntry[]> music = JsonSerializer.Deserialize<MusicList>(File.ReadAllText(Paths.Jsons.music), Managers.Standard.WriteIndented).Music;
         for (int i = 0; i < music.Count; i++)
         {
             ConfigSlot musicRemoveSlot = new ConfigSlot
@@ -398,14 +397,14 @@ public partial class NewManager : Window
             {
                 try
                 {
-                    Misc.CopyDirectory(GetModFolder(ms.ModMeta.ID), System.IO.Path.Combine(Misc.Paths.temp, ms.ModMeta.ID, ms.ModMeta.Name), true);
+                    Misc.CopyDirectory(GetModFolder(ms.ModMeta.ID), Path.Combine(Paths.Folders.temp, ms.ModMeta.ID, ms.ModMeta.Name), true);
 
                     var jsonoptions = new JsonSerializerOptions
                     {
                         WriteIndented = true
                     };
                     string jsonString = JsonSerializer.Serialize(ms.ModMeta, jsonoptions);
-                    string filepath = System.IO.Path.Combine(Misc.Paths.temp, ms.ModMeta.ID, ms.ModMeta.Name, "meta.json");
+                    string filepath = Path.Combine(Paths.Folders.temp, ms.ModMeta.ID, ms.ModMeta.Name, "meta.json");
                     System.IO.File.WriteAllText(filepath, jsonString);
 
                     var file = await this.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
@@ -427,7 +426,7 @@ public partial class NewManager : Window
                     }
 
                     using var archive = SharpCompress.Archives.Zip.ZipArchive.CreateArchive();
-                    archive.AddAllFromDirectory(System.IO.Path.Combine(Misc.Paths.temp, ms.ModMeta.ID));
+                    archive.AddAllFromDirectory(Path.Combine(Paths.Folders.temp, ms.ModMeta.ID));
                     archive.SaveTo(file.Path.LocalPath, SharpCompress.Common.CompressionType.Deflate);
                 }
                 catch
@@ -531,7 +530,7 @@ public partial class NewManager : Window
 
     private async void UnpackRBINConfig_OnClick(object? sender, EventArgs e)
     {
-        Directory.CreateDirectory(Misc.Paths.current);
+        Directory.CreateDirectory(Paths.Folders.current);
         IStorageFolder? startFolder = null;
         if (Directory.Exists(MainSettings.DeployPath))
         {
@@ -545,7 +544,7 @@ public partial class NewManager : Window
             Title = "Select an RBIN to unpack",
             AllowMultiple = false,
             SuggestedStartLocation = startFolder,
-            FileTypeFilter = Misc.FileFilters.rbin
+            FileTypeFilter = Paths.FileFilters.rbin
         });
         if (files == null || files.Count == 0)
         {
@@ -553,11 +552,11 @@ public partial class NewManager : Window
         }
         if (!string.IsNullOrWhiteSpace(files[0].Path.LocalPath))
         {
-            if (System.IO.Path.GetExtension(files[0].Path.LocalPath) == ".rbin")
+            if (Path.GetExtension(files[0].Path.LocalPath) == ".rbin")
             {
                 try
                 {
-                    File.Copy(files[0].Path.LocalPath, System.IO.Path.Combine(Misc.Paths.current, System.IO.Path.GetFileName(files[0].Path.LocalPath)));
+                    File.Copy(files[0].Path.LocalPath, Path.Combine(Paths.Folders.current, Path.GetFileName(files[0].Path.LocalPath)));
                     ProgressBar.IsVisible = true;
                     var progress = new Progress<(int current, int total, string message)>(message =>
                     {
@@ -566,7 +565,10 @@ public partial class NewManager : Window
                     });
                     await Task.Run(() =>
                     {
-                        RBIN.Load(files[0].Path.LocalPath, progress: progress);
+                        string path = files[0].Path.LocalPath;
+                        string folder = Path.GetFileNameWithoutExtension(path);
+                        RBIN.Load(files[0].Path.LocalPath, Path.Combine(Paths.Folders.work), recursive: true, progress: progress);
+                        RBIN.Load(files[0].Path.LocalPath, Path.Combine(Paths.Folders.basePath), recursive: false, progress: progress);
                     });
                     ProgressBar.IsVisible = false;
                 }
@@ -579,8 +581,8 @@ public partial class NewManager : Window
             }
             else
             {
-                string[] files2 = Directory.GetFiles(System.IO.Path.Combine(Misc.Paths.work, "User-Added"), "*.*", SearchOption.AllDirectories);
-                File.Copy(files[0].Path.LocalPath, System.IO.Path.Combine(Misc.Paths.work, "User-Added", $"{files2.Length}-{System.IO.Path.GetFileName(files[0].Path.LocalPath)}"), true);
+                string[] files2 = Directory.GetFiles(Path.Combine(Paths.Folders.work, "User-Added"), "*.*", SearchOption.AllDirectories);
+                File.Copy(files[0].Path.LocalPath, Path.Combine(Paths.Folders.work, "User-Added", $"{files2.Length}-{Path.GetFileName(files[0].Path.LocalPath)}"), true);
             }
         }
     }
@@ -663,7 +665,7 @@ public partial class NewManager : Window
                 string text = $@"This will delete all files inside {settings.DeployPath}. Is this okay?";
                 if (settings.Emulator)
                 {
-                    text = $"This will delete all files inside the following directories:\n\n{System.IO.Path.Combine(settings.DeployPath, "mods", GetTitleIDFromRegion(settings.Region), "romfs")}\n\n{System.IO.Path.Combine(settings.DeployPath, "textures", GetTitleIDFromRegion(settings.Region), "NightmareEditor")}\n\nIs this okay?";
+                    text = $"This will delete all files inside the following directories:\n\n{Path.Combine(settings.DeployPath, "mods", GetTitleIDFromRegion(settings.Region), "romfs")}\n\n{Path.Combine(settings.DeployPath, "textures", GetTitleIDFromRegion(settings.Region), "NightmareEditor")}\n\nIs this okay?";
                 }
                 
                 MesgWindow mw = new MesgWindow("WARNING", text, MesgWindow.MsgBoxType.YesNo);
@@ -729,7 +731,7 @@ public partial class NewManager : Window
     {
         MesgWindow mw1 = new MesgWindow("INFORMATION", "Cloning git repo...", MesgWindow.MsgBoxType.Info);
         mw1.Show();
-        Repository.Clone("https://github.com/" + GitRepoBox.Text + ".git", System.IO.Path.Combine(Misc.Paths.mods, GitRepoBox.Text.Replace('/', '.').Replace('\\', '.')));
+        Repository.Clone("https://github.com/" + GitRepoBox.Text + ".git", Path.Combine(Paths.Folders.mods, GitRepoBox.Text.Replace('/', '.').Replace('\\', '.')));
         MesgWindow mw2 = new MesgWindow("INFORMATION", "Done cloning.", MesgWindow.MsgBoxType.Info);
         mw2.Show();
         Refresh();
@@ -737,13 +739,13 @@ public partial class NewManager : Window
     
     private async void UpdateGit_OnClick(object? sender, EventArgs e)
     {
-        string[] folders = Directory.GetDirectories(Misc.Paths.mods);
+        string[] folders = Directory.GetDirectories(Paths.Folders.mods);
         string updated = "Updated the following mods:";
         foreach (string folder in folders)
         {
             try
             {
-                string jsonString = System.IO.File.ReadAllText(System.IO.Path.Combine(folder, "meta.json"));
+                string jsonString = System.IO.File.ReadAllText(Path.Combine(folder, "meta.json"));
                 Meta meta = JsonSerializer.Deserialize<Meta>(jsonString, WriteIndented);
                 using var repo = new Repository(folder);
                 Commands.Pull(
@@ -758,7 +760,7 @@ public partial class NewManager : Window
                 Console.WriteLine(ex.Message);
                 if (ex.Message.Contains("conflicts prevent checkout"))
                 {
-                    string jsonString = System.IO.File.ReadAllText(System.IO.Path.Combine(folder, "meta.json"));
+                    string jsonString = System.IO.File.ReadAllText(Path.Combine(folder, "meta.json"));
                     Meta meta = JsonSerializer.Deserialize<Meta>(jsonString, WriteIndented);
                     MesgWindow mw2 = new MesgWindow("WARNING", meta.Name + "\n" + ex.Message + "\nWould you like to update? This will delete any local changes to the mod.", MesgWindow.MsgBoxType.YesNo);
 
@@ -774,7 +776,7 @@ public partial class NewManager : Window
                                 {
                                     if (item.State == FileStatus.NewInWorkdir)
                                     {
-                                        var path = System.IO.Path.Combine(repo.Info.WorkingDirectory, item.FilePath);
+                                        var path = Path.Combine(repo.Info.WorkingDirectory, item.FilePath);
                                         if (File.Exists(path))
                                             File.Delete(path);
                                     }
@@ -976,7 +978,7 @@ public partial class NewManager : Window
 
     private void MusicReplaceSlot_Click(object? sender, EventArgs e)
     {
-        MusicList musiclist = JsonSerializer.Deserialize<MusicList>(File.ReadAllText(Misc.Jsons.music), Managers.Standard.WriteIndented);
+        MusicList musiclist = JsonSerializer.Deserialize<MusicList>(File.ReadAllText(Paths.Jsons.music), Managers.Standard.WriteIndented);
         if (sender is ConfigSlot mrs)
         {
             int index = -1;
@@ -988,11 +990,10 @@ public partial class NewManager : Window
                     break;
                 }
             }
-
             if (index == -1) return;
             musiclist.Music.RemoveAt(index);
             string jsonString = JsonSerializer.Serialize<MusicList>(musiclist, Managers.Standard.WriteIndented);
-            File.WriteAllText(Misc.Jsons.music, jsonString);
+            File.WriteAllText(Paths.Jsons.music, jsonString);
             Refresh();
         }
     }

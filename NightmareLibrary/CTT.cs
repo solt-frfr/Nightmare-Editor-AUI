@@ -1,26 +1,9 @@
-﻿using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SixLabors.ImageSharp;
+﻿using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.PixelFormats;
-using System.Reflection;
-using System.Text.Json;
-using Markdown.Avalonia;
-using Nightmare_Editor_AUI.Controls;
-using SixLabors.ImageSharp.ColorSpaces;
-using SixLabors.ImageSharp.Processing;
-using SixLabors.ImageSharp.Processing.Processors;
-using SixLabors.ImageSharp.Processing.Processors.Quantization;
-using SixLabors.ImageSharp.Drawing.Processing;
-using Color = ExCSS.Color;
-using static Nightmare_Editor.NewTools.ETC;
-using static Nightmare_Editor_AUI.Managers.Standard;
+using static NightmareLibrary.ETC;
 
-namespace Nightmare_Editor.NewTools
+namespace NightmareLibrary
 {
     /// <summary>
     /// Reimplemented CTT Encoding/Decoding.
@@ -340,24 +323,11 @@ namespace Nightmare_Editor.NewTools
         /// <param name="texture">Filepath containing a PNG texture to Encode into the CTT file.</param>
         public static void Encode(string file, string texture)
         {
-            Settings settings = MainSettings;
-            
             byte[] data = File.ReadAllBytes(texture);
             int formatByte = (int)GetAttributesFromFile(file).format;
             Format formatenum = (Format)formatByte;
-            if (formatByte >= 12 && (settings.ETC1Encoder == 0 || settings.ETC1Encoder == 1))
-            {
-                File.Copy(texture, Path.Combine(Misc.Paths.toolkit, Path.GetFileNameWithoutExtension(file) + "." + formatenum.ToString() + ".png"), true);
-                File.Copy(file, Path.Combine(Misc.Paths.toolkit, Path.GetFileName(file)), true);
-                Toolkit.CTTPack(Path.GetFileNameWithoutExtension(file), Misc.Paths.toolkit, formatenum.ToString());
-                File.Copy(Path.Combine(Misc.Paths.toolkit, Path.GetFileName(file)), file, true);
-                
-            }
-            else
-            {
-                var image = Swizzle(data, (int)formatenum);
-                File.WriteAllBytes(file, image);   
-            }
+            var image = Swizzle(data, (int)formatenum);
+            File.WriteAllBytes(file, image);   
             Decode(file);
         }
 

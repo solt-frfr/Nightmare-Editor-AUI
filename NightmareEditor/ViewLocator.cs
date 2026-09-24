@@ -1,9 +1,9 @@
 using System;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
-using Nightmare_Editor_AUI.ViewModels;
+using NightmareEditor.ViewModels;
 
-namespace Nightmare_Editor_AUI
+namespace NightmareEditor
 {
     public class ViewLocator : IDataTemplate
     {

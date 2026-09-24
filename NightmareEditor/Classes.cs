@@ -10,7 +10,7 @@ using Avalonia;
 using Avalonia.Data.Converters;
 using Avalonia.Media.Imaging;
 
-namespace Nightmare_Editor
+namespace NightmareEditor
 {
     public class TextureList
     {

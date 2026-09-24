@@ -10,8 +10,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Nightmare_Editor;
-using Nightmare_Editor.NewTools;
+using NightmareLibrary;
 using System.Collections.ObjectModel;
 using Avalonia.Controls.Presenters;
 using Avalonia.Controls.Shapes;
@@ -30,15 +29,15 @@ using SharpCompress.Archives;
 using SharpCompress.Common;
 using MsBox.Avalonia.Enums;
 using MsBox.Avalonia;
-using Nightmare_Editor_AUI.ViewModels;
+using NightmareEditor.ViewModels;
 using LibGit2Sharp;
-using Nightmare_Editor_AUI;
-using Nightmare_Editor_AUI.Managers;
-using static Nightmare_Editor_AUI.Managers.Standard;
+using NightmareEditor;
+using NightmareEditor.Managers;
+using static NightmareEditor.Managers.Standard;
 using Path = System.IO.Path;
 
 
-namespace Nightmare_Editor
+namespace NightmareEditor
 {
     /// <summary>
     /// Interaction logic for Manager.axaml
@@ -62,15 +61,15 @@ namespace Nightmare_Editor
             MusicButton.Content = MainButtonContent(false, "Music");
             SettingsWindow.IsVisible = false;
             MusicWindow.IsVisible = false;
-            Directory.CreateDirectory(Misc.Paths.mods);
+            Directory.CreateDirectory(Paths.Folders.mods);
             var jsonoptions = new JsonSerializerOptions
             {
                 WriteIndented = true
             };
-            if (!System.IO.File.Exists(Misc.Jsons.enabled))
+            if (!System.IO.File.Exists(Paths.Jsons.enabled))
             {
                 string jsonString = JsonSerializer.Serialize<List<string>>(new List<string>(), jsonoptions);
-                System.IO.File.WriteAllText(Misc.Jsons.enabled, jsonString);
+                System.IO.File.WriteAllText(Paths.Jsons.enabled, jsonString);
             }
             Refresh();
             isInitialized = true;
@@ -204,7 +203,7 @@ namespace Nightmare_Editor
             }
             catch { }
             viewModel.AllMods.Clear();
-            string[] griditems = CountFolders(Misc.Paths.mods);
+            string[] griditems = CountFolders(Paths.Folders.mods);
             Settings settings = new Settings();
             List<string> blacklist = new List<string>();
             List<MusicEntry> musicEntries = JsonSerializer.Deserialize<List<MusicEntry>>(AssetLoader.Open(new Uri($"avares://Nightmare Editor AUI/Music/database.json", UriKind.RelativeOrAbsolute)), WriteIndented);
@@ -225,7 +224,7 @@ namespace Nightmare_Editor
             MusicInputBox.SelectedIndex = 0;
             MusicOutputBox.SelectedIndex = 1;
             
-            if (System.IO.File.Exists(Misc.Jsons.settings))
+            if (System.IO.File.Exists(Paths.Jsons.settings))
             {
                 settings = MainSettings;
 
@@ -248,7 +247,7 @@ namespace Nightmare_Editor
                 string filepath = Path.Combine(modpath, "meta.json");
                 if (!System.IO.File.Exists(filepath))
                 {
-                    string genid = modpath.Replace(Misc.Paths.mods, "");
+                    string genid = modpath.Replace(Paths.Folders.mods, "");
                     mod.Name = mod.ID = genid = genid.TrimStart(Path.DirectorySeparatorChar);
                     mod.Description = mod.Authors = "";
                     string jsonString = JsonSerializer.Serialize(mod, WriteIndented);
@@ -299,12 +298,12 @@ namespace Nightmare_Editor
                 Meta row = (Meta)item;
                 if (row != null)
                 {
-                    if (Directory.Exists(Path.Combine(Misc.Paths.mods, row.ID)))
+                    if (Directory.Exists(Path.Combine(Paths.Folders.mods, row.ID)))
                     {
                         try
                         {
                             ProcessStartInfo StartInformation = new ProcessStartInfo();
-                            StartInformation.FileName = Path.Combine(Misc.Paths.mods, row.ID);
+                            StartInformation.FileName = Path.Combine(Paths.Folders.mods, row.ID);
                             StartInformation.UseShellExecute = true;
                             Process process = Process.Start(StartInformation);
                         }
@@ -325,14 +324,14 @@ namespace Nightmare_Editor
                     {
                         try
                         {
-                            Misc.CopyDirectory(GetModFolder(row.ID), Path.Combine(Misc.Paths.temp, row.ID, row.Name), true);
+                            Misc.CopyDirectory(GetModFolder(row.ID), Path.Combine(Paths.Folders.temp, row.ID, row.Name), true);
 
                             var jsonoptions = new JsonSerializerOptions
                             {
                                 WriteIndented = true
                             };
                             string jsonString = JsonSerializer.Serialize(row, jsonoptions);
-                            string filepath = Path.Combine(Misc.Paths.temp, row.ID, row.Name, "meta.json");
+                            string filepath = Path.Combine(Paths.Folders.temp, row.ID, row.Name, "meta.json");
                             System.IO.File.WriteAllText(filepath, jsonString);
 
                             var file = await this.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
@@ -353,7 +352,7 @@ namespace Nightmare_Editor
                                 return;
                             }
                             using var archive = SharpCompress.Archives.Zip.ZipArchive.CreateArchive();
-                            archive.AddAllFromDirectory(Path.Combine(Misc.Paths.temp, row.ID));
+                            archive.AddAllFromDirectory(Path.Combine(Paths.Folders.temp, row.ID));
                             archive.SaveTo(file.Path.LocalPath, SharpCompress.Common.CompressionType.Deflate);
                         }
                         catch { }
@@ -608,7 +607,7 @@ namespace Nightmare_Editor
 
         private void OpenLink_Click(object sender, EventArgs e)
         {
-            if (sender is Nightmare_Editor_AUI.Controls.ImageButton button && button.Description is string url)
+            if (sender is NightmareEditor.Controls.ImageButton button && button.Description is string url)
             {
                 try
                 {
@@ -654,7 +653,7 @@ namespace Nightmare_Editor
                     WriteIndented = true
                 };
                 string jsonString = JsonSerializer.Serialize(what, jsonoptions);
-                System.IO.File.WriteAllText(Path.Combine(Misc.Paths.program, filename), jsonString);
+                System.IO.File.WriteAllText(Path.Combine(Paths.Folders.program, filename), jsonString);
                 return null;
             }
             else
@@ -663,7 +662,7 @@ namespace Nightmare_Editor
                 {
                     WriteIndented = true
                 };
-                string jsonString = System.IO.File.ReadAllText(Path.Combine(Misc.Paths.program, filename));
+                string jsonString = System.IO.File.ReadAllText(Path.Combine(Paths.Folders.program, filename));
                 what = JsonSerializer.Deserialize<List<string>>(jsonString, jsonoptions);
                 return what;
             }
@@ -711,7 +710,7 @@ namespace Nightmare_Editor
 
         private async void File_Unpack(object sender, RoutedEventArgs e)
         {
-            Directory.CreateDirectory(Misc.Paths.current);
+            Directory.CreateDirectory(Paths.Folders.current);
             var files = await this.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
             {
                 Title = "Select a file to open...",
@@ -742,7 +741,7 @@ namespace Nightmare_Editor
                 {
                     try
                     {
-                        File.Copy(files[0].Path.LocalPath, Path.Combine(Misc.Paths.current, Path.GetFileName(files[0].Path.LocalPath)));
+                        File.Copy(files[0].Path.LocalPath, Path.Combine(Paths.Folders.current, Path.GetFileName(files[0].Path.LocalPath)));
                         ProgressBar.IsVisible = true;
                         var progress = new Progress<(int current, int total, string message)>(message =>
                         {
@@ -751,7 +750,10 @@ namespace Nightmare_Editor
                         });
                         await Task.Run(() =>
                         {
-                            RBIN.Load(files[0].Path.LocalPath, progress: progress);
+                            string path = files[0].Path.LocalPath;
+                            string folder = Path.GetFileNameWithoutExtension(path);
+                            RBIN.Load(files[0].Path.LocalPath, Path.Combine(Paths.Folders.work), recursive: true, progress: progress);
+                            RBIN.Load(files[0].Path.LocalPath, Path.Combine(Paths.Folders.basePath), recursive: false, progress: progress);
                         });
                         ProgressBar.IsVisible = false;
                     }
@@ -768,8 +770,8 @@ namespace Nightmare_Editor
                 }
                 else
                 {
-                    string[] files2 = Directory.GetFiles(Path.Combine(Misc.Paths.work, "User-Added"), "*.*", SearchOption.AllDirectories);
-                    File.Copy(files[0].Path.LocalPath, Path.Combine(Misc.Paths.work, "User-Added", $"{files2.Length}-{Path.GetFileName(files[0].Path.LocalPath)}"), true);
+                    string[] files2 = Directory.GetFiles(Path.Combine(Paths.Folders.work, "User-Added"), "*.*", SearchOption.AllDirectories);
+                    File.Copy(files[0].Path.LocalPath, Path.Combine(Paths.Folders.work, "User-Added", $"{files2.Length}-{Path.GetFileName(files[0].Path.LocalPath)}"), true);
                 }
             }
         }
@@ -786,7 +788,7 @@ namespace Nightmare_Editor
                 MusicList musiclist = new MusicList();
                 musiclist.Music = music;
                 string jsonString = JsonSerializer.Serialize<MusicList>(musiclist, jsonoptions);
-                File.WriteAllText(Misc.Jsons.music, jsonString);
+                File.WriteAllText(Paths.Jsons.music, jsonString);
             }
             else
             {
@@ -794,20 +796,20 @@ namespace Nightmare_Editor
                 {
                     WriteIndented = true
                 };
-                string jsonString = File.ReadAllText(Misc.Jsons.music);
+                string jsonString = File.ReadAllText(Paths.Jsons.music);
                 music = JsonSerializer.Deserialize<MusicList>(jsonString, jsonoptions).Music;
             }
         }
 
         private void Git_Click(object? sender, RoutedEventArgs e)
         {
-            Repository.Clone("https://github.com/" + GitRepoBox.Text + ".git", Path.Combine(Misc.Paths.mods, GitRepoBox.Text.Replace('/', '.').Replace('\\', '.')));
+            Repository.Clone("https://github.com/" + GitRepoBox.Text + ".git", Path.Combine(Paths.Folders.mods, GitRepoBox.Text.Replace('/', '.').Replace('\\', '.')));
             Refresh();
         }
         
         private async void UpdateGit_Click(object? sender, RoutedEventArgs e)
         {
-            string[] folders = Directory.GetDirectories(Misc.Paths.mods);
+            string[] folders = Directory.GetDirectories(Paths.Folders.mods);
             foreach (string folder in folders)
             {
                 try
@@ -870,7 +872,7 @@ namespace Nightmare_Editor
                         {
                             Title = "Select a music file.",
                             AllowMultiple = false,
-                            FileTypeFilter = Misc.FileFilters.bcstm
+                            FileTypeFilter = Paths.FileFilters.bcstm
                         });
                         if (files.Count == 1)
                         {
@@ -900,7 +902,7 @@ namespace Nightmare_Editor
             {
                 Title = "Select a music file.",
                 AllowMultiple = false,
-                FileTypeFilter = Misc.FileFilters.bcstm
+                FileTypeFilter = Paths.FileFilters.bcstm
             });
             if (files.Count == 1)
             {
@@ -1265,7 +1267,7 @@ namespace Nightmare_Editor
             MusicDescPanel.Children.Clear();
             for (int i = 0; i < music.Count; i++)
             {
-                var display = new Nightmare_Editor_AUI.Controls.RemovableMusic
+                var display = new NightmareEditor.Controls.RemovableMusic
                 {
                     MusicEntries = music[i],
                     Margin = new Thickness(10, 0),
@@ -1277,7 +1279,7 @@ namespace Nightmare_Editor
         }
 
         private void MusicRemovalRequested(object? sender,
-            Nightmare_Editor_AUI.Controls.RemovableMusic.MusicRemoveEventArgs e)
+            NightmareEditor.Controls.RemovableMusic.MusicRemoveEventArgs e)
         {
             int index = -1;
             for (int i = 0; i < music.Count; i++)

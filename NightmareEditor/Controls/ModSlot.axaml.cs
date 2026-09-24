@@ -8,9 +8,9 @@ using Avalonia.Media;
 using Avalonia.Media.Immutable;
 using Avalonia.Reactive;
 using Avalonia.Threading;
-using Nightmare_Editor;
+using NightmareEditor;
 
-namespace Nightmare_Editor_AUI.Controls;
+namespace NightmareEditor.Controls;
 
 public partial class ModSlot : UserControl
 {

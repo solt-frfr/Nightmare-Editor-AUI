@@ -1,9 +1,9 @@
-﻿<Window x:Class="Nightmare_Editor.MakePack"
+﻿<Window x:Class="NightmareEditor.MakePack"
         xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Nightmare_Editor"
+        xmlns:local="clr-namespace:NightmareEditor"
         mc:Ignorable="d"
         Title="Create Mod" Width="300" SizeToContent="Height" Background="#e43079">
     <Viewbox>

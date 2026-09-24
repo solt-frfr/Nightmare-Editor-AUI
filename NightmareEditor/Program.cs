@@ -2,7 +2,7 @@
 using Avalonia;
 using Avalonia.Svg.Skia;
 
-namespace Nightmare_Editor_AUI
+namespace NightmareEditor
 {
     internal sealed class Program
     {

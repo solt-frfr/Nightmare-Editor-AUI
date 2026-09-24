@@ -9,7 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Nightmare Editor AUI\Nightmare Editor AUI.csproj" />
+      <ProjectReference Include="..\NightmareLibrary\NightmareLibrary.csproj" />
     </ItemGroup>
 
     <ItemGroup>

@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace Nightmare_Editor_AUI.ViewModels
+namespace NightmareEditor.ViewModels
 {
     public class ViewModelBase : ObservableObject
     {

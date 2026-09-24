@@ -8,7 +8,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Media.Immutable;
 using Avalonia.Reactive;
 
-namespace Nightmare_Editor_AUI.Controls;
+namespace NightmareEditor.Controls;
 
 public partial class ImageButtonColor : UserControl
 {

@@ -11,12 +11,9 @@ using System.Reflection;
 using System.Text.Json;
 using SixLabors.ImageSharp.ColorSpaces;
 using System.Text.Json.Serialization;
-using Avalonia.Controls;
-using Avalonia.Platform.Storage;
 using OpenKh.Ddd.Utils;
-using static Nightmare_Editor_AUI.Managers.Standard;
 
-namespace Nightmare_Editor.NewTools;
+namespace NightmareLibrary;
 
 public class RBIN
 {
@@ -40,6 +37,7 @@ public class RBIN
         public bool Compressed { get; set; }
     }
 
+    /*
     /// <summary>
     /// Unfinished and unplanned.
     /// </summary>
@@ -83,33 +81,20 @@ public class RBIN
         
         return (output, handled);
     }
-    
+    */
     
     
     /// <summary>
     /// Create an RBINFile class from an RBIN file.
     /// </summary>
-    public static RBINFile Load(string input, string output = null, bool recursive = true, bool silent = false, IProgress<(int current, int total, string message)>? progress = null)
+    public static RBINFile Load(string input, string output, bool recursive = true, bool silent = false, IProgress<(int current, int total, string message)>? progress = null)
     {
         progress ??= new Progress<(int current, int total, string message)>();
         
         List<Entry> json = new List<Entry>();
-        string realoutput;
-        if (string.IsNullOrWhiteSpace(output))
-        {
-            realoutput = Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(input));
-            Directory.CreateDirectory(realoutput);
-            Directory.Delete(realoutput, true);
-            Directory.CreateDirectory(realoutput);
-            RBIN.Load(input, Misc.Paths.basePath, false);
-        }
-        else
-        {
-            realoutput = Path.Combine(output, Path.GetFileNameWithoutExtension(input));
-            Directory.CreateDirectory(realoutput);
-            Directory.Delete(realoutput, true);
-            Directory.CreateDirectory(realoutput);
-        }
+        Directory.CreateDirectory(output);
+        Directory.Delete(output, true);
+        Directory.CreateDirectory(output);
         byte[] data = File.ReadAllBytes(input);
         RBINFile rbin = new RBINFile();
         rbin.Entries = new List<Entry>();
@@ -166,7 +151,6 @@ public class RBIN
                 fs.Read(entry.Data, 0, entry.ReadSize);
             }
             rbin.Entries.Add(entry);
-            Directory.CreateDirectory(realoutput);
             if (entry.Compressed)
             {
                 if (!silent)
@@ -180,7 +164,7 @@ public class RBIN
                 ms.Seek(0, SeekOrigin.Begin);
                 entry.Data = BLZ.Uncompress(ms, entry.Data.Length);
             }
-            File.WriteAllBytes(Path.Combine(realoutput, i.ToString() + "-" + entry.Name), entry.Data);
+            File.WriteAllBytes(Path.Combine(output, i.ToString() + "-" + entry.Name), entry.Data);
             json.Add(entry);
         }
         var jsonoptions = new JsonSerializerOptions
@@ -188,7 +172,7 @@ public class RBIN
             WriteIndented = true
         };
         string jsonString = JsonSerializer.Serialize<List<Entry>>(json, jsonoptions);
-        File.WriteAllText(Path.Combine(realoutput, "info.json"), jsonString);
+        File.WriteAllText(Path.Combine(output, "info.json"), jsonString);
         if (recursive)
         {
             if (!silent)
@@ -197,7 +181,7 @@ public class RBIN
                 Console.WriteLine(message);
                 progress.Report((0, rbin.ReadEntryCount, message));
             }
-            string[] files = Directory.GetFiles(realoutput, "*", SearchOption.AllDirectories);
+            string[] files = Directory.GetFiles(output, "*", SearchOption.AllDirectories);
             int count = 1;
             foreach (string file in files)
             {
@@ -229,7 +213,7 @@ public class RBIN
         return rbin;
     }
     
-    public async static void Pack(string filename, bool tooutput, Window parent = null, string output = null)
+    public static byte[] Pack(string filename)
     {
         List<int> offsets_values = new List<int>();
         List<int> offsets = new List<int>();
@@ -345,44 +329,7 @@ public class RBIN
             data[offsets[i] + 2] = (byte)((offsets_values[i] >> 16) & 0xFF);
             data[offsets[i] + 3] = (byte)((offsets_values[i] >> 24) & 0xFF);
         }
-        
-        
-        if (!tooutput)
-        {
-            var save = await parent.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
-            {
-                Title = "Save packed file...",
-                FileTypeChoices = new List<FilePickerFileType>
-                {
-                    new FilePickerFileType("Game Archive File")
-                    {
-                        Patterns = new List<string> { "*.rbin" }
-                    }
-                }
-                
-            });
-            if (!string.IsNullOrWhiteSpace(save.Path.LocalPath))
-            {
-                File.WriteAllBytes(save.Path.LocalPath, data.ToArray());
-            }
-        }
-        else if (string.IsNullOrWhiteSpace(output))
-        {
-            Settings settings = MainSettings;
 
-            if (settings.Emulator)
-            {
-                Directory.CreateDirectory(Path.Combine(settings.DeployPath, "mods", GetTitleIDFromRegion(settings.Region), "romfs"));
-                File.WriteAllBytes(Path.Combine(settings.DeployPath, "mods", GetTitleIDFromRegion(settings.Region), "romfs", Path.GetFileName(filename)), data.ToArray());
-            }
-            else
-            {
-                File.WriteAllBytes(Path.Combine(settings.DeployPath, Path.GetFileName(filename)), data.ToArray());
-            }
-        }
-        else
-        {
-            File.WriteAllBytes(output, data.ToArray());
-        }
+        return data.ToArray();
     }
 }

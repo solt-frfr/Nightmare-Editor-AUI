@@ -10,7 +10,7 @@ using Avalonia.Media.Immutable;
 using Avalonia.Reactive;
 using Avalonia.Svg.Skia;
 
-namespace Nightmare_Editor_AUI.Controls;
+namespace NightmareEditor.Controls;
 
 public partial class MenuButton : UserControl
 {

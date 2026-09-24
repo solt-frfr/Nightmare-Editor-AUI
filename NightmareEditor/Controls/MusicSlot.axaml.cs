@@ -8,9 +8,9 @@ using Avalonia.Reactive;
 using Avalonia.Styling;
 using Avalonia.Svg.Skia;
 using Avalonia.Threading;
-using Nightmare_Editor;
+using NightmareEditor;
 
-namespace Nightmare_Editor_AUI.Controls;
+namespace NightmareEditor.Controls;
 
 public partial class MusicSlot : UserControl
 {

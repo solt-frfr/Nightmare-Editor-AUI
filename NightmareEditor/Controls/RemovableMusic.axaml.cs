@@ -4,9 +4,9 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Reactive;
-using Nightmare_Editor;
+using NightmareEditor;
 
-namespace Nightmare_Editor_AUI.Controls;
+namespace NightmareEditor.Controls;
 
 public partial class RemovableMusic : UserControl
 {

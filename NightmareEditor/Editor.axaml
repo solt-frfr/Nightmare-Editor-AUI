@@ -1,9 +1,9 @@
-﻿<Window x:Class="Nightmare_Editor.Editor"
+﻿<Window x:Class="NightmareEditor.Editor"
         xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Nightmare_Editor"
+        xmlns:local="clr-namespace:NightmareEditor"
         mc:Ignorable="d"
         Title="Nightmare Editor" Height="450" Width="800" Background="Black">
     <Grid RowDefinitions="45,*,45" ColumnDefinitions="158,158,*" Margin="5">

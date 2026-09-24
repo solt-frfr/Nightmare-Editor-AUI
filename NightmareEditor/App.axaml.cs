@@ -6,12 +6,11 @@ using Avalonia.Data.Core;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
-using Nightmare_Editor;
-using Nightmare_Editor_AUI.ViewModels;
-using Nightmare_Editor_AUI;
-using static Nightmare_Editor_AUI.Managers.Standard;
+using NightmareEditor;
+using NightmareEditor.ViewModels;
+using static NightmareEditor.Managers.Standard;
 
-namespace Nightmare_Editor_AUI
+namespace NightmareEditor
 {
     public partial class App : Application
     {

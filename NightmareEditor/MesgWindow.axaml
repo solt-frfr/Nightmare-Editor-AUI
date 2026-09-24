@@ -2,11 +2,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Nightmare_Editor"
-        xmlns:rewrite="clr-namespace:Nightmare_Editor_AUI"
-        xmlns:controls="clr-namespace:Nightmare_Editor_AUI.Controls"
+        xmlns:local="clr-namespace:NightmareEditor"
+        xmlns:rewrite="clr-namespace:NightmareEditor"
+        xmlns:controls="clr-namespace:NightmareEditor.Controls"
         xmlns:skia="clr-namespace:Avalonia.Svg.Skia;assembly=Svg.Controls.Skia.Avalonia"
-        x:Class="Nightmare_Editor_AUI.MesgWindow"
+        x:Class="NightmareEditor.MesgWindow"
         Title="MesgWindow" SystemDecorations="None" Height="320" Width="684" Background="Transparent" TransparencyLevelHint="Transparent">
     <Window.Resources>
         <controls:PixelWidthCustom x:Key="PixelWidth"/>

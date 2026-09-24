@@ -1,7 +1,7 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="Nightmare_Editor_AUI.App"
-             xmlns:local="using:Nightmare_Editor_AUI"
+             x:Class="NightmareEditor.App"
+             xmlns:local="using:NightmareEditor"
              RequestedThemeVariant="Light">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 

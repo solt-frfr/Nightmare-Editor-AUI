@@ -3,7 +3,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Diagnostics;
-using Nightmare_Editor.NewTools;
+using NightmareLibrary;
 using System.Text.Json;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -26,11 +26,11 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Input.Platform;
 using Avalonia.Threading;
-using Nightmare_Editor_AUI;
-using Nightmare_Editor_AUI.Controls;
+using NightmareEditor;
+using NightmareEditor.Controls;
 
 
-namespace Nightmare_Editor
+namespace NightmareEditor
 {
     /// <summary>
     /// Interaction logic for Editor.axaml
@@ -169,17 +169,16 @@ namespace Nightmare_Editor
             InitializeComponent();
             InfoWindow.IsVisible = false;
             HexWindow.IsVisible = false;
-            List<string> Paths = new List<string>();
-            Directory.CreateDirectory(Misc.Paths.current);
-            Directory.CreateDirectory(Misc.Paths.work);
-            Directory.CreateDirectory(Path.Combine(Misc.Paths.work, "User-Added"));
-            Directory.CreateDirectory(Misc.Paths.basePath);
-            Directory.CreateDirectory(Path.Combine(Misc.Paths.basePath, "User-Added"));
-            string[] files = Directory.GetFiles(Misc.Paths.current, "*.*", SearchOption.AllDirectories);
+            Directory.CreateDirectory(Paths.Folders.current);
+            Directory.CreateDirectory(Paths.Folders.work);
+            Directory.CreateDirectory(Path.Combine(Paths.Folders.work, "User-Added"));
+            Directory.CreateDirectory(Paths.Folders.basePath);
+            Directory.CreateDirectory(Path.Combine(Paths.Folders.basePath, "User-Added"));
+            string[] files = Directory.GetFiles(Paths.Folders.current, "*.*", SearchOption.AllDirectories);
             List<EditorFile> tempList = new List<EditorFile>();
             foreach (string file in files)
             {
-                string filetrim = file.Replace(Misc.Paths.current + Path.DirectorySeparatorChar, "");
+                string filetrim = file.Replace(Paths.Folders.current + Path.DirectorySeparatorChar, "");
                 tempList = AddFile(tempList, filetrim, Column.Rbin, filetrim.Contains("User-Added.rbin"));
             }
             tempList = tempList.OrderBy(ef => ef.Name).ToList();
@@ -187,7 +186,7 @@ namespace Nightmare_Editor
             {
                 Files.Children.Add(editorFile);
             }
-            if (!File.Exists(Misc.Jsons.textures))
+            if (!File.Exists(Paths.Jsons.textures))
             {
                 QuickJson(true);
             }
@@ -199,13 +198,13 @@ namespace Nightmare_Editor
         
         private async void TryGetQueue()
         {
-            if (File.Exists(Misc.Jsons.queue))
+            if (File.Exists(Paths.Jsons.queue))
             {
                 var jsonoptions = new JsonSerializerOptions
                 {
                     WriteIndented = true
                 };
-                var queueList = JsonSerializer.Deserialize<List<string>>(File.ReadAllText(Misc.Jsons.queue), jsonoptions);
+                var queueList = JsonSerializer.Deserialize<List<string>>(File.ReadAllText(Paths.Jsons.queue), jsonoptions);
                 if (queueList.Count > 1)
                 {
                     var box = MessageBoxManager.GetMessageBoxStandard(
@@ -234,7 +233,7 @@ namespace Nightmare_Editor
                 TextureList texturelist = new TextureList();
                 texturelist.Textures = textureLinks;
                 string jsonString = JsonSerializer.Serialize<TextureList>(texturelist, jsonoptions);
-                File.WriteAllText(Misc.Jsons.textures, jsonString);
+                File.WriteAllText(Paths.Jsons.textures, jsonString);
             }
             else
             {
@@ -242,7 +241,7 @@ namespace Nightmare_Editor
                 {
                     WriteIndented = true
                 };
-                string jsonString = File.ReadAllText(Misc.Jsons.textures);
+                string jsonString = File.ReadAllText(Paths.Jsons.textures);
                 textureLinks = JsonSerializer.Deserialize<TextureList>(jsonString, jsonoptions).Textures;
             }
         }
@@ -283,17 +282,17 @@ namespace Nightmare_Editor
         {
             try
             {
-                Directory.CreateDirectory(Misc.Paths.current);
+                Directory.CreateDirectory(Paths.Folders.current);
                 var files = await this.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
                 {
                     Title = "Select Game File",
                     AllowMultiple = false,
-                    FileTypeFilter = Misc.FileFilters.all,
+                    FileTypeFilter = Paths.FileFilters.all,
                 });
-                Path.Combine(Misc.Paths.basePath, "User-Added");
-                Directory.CreateDirectory(Path.Combine(Misc.Paths.basePath, "User-Added"));
-                Directory.CreateDirectory(Path.Combine(Misc.Paths.work, "User-Added"));
-                File.WriteAllText(Path.Combine(Misc.Paths.current, "User-Added.rbin"), "");
+                Path.Combine(Paths.Folders.basePath, "User-Added");
+                Directory.CreateDirectory(Path.Combine(Paths.Folders.basePath, "User-Added"));
+                Directory.CreateDirectory(Path.Combine(Paths.Folders.work, "User-Added"));
+                File.WriteAllText(Path.Combine(Paths.Folders.current, "User-Added.rbin"), "");
                 if (!string.IsNullOrWhiteSpace(files[0].Path.LocalPath))
                 {
                     if (Path.GetExtension(files[0].Path.LocalPath) == ".rbin")
@@ -301,7 +300,7 @@ namespace Nightmare_Editor
                         try
                         {
                             File.Copy(files[0].Path.LocalPath,
-                                Path.Combine(Misc.Paths.current, Path.GetFileName(files[0].Path.LocalPath)));
+                                Path.Combine(Paths.Folders.current, Path.GetFileName(files[0].Path.LocalPath)));
                             
                             EditorFile newFile = MakeEditorFile(Path.GetFileName(files[0].Path.LocalPath), Column.Rbin, false);
                             Files.Children.Add(newFile);
@@ -316,37 +315,37 @@ namespace Nightmare_Editor
                     }
                     else if (Path.GetExtension(files[0].Path.LocalPath) == ".ctt")
                     {
-                        string[] files2 = Directory.GetFiles(Path.Combine(Misc.Paths.work, "User-Added"), "*.*",
+                        string[] files2 = Directory.GetFiles(Path.Combine(Paths.Folders.work, "User-Added"), "*.*",
                             SearchOption.AllDirectories);
                         File.Copy(files[0].Path.LocalPath,
-                            Path.Combine(Misc.Paths.work, "User-Added",
+                            Path.Combine(Paths.Folders.work, "User-Added",
                                 $"{files2.Length}-{Path.GetFileName(files[0].Path.LocalPath)}"), true);
-                        CTT.Decode(Path.Combine(Misc.Paths.work, "User-Added",
+                        CTT.Decode(Path.Combine(Paths.Folders.work, "User-Added",
                             $"{files2.Length}-{Path.GetFileName(files[0].Path.LocalPath)}"));
                     }
                     else if (Containers.IsArc(files[0].Path.LocalPath))
                     {
-                        string[] files2 = Directory.GetFiles(Path.Combine(Misc.Paths.work, "User-Added"), "*.*",
+                        string[] files2 = Directory.GetFiles(Path.Combine(Paths.Folders.work, "User-Added"), "*.*",
                             SearchOption.AllDirectories);
                         File.Copy(files[0].Path.LocalPath,
-                            Path.Combine(Misc.Paths.work, "User-Added",
+                            Path.Combine(Paths.Folders.work, "User-Added",
                                 $"{files2.Length}-{Path.GetFileName(files[0].Path.LocalPath)}"), true);
-                        Containers.Generic.Unpack(Path.Combine(Misc.Paths.work, "User-Added",
+                        Containers.Generic.Unpack(Path.Combine(Paths.Folders.work, "User-Added",
                             $"{files2.Length}-{Path.GetFileName(files[0].Path.LocalPath)}"));
                     }
                     else
                     {
-                        string[] files2 = Directory.GetFiles(Path.Combine(Misc.Paths.work, "User-Added"), "*.*",
+                        string[] files2 = Directory.GetFiles(Path.Combine(Paths.Folders.work, "User-Added"), "*.*",
                             SearchOption.AllDirectories);
                         File.Copy(files[0].Path.LocalPath,
-                            Path.Combine(Misc.Paths.work, "User-Added",
+                            Path.Combine(Paths.Folders.work, "User-Added",
                                 $"{files2.Length}-{Path.GetFileName(files[0].Path.LocalPath)}"), true);
                     }
 
                     if (Path.GetExtension(files[0].Path.LocalPath) != ".rbin" &&
-                        !File.Exists(Path.Combine(Misc.Paths.current, "User-Added.rbin")))
+                        !File.Exists(Path.Combine(Paths.Folders.current, "User-Added.rbin")))
                     {
-                        File.WriteAllText(Path.Combine(Misc.Paths.current, "User-Added.rbin"), "");
+                        File.WriteAllText(Path.Combine(Paths.Folders.current, "User-Added.rbin"), "");
                     }
                 }
             }
@@ -358,7 +357,6 @@ namespace Nightmare_Editor
 
         private async Task ExtractRbinWithUI(EditorFile ef, string extractPath)
         {
-            
             runningOperations++;
             ef.IsHitTestVisible = false;
             ef.ProgressBar.IsVisible = true;
@@ -369,7 +367,9 @@ namespace Nightmare_Editor
             });
             await Task.Run(() =>
             {
-                RBIN.Load(extractPath, progress: progress);
+                string folder = Path.GetFileNameWithoutExtension(extractPath);
+                RBIN.Load(extractPath, Path.Combine(Paths.Folders.work), recursive: true, progress: progress);
+                RBIN.Load(extractPath, Path.Combine(Paths.Folders.basePath), recursive: false, progress: progress);
             });
             ef.IsHitTestVisible = true;
             ef.ProgressBar.IsVisible = false;
@@ -667,7 +667,7 @@ namespace Nightmare_Editor
             };
             InfoWindow.IsVisible = source == Column.File || source == Column.EmbeddedFile;
             
-            if (Directory.Exists(Path.Combine(Misc.Paths.work, GetSelecedFilePathFolder(destination))) && Enum.IsDefined(destination))
+            if (Directory.Exists(Path.Combine(Paths.Folders.work, GetSelecedFilePathFolder(destination))) && Enum.IsDefined(destination))
             {
                 await ListFiles(sender, destination, sourceColumn, destinationColumn);
                 await Dispatcher.UIThread.InvokeAsync(() =>
@@ -684,7 +684,7 @@ namespace Nightmare_Editor
             }
         }
 
-        private async Task ListFiles(object sender, Column destination, Controls sourceColumn, Controls destinationColumn)
+        private async Task ListFiles(object sender, Column destination, Avalonia.Controls.Controls sourceColumn, Avalonia.Controls.Controls destinationColumn)
         {
             try
             {
@@ -739,7 +739,7 @@ namespace Nightmare_Editor
                     {
                         ef.ProgressBar.Value = (double)message.current / (double)message.total;
                     });
-                    string searchDir = Path.Combine(Misc.Paths.work, GetSelecedFilePathFolder(destination));
+                    string searchDir = Path.Combine(Paths.Folders.work, GetSelecedFilePathFolder(destination));
                     string logText = $"Files in {ef.Text}";
                     if (Directory.Exists(searchDir))
                     {
@@ -852,7 +852,7 @@ namespace Nightmare_Editor
             }
             else if (filename.EndsWith(".txa"))
             {
-                AnimWindow anim = new AnimWindow(Path.Combine(Misc.Paths.work, filepath));
+                AnimWindow anim = new AnimWindow(Path.Combine(Paths.Folders.work, filepath));
                 anim.Show();
                 Log.Text = $"Opened {ef.Text} in Nightmare Animation Studio";
                 InfoWindow.IsVisible = false;
@@ -863,13 +863,13 @@ namespace Nightmare_Editor
         
         private async void AssignImage(string file, Column source)
         {
-            string path = Path.Combine(Misc.Paths.work, file);
+            string path = Path.Combine(Paths.Folders.work, file);
             displayedTextureName = Path.GetFileNameWithoutExtension(path);
             HexWindow.IsVisible = false;
             
             FileFormat.Text = ((CTT.Format)File.ReadAllBytes(path)[0x1C]).ToString();;
             MemoryStream ms = new MemoryStream();
-            NewTools.CTT.Decode(path, false).SaveAsPng(ms);
+            CTT.Decode(path, false).SaveAsPng(ms);
             ms.Seek(0, SeekOrigin.Begin);
             Bitmap bitmap = new Bitmap(ms);
             Bitmap bitmap2;
@@ -881,7 +881,7 @@ namespace Nightmare_Editor
             {
                 TextureSmall.Source = bitmap;
             }
-            FileName.Text = path.Replace(Misc.Paths.work + Path.DirectorySeparatorChar, "");
+            FileName.Text = path.Replace(Paths.Folders.work + Path.DirectorySeparatorChar, "");
             FileLink.Text = path;
             FileSize.Text = bitmap.PixelSize.Width.ToString() + "x" + bitmap.PixelSize.Height.ToString();
             bool found = false;
@@ -951,7 +951,7 @@ namespace Nightmare_Editor
             {
                 try
                 {
-                    Directory.Delete(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(requestedContextMenu.Text)), true);
+                    Directory.Delete(Path.Combine(Paths.Folders.work, Path.GetFileNameWithoutExtension(requestedContextMenu.Text)), true);
                 }
                 catch (Exception exception)
                 {
@@ -959,7 +959,7 @@ namespace Nightmare_Editor
                 }
                 try
                 {
-                    Directory.Delete(Path.Combine(Misc.Paths.basePath, Path.GetFileNameWithoutExtension(requestedContextMenu.Text)), true);
+                    Directory.Delete(Path.Combine(Paths.Folders.basePath, Path.GetFileNameWithoutExtension(requestedContextMenu.Text)), true);
                 }
                 catch (Exception exception)
                 {
@@ -967,7 +967,7 @@ namespace Nightmare_Editor
                 }
                 try
                 {
-                    File.Delete(Path.Combine(Misc.Paths.current, requestedContextMenu.Text));
+                    File.Delete(Path.Combine(Paths.Folders.current, requestedContextMenu.Text));
                 }
                 catch (Exception exception)
                 {
@@ -994,9 +994,9 @@ namespace Nightmare_Editor
             var result = await box.ShowAsPopupAsync(this);
             if (result == ButtonResult.Yes)
             {
-                if (Directory.Exists(Path.Combine(Misc.Paths.work, "User-Added", Path.GetFileNameWithoutExtension(requestedContextMenu.Text))));
-                Directory.Delete(Path.Combine(Misc.Paths.work, "User-Added", Path.GetFileNameWithoutExtension(requestedContextMenu.Text)), true);
-                File.Delete(Path.Combine(Misc.Paths.work, "User-Added", requestedContextMenu.Text));
+                if (Directory.Exists(Path.Combine(Paths.Folders.work, "User-Added", Path.GetFileNameWithoutExtension(requestedContextMenu.Text))));
+                Directory.Delete(Path.Combine(Paths.Folders.work, "User-Added", Path.GetFileNameWithoutExtension(requestedContextMenu.Text)), true);
+                File.Delete(Path.Combine(Paths.Folders.work, "User-Added", requestedContextMenu.Text));
                 Files2.Children.Remove(requestedContextMenu);
             }
         }
@@ -1012,16 +1012,16 @@ namespace Nightmare_Editor
             var result = await box.ShowAsPopupAsync(this);
             if (result == ButtonResult.Yes)
             {
-                await ExtractRbinWithUI(requestedContextMenu, Path.Combine(Misc.Paths.current, requestedContextMenu.Text));
+                await ExtractRbinWithUI(requestedContextMenu, Path.Combine(Paths.Folders.current, requestedContextMenu.Text));
             }
         }
 
         private void OpenFolder_Click(object sender, RoutedEventArgs e)
         {
-            if (File.Exists(Path.Combine(Misc.Paths.current, requestedContextMenu.Text)))
+            if (File.Exists(Path.Combine(Paths.Folders.current, requestedContextMenu.Text)))
             {
                 ProcessStartInfo StartInformation = new ProcessStartInfo();
-                StartInformation.FileName = Misc.Paths.current;
+                StartInformation.FileName = Paths.Folders.current;
                 StartInformation.UseShellExecute = true;
                 Process process = Process.Start(StartInformation);
             }
@@ -1029,11 +1029,11 @@ namespace Nightmare_Editor
 
         private void OpenFolder2_Click(object sender, RoutedEventArgs e)
         {
-            if (File.Exists(Path.Combine(Misc.Paths.work, GetSelectedFilePath(Column.File, true))))
+            if (File.Exists(Path.Combine(Paths.Folders.work, GetSelectedFilePath(Column.File, true))))
             {
-                string file = Path.Combine(Misc.Paths.work, GetSelectedFilePath(Column.File, true));
+                string file = Path.Combine(Paths.Folders.work, GetSelectedFilePath(Column.File, true));
                 ProcessStartInfo StartInformation = new ProcessStartInfo();
-                StartInformation.FileName = Path.Combine(Misc.Paths.work, GetSelecedFilePathFolder(Column.File));
+                StartInformation.FileName = Path.Combine(Paths.Folders.work, GetSelecedFilePathFolder(Column.File));
                 StartInformation.UseShellExecute = true;
                 Process process = Process.Start(StartInformation);
             }
@@ -1041,11 +1041,11 @@ namespace Nightmare_Editor
 
         private void OpenFolder3_Click(object sender, RoutedEventArgs e)
         {
-            if (File.Exists(Path.Combine(Misc.Paths.work, GetSelectedFilePath(Column.EmbeddedFile, true))))
+            if (File.Exists(Path.Combine(Paths.Folders.work, GetSelectedFilePath(Column.EmbeddedFile, true))))
             {
-                string file = Path.Combine(Misc.Paths.work, GetSelectedFilePath(Column.EmbeddedFile, true));
+                string file = Path.Combine(Paths.Folders.work, GetSelectedFilePath(Column.EmbeddedFile, true));
                 ProcessStartInfo StartInformation = new ProcessStartInfo();
-                StartInformation.FileName = Path.Combine(Misc.Paths.work, GetSelecedFilePathFolder(Column.EmbeddedFile));
+                StartInformation.FileName = Path.Combine(Paths.Folders.work, GetSelecedFilePathFolder(Column.EmbeddedFile));
                 StartInformation.UseShellExecute = true;
                 Process process = Process.Start(StartInformation);
             }
@@ -1058,7 +1058,7 @@ namespace Nightmare_Editor
             {
                 if (sender.EndsWith(enumValues[i].ToString()))
                 {
-                    return Misc.FileFilters.all[i + 1];
+                    return Paths.FileFilters.all[i + 1];
                 }
             }
             return null;
@@ -1070,14 +1070,14 @@ namespace Nightmare_Editor
             {
                 Title = "Select a file to open...",
                 AllowMultiple = false,
-                FileTypeFilter = Misc.FileFilters.rbin,
+                FileTypeFilter = Paths.FileFilters.rbin,
             });
             try
             {
                 if (!string.IsNullOrWhiteSpace(file[0].Path.LocalPath))
                 {
-                    File.Copy(file[0].Path.LocalPath, Path.Combine(Misc.Paths.current, requestedContextMenu.Text), true);
-                    RBIN.Load(file[0].Path.LocalPath);
+                    File.Copy(file[0].Path.LocalPath, Path.Combine(Paths.Folders.current, requestedContextMenu.Text), true);
+                    await ExtractRbinWithUI(requestedContextMenu, Path.Combine(Paths.Folders.current, requestedContextMenu.Text));
                 }
             }
             catch (Exception ex)
@@ -1116,20 +1116,20 @@ namespace Nightmare_Editor
                     {
                         if (Path.GetExtension(file[0].Path.LocalPath) == ".ctt")
                         {
-                            string path = Path.Combine(Misc.Paths.work, GetSelectedFilePath(Column.File, true));
+                            string path = Path.Combine(Paths.Folders.work, GetSelectedFilePath(Column.File, true));
                             File.Copy(file[0].Path.LocalPath, path, true);
                             CTT.Decode(path);
                         }
                         else if (Containers.IsArc(file[0].Path.LocalPath))
                         {
-                            string path = Path.Combine(Misc.Paths.work, GetSelectedFilePath(Column.File, true));
+                            string path = Path.Combine(Paths.Folders.work, GetSelectedFilePath(Column.File, true));
                             File.Copy(file[0].Path.LocalPath, path, true);
                             Containers.Generic.Unpack(path);
                             
                         }
                         else
                         {
-                            File.Copy(file[0].Path.LocalPath, Path.Combine(Misc.Paths.work, GetSelectedFilePath(Column.File, true)), true);
+                            File.Copy(file[0].Path.LocalPath, Path.Combine(Paths.Folders.work, GetSelectedFilePath(Column.File, true)), true);
                         }
                     }
                     catch (Exception ex)
@@ -1161,8 +1161,8 @@ namespace Nightmare_Editor
                 }
                 if (!found)
                 {
-                    NewTools.CTT.Decode(Path.Combine(Misc.Paths.work, GetSelectedFilePath(Column.File, true)), true);
-                    string[] files2 = Directory.GetFiles(Path.Combine(Misc.Paths.work, GetSelecedFilePathFolder(Column.File)), $"{requestedContextMenu.Name}.*.png", SearchOption.AllDirectories);
+                    CTT.Decode(Path.Combine(Paths.Folders.work, GetSelectedFilePath(Column.File, true)), true);
+                    string[] files2 = Directory.GetFiles(Path.Combine(Paths.Folders.work, GetSelecedFilePathFolder(Column.File)), $"{requestedContextMenu.Name}.*.png", SearchOption.AllDirectories);
                     if (files2.Length < 1)
                     {
                         Log.Text = "Couldn't find a texture to pack.";
@@ -1173,14 +1173,14 @@ namespace Nightmare_Editor
                 }
                 
                 Log.Text = "Packing...";
-                NewTools.CTT.Encode(Path.Combine(Misc.Paths.work, GetSelectedFilePath(Column.File, true)), file2);
+                CTT.Encode(Path.Combine(Paths.Folders.work, GetSelectedFilePath(Column.File, true)), file2);
                 Log.Text = $"Packed {requestedContextMenu.Text}!";
             }
             
-            else if (Containers.IsArc(requestedContextMenu.Text) && Directory.Exists(Path.Combine(Misc.Paths.work, Path.GetFileNameWithoutExtension(selectedRbin.Text), Path.GetFileNameWithoutExtension(requestedContextMenu.Name))))
+            else if (Containers.IsArc(requestedContextMenu.Text) && Directory.Exists(Path.Combine(Paths.Folders.work, Path.GetFileNameWithoutExtension(selectedRbin.Text), Path.GetFileNameWithoutExtension(requestedContextMenu.Name))))
             {
                 ShowGenericWarning();
-                Containers.Generic.Pack(Path.Combine(Misc.Paths.work, GetSelectedFilePath(Column.File, true)));
+                Containers.Generic.Pack(Path.Combine(Paths.Folders.work, GetSelectedFilePath(Column.File, true)));
                 Log.Text = $"Packed {requestedContextMenu.Text}!";
             }
             else
@@ -1219,14 +1219,14 @@ namespace Nightmare_Editor
                     {
                         if (Path.GetExtension(file[0].Path.LocalPath) == ".ctt")
                         {
-                            File.Copy(file[0].Path.LocalPath, Path.Combine(Misc.Paths.work, GetSelectedFilePath(Column.EmbeddedFile, true)), true);
-                            File.Copy(file[0].Path.LocalPath, Path.Combine(Misc.Paths.toolkit, requestedContextMenu.Text), true);
-                            CTT.Decode(Path.Combine(Misc.Paths.work, GetSelectedFilePath(Column.EmbeddedFile, true)));
+                            File.Copy(file[0].Path.LocalPath, Path.Combine(Paths.Folders.work, GetSelectedFilePath(Column.EmbeddedFile, true)), true);
+                            File.Copy(file[0].Path.LocalPath, Path.Combine(Paths.Folders.toolkit, requestedContextMenu.Text), true);
+                            CTT.Decode(Path.Combine(Paths.Folders.work, GetSelectedFilePath(Column.EmbeddedFile, true)));
 
                         }
                         else
                         {
-                            File.Copy(file[0].Path.LocalPath, Path.Combine(Misc.Paths.work, GetSelectedFilePath(Column.EmbeddedFile, true)), true);
+                            File.Copy(file[0].Path.LocalPath, Path.Combine(Paths.Folders.work, GetSelectedFilePath(Column.EmbeddedFile, true)), true);
                         }
                     }
                     catch (Exception ex)
@@ -1258,8 +1258,8 @@ namespace Nightmare_Editor
                 }
                 if (!found)
                 {
-                    NewTools.CTT.Decode(Path.Combine(Misc.Paths.work, GetSelectedFilePath(Column.EmbeddedFile, true)), true);
-                    string[] files2 = Directory.GetFiles(Path.Combine(Misc.Paths.work, GetSelecedFilePathFolder(Column.EmbeddedFile)), $"{requestedContextMenu.Text}.*.png", SearchOption.AllDirectories);
+                    CTT.Decode(Path.Combine(Paths.Folders.work, GetSelectedFilePath(Column.EmbeddedFile, true)), true);
+                    string[] files2 = Directory.GetFiles(Path.Combine(Paths.Folders.work, GetSelecedFilePathFolder(Column.EmbeddedFile)), $"{requestedContextMenu.Text}.*.png", SearchOption.AllDirectories);
                     if (files2.Length < 1)
                     {
                         Log.Text = "Couldn't find a texture to pack.";
@@ -1268,7 +1268,7 @@ namespace Nightmare_Editor
                     file2 = files2[0];
                 }
                 Log.Text = "Packing...";
-                NewTools.CTT.Encode(Path.Combine(Misc.Paths.work, GetSelectedFilePath(Column.EmbeddedFile, true)), file2);
+                CTT.Encode(Path.Combine(Paths.Folders.work, GetSelectedFilePath(Column.EmbeddedFile, true)), file2);
                 Log.Text = $"Packed {requestedContextMenu.Text}!";
             }
         }
@@ -1376,28 +1376,39 @@ namespace Nightmare_Editor
                     }
                     if (!found)
                     {
-                        string[] files2 = Directory.GetFiles(Path.Combine(Misc.Paths.work, Path.GetDirectoryName(file), Path.GetFileNameWithoutExtension(file)), $"{Path.GetFileName(file)}.*.png", SearchOption.AllDirectories);
+                        string[] files2 = Directory.GetFiles(Path.Combine(Paths.Folders.work, Path.GetDirectoryName(file), Path.GetFileNameWithoutExtension(file)), $"{Path.GetFileName(file)}.*.png", SearchOption.AllDirectories);
                         file2 = files2[0];
                     }
-                    NewTools.CTT.Encode(Path.Combine(Misc.Paths.work, file), file2);
+                    CTT.Encode(Path.Combine(Paths.Folders.work, file), file2);
                     Log.Text = $"Packed {file}!";
                 }
-                else if (Containers.IsArc(file) && Directory.Exists(Path.Combine(Misc.Paths.work, Path.GetDirectoryName(file), Path.GetFileNameWithoutExtension(file))))
+                else if (Containers.IsArc(file) && Directory.Exists(Path.Combine(Paths.Folders.work, Path.GetDirectoryName(file), Path.GetFileNameWithoutExtension(file))))
                 {
                     ShowGenericWarning();
-                    Containers.Generic.Pack(Path.Combine(Misc.Paths.work, file));
+                    Containers.Generic.Pack(Path.Combine(Paths.Folders.work, file));
                     Log.Text = $"Packed {file}!";
                 }
                 else if (file.EndsWith(".rbin"))
                 { 
-                    BetterDirCopy(Path.Combine(Misc.Paths.basePath, Path.GetFileNameWithoutExtension(file)), Path.Combine(Misc.Paths.pack, Path.GetFileNameWithoutExtension(file)), false, false);
-                    RBIN.Pack(Path.Combine(Misc.Paths.pack, file), false, this);
+                    BetterDirCopy(Path.Combine(Paths.Folders.basePath, Path.GetFileNameWithoutExtension(file)), Path.Combine(Paths.Folders.pack, Path.GetFileNameWithoutExtension(file)), false, false);
+                    byte[] rbin = RBIN.Pack(Path.Combine(Paths.Folders.pack, file));
+                    var save = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+                    {
+                        Title = "Save packed file...",
+                        FileTypeChoices = Paths.FileFilters.rbin
+                
+                    });
+                    if (save is null) continue;
+                    if (!string.IsNullOrWhiteSpace(save.Path.LocalPath))
+                    {
+                        File.WriteAllBytes(save.Path.LocalPath, rbin);
+                    }
                     Log.Text = $"Packed {file}!";
                 }
                 if (file.Length - file.Replace(Path.DirectorySeparatorChar.ToString(), "").Length == 1)
                 {
-                    Directory.CreateDirectory(Path.Combine(Misc.Paths.pack, Path.GetDirectoryName(file)));
-                    File.Copy(Path.Combine(Misc.Paths.work, file), Path.Combine(Misc.Paths.pack, file), true);
+                    Directory.CreateDirectory(Path.Combine(Paths.Folders.pack, Path.GetDirectoryName(file)));
+                    File.Copy(Path.Combine(Paths.Folders.work, file), Path.Combine(Paths.Folders.pack, file), true);
                 }
             }
         }
@@ -1411,7 +1422,7 @@ namespace Nightmare_Editor
             {
                 WriteIndented = true
             };
-            string jsonString = System.IO.File.ReadAllText(Misc.Jsons.temp);
+            string jsonString = System.IO.File.ReadAllText(Paths.Jsons.temp);
             Meta mod = JsonSerializer.Deserialize<Meta>(jsonString, jsonoptions);
             foreach (string file in allfiles)
             {
@@ -1445,30 +1456,30 @@ namespace Nightmare_Editor
                     }
                     if (!found)
                     {
-                        string[] files2 = Directory.GetFiles(Path.Combine(Misc.Paths.work, Path.GetDirectoryName(file), Path.GetFileNameWithoutExtension(file)), $"{Path.GetFileName(file)}.*.png", SearchOption.AllDirectories);
+                        string[] files2 = Directory.GetFiles(Path.Combine(Paths.Folders.work, Path.GetDirectoryName(file), Path.GetFileNameWithoutExtension(file)), $"{Path.GetFileName(file)}.*.png", SearchOption.AllDirectories);
                         file2 = files2[0];
                     }
-                    NewTools.CTT.Encode(Path.Combine(Misc.Paths.work, file), file2);
+                    CTT.Encode(Path.Combine(Paths.Folders.work, file), file2);
                     Log.Text = $"Packed {file}!";
                 }
-                else if (Containers.IsArc(file) && Directory.Exists(Path.Combine(Misc.Paths.work, Path.GetDirectoryName(file), Path.GetFileNameWithoutExtension(file))))
+                else if (Containers.IsArc(file) && Directory.Exists(Path.Combine(Paths.Folders.work, Path.GetDirectoryName(file), Path.GetFileNameWithoutExtension(file))))
                 {
                     ShowGenericWarning();
-                    Containers.Generic.Pack(Path.Combine(Misc.Paths.work, file));
+                    Containers.Generic.Pack(Path.Combine(Paths.Folders.work, file));
                     Log.Text = $"Packed {file}!";
                 }
                 if (file.Length - file.Replace(Path.DirectorySeparatorChar.ToString(), "").Length == 1)
                 {
-                    string endpath = Nightmare_Editor_AUI.Managers.Standard.GetModFolder(mod.ID);
+                    string endpath = NightmareEditor.Managers.Standard.GetModFolder(mod.ID);
                     if (!string.IsNullOrWhiteSpace(mod.Prefix))
                     {
                         endpath = Path.Combine(endpath, mod.Prefix);
                     }
                     Directory.CreateDirectory(Path.Combine(endpath, Path.GetDirectoryName(file)));
-                    File.Copy(Path.Combine(Misc.Paths.work, file), Path.Combine(endpath, file), true);
+                    File.Copy(Path.Combine(Paths.Folders.work, file), Path.Combine(endpath, file), true);
                 }
             }
-            File.Delete(Misc.Jsons.temp);
+            File.Delete(Paths.Jsons.temp);
             ZipMod(mod);
         }
 
@@ -1605,10 +1616,10 @@ namespace Nightmare_Editor
         {
             if (FileLink.Text.EndsWith(".ctt"))
             {
-                Directory.CreateDirectory(Misc.Paths.temp);
-                Directory.CreateDirectory(Path.GetDirectoryName(Path.Combine(Misc.Paths.temp, FileName.Text)));
-                string file = Path.Combine(Misc.Paths.work, FileName.Text);
-                string save = Path.Combine(Misc.Paths.temp, FileName.Text);
+                Directory.CreateDirectory(Paths.Folders.temp);
+                Directory.CreateDirectory(Path.GetDirectoryName(Path.Combine(Paths.Folders.temp, FileName.Text)));
+                string file = Path.Combine(Paths.Folders.work, FileName.Text);
+                string save = Path.Combine(Paths.Folders.temp, FileName.Text);
                 var image = CTT.Decode(file, false);
                 image.SaveAsPng(save);
                 System.Diagnostics.Process.Start(new ProcessStartInfo
@@ -1656,7 +1667,7 @@ namespace Nightmare_Editor
                 {
                     Texture.Source = TextureSmall.Source;
                 }
-                FileLink.Text = Path.Combine(Misc.Paths.work, FileName.Text);
+                FileLink.Text = Path.Combine(Paths.Folders.work, FileName.Text);
             }
             QuickJson(true);
         }
@@ -1766,7 +1777,7 @@ namespace Nightmare_Editor
         {
             if (!(runningOperations > 0))
             {
-                if (Nightmare_Editor_AUI.Managers.Standard.MainSettings.UI == 0)
+                if (NightmareEditor.Managers.Standard.MainSettings.UI == 0)
                 {
                     Manager mw = new Manager();
                     mw.Show();
@@ -1782,19 +1793,19 @@ namespace Nightmare_Editor
 
         private async void ZipMod(Meta meta)
         {
-            string folderpath = Nightmare_Editor_AUI.Managers.Standard.GetModFolder(meta.ID);
+            string folderpath = NightmareEditor.Managers.Standard.GetModFolder(meta.ID);
             if (Directory.Exists(folderpath))
             {
                 try
                 {
-                    Misc.CopyDirectory(folderpath, Path.Combine(Misc.Paths.temp, meta.ID, meta.Name), true);
+                    Misc.CopyDirectory(folderpath, Path.Combine(Paths.Folders.temp, meta.ID, meta.Name), true);
 
                     var jsonoptions = new JsonSerializerOptions
                     {
                         WriteIndented = true
                     };
                     string jsonString = JsonSerializer.Serialize(meta, jsonoptions);
-                    string filepath = Path.Combine(Misc.Paths.temp, meta.ID, meta.Name, "meta.json");
+                    string filepath = Path.Combine(Paths.Folders.temp, meta.ID, meta.Name, "meta.json");
                     System.IO.File.WriteAllText(filepath, jsonString);
                     var file = await this.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
                     {
@@ -1813,9 +1824,9 @@ namespace Nightmare_Editor
                         return;
                     }
                     using var archive = SharpCompress.Archives.Zip.ZipArchive.CreateArchive();
-                    archive.AddAllFromDirectory(Path.Combine(Misc.Paths.temp, meta.ID));
+                    archive.AddAllFromDirectory(Path.Combine(Paths.Folders.temp, meta.ID));
                     archive.SaveTo(file.Path.LocalPath, SharpCompress.Common.CompressionType.Deflate);
-                    Directory.Delete(Path.Combine(Misc.Paths.temp, meta.ID, meta.Name), true);
+                    Directory.Delete(Path.Combine(Paths.Folders.temp, meta.ID, meta.Name), true);
                 }
                 catch { }
             }
@@ -1847,7 +1858,7 @@ namespace Nightmare_Editor
                 });
                 if (!string.IsNullOrWhiteSpace(save.Path.LocalPath) && save != null)
                 {
-                    string file = Path.Combine(Misc.Paths.work, FileName.Text);
+                    string file = Path.Combine(Paths.Folders.work, FileName.Text);
                     var image = CTT.Decode(file, false);
                     image.SaveAsPng(save.Path.LocalPath);
                 }
@@ -1890,7 +1901,7 @@ namespace Nightmare_Editor
                     WriteIndented = true
                 };
                 string jsonString = JsonSerializer.Serialize<List<string>>(allfiles, jsonoptions);
-                File.WriteAllText(Misc.Jsons.queue, jsonString);
+                File.WriteAllText(Paths.Jsons.queue, jsonString);
             }
         }
     }

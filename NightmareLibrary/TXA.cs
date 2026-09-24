@@ -11,10 +11,10 @@ using System.Reflection;
 using SixLabors.ImageSharp.ColorSpaces;
 using System.Text.Json.Serialization;
 using SixLabors.ImageSharp.Processing;
-using static Nightmare_Editor.NewTools.TXA;
+using static NightmareLibrary.TXA;
 
 
-namespace Nightmare_Editor.NewTools
+namespace NightmareLibrary
 {
     /// <summary>
     /// TXA Encoding/Decoding.
@@ -71,7 +71,7 @@ namespace Nightmare_Editor.NewTools
         /// <summary>
         /// Create a TXAFile class from a TXA file.
         /// </summary>
-        public static (TXAFile TXAFile, Misc.ErrorCode ErrorCode, string ErrorValue) Load(string file, string searchDir = "defaultDir/puttingstuffheretomakesurenooneusesthisexactstringofcharacters/hiitsmesolt11/balls")
+        public static (TXAFile TXAFile, Misc.ErrorCode ErrorCode, string ErrorValue) Load(string file, string searchDir)
         {
             TXAFile txa = new TXAFile();
             txa.Groups = new List<AnimGroup>();
@@ -94,18 +94,10 @@ namespace Nightmare_Editor.NewTools
                 byte[] textBytes = {data[j++], data[j++], data[j++], data[j++], data[j++], data[j++], data[j++], data[j++], data[j++], data[j++], data[j++], data[j++], data[j++], data[j++], data[j++], data[j++], data[j++], data[j++], data[j++], data[j++], data[j++], data[j++], data[j++], data[j++] };
                 textBytes = textBytes.Where(b => b != 0).ToArray();
                 group.DestTexture = System.Text.Encoding.ASCII.GetString(textBytes);
-                string search = Path.Combine(Misc.Paths.work, Path.GetFileName(Path.GetDirectoryName(file)));
-                if (searchDir != "defaultDir/puttingstuffheretomakesurenooneusesthisexactstringofcharacters/hiitsmesolt11/balls")
-                    search = searchDir;
-                string[] files2 = Directory.GetFiles(search, $"*{group.DestTexture}.ctt", SearchOption.AllDirectories);
-                if (files2.Length == 0 && search == Path.Combine(Misc.Paths.work, Path.GetFileName(Path.GetDirectoryName(file))))
-                {
-                    search = Misc.Paths.work;
-                    files2 = Directory.GetFiles(search, $"*{group.DestTexture}.ctt", SearchOption.AllDirectories);
-                }
+                string[] files2 = Directory.GetFiles(searchDir, $"*{group.DestTexture}.ctt", SearchOption.AllDirectories);
                 if (files2.Length == 0)
                 {
-                    return (null, Misc.ErrorCode.FailedFileFind, "Could not find Destination Texture: " + group.DestTexture);
+                    return (null, Misc.ErrorCode.FailedFileFind, "Could not find Destination Texture: \"" + group.DestTexture + "\" in directory \"" + searchDir + "\".");
                 }
                 string file2 = files2[0];
                 byte[] data2 = File.ReadAllBytes(file2);

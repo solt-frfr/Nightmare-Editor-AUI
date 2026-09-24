@@ -3,7 +3,7 @@ using System.Globalization;
 using Avalonia;
 using Avalonia.Data.Converters;
 
-namespace Nightmare_Editor_AUI.Controls;
+namespace NightmareEditor.Controls;
 
     public class PixelWidth : IValueConverter
     {

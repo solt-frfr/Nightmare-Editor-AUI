@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Nightmare_Editor_AUI.Controls;
+namespace NightmareEditor.Controls;
 
 public class KH3DFonts
 {
