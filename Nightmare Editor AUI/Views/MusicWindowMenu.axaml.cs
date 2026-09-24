@@ -173,6 +173,7 @@ public partial class MusicWindowMenu : UserControl
         string jsonString = JsonSerializer.Serialize<MusicList>(musiclist, Managers.Standard.WriteIndented);
         File.WriteAllText(Misc.Jsons.music, jsonString);
         RequestRefresh?.Invoke(this, EventArgs.Empty);
+        
     }
 
     private void ReplaceButton_Hover(object? sender, PointerEventArgs e)
