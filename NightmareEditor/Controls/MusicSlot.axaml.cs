@@ -98,7 +98,7 @@ public partial class MusicSlot : UserControl
         {
             InternalImage.Source = new SvgImage
             {
-                Source = SvgSource.Load($"avares://Nightmare Editor AUI/Images/synthesis-purple.svg")
+                Source = SvgSource.Load($"avares://{App.AssemblyName}/Images/synthesis-purple.svg")
             }; 
             InternalRectangle.Fill = new LinearGradientBrush()
             {
@@ -115,7 +115,7 @@ public partial class MusicSlot : UserControl
         {
             InternalImage.Source = new SvgImage
             {
-                Source = SvgSource.Load($"avares://Nightmare Editor AUI/Images/synthesis-red.svg")
+                Source = SvgSource.Load($"avares://{App.AssemblyName}/Images/synthesis-red.svg")
             }; 
             InternalRectangle.Fill = new LinearGradientBrush()
             {

@@ -18,8 +18,8 @@
     <Window.Resources>
         <controls:PixelWidth x:Key="PixelWidth"/>
         <controls:PixelMargin x:Key="PixelMargin"/>
-        <FontFamily x:Key="JetBrains Mono">avares://Nightmare Editor AUI/Assets/fonts#JetBrains Mono</FontFamily>
-        <FontFamily x:Key="KH2 Menu">avares://Nightmare Editor AUI/Assets/fonts#KH2 ALL MENU</FontFamily>
+        <FontFamily x:Key="JetBrains Mono">avares://NightmareEditor/Assets/fonts#JetBrains Mono</FontFamily>
+        <FontFamily x:Key="KH2 Menu">avares://NightmareEditor/Assets/fonts#KH2 ALL MENU</FontFamily>
     </Window.Resources>
     <Grid>
         <Grid Margin="10" ColumnDefinitions="3*,2*" RowDefinitions="1*,3*,0.5*">

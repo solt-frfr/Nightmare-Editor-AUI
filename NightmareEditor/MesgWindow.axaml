@@ -11,8 +11,8 @@
     <Window.Resources>
         <controls:PixelWidthCustom x:Key="PixelWidth"/>
         <controls:PixelMarginCustom x:Key="PixelMargin"/>
-        <FontFamily x:Key="JetBrains Mono">avares://Nightmare Editor AUI/Assets/fonts#JetBrains Mono</FontFamily>
-        <FontFamily x:Key="KH2 Menu">avares://Nightmare Editor AUI/Assets/fonts#KH2 ALL MENU</FontFamily>
+        <FontFamily x:Key="JetBrains Mono">avares://NightmareEditor/Assets/fonts#JetBrains Mono</FontFamily>
+        <FontFamily x:Key="KH2 Menu">avares://NightmareEditor/Assets/fonts#KH2 ALL MENU</FontFamily>
     </Window.Resources>
     <LayoutTransformControl Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=160|0|0|0|0}">
         <LayoutTransformControl.LayoutTransform>

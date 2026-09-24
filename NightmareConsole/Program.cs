@@ -14,7 +14,7 @@ string[] AllPaths = File.ReadAllLines(Path.Combine(AppContext.BaseDirectory, "fi
 
 Console.ForegroundColor = ConsoleColor.Green;
 Console.WriteLine("________________________________________________________________________________");
-Console.WriteLine("::::::::::::::::::: Kingdom Hearts 3D Romhacking Suite v0.0.0 ::::::::::::::::::");
+Console.WriteLine("::::::::::::::::::: Kingdom Hearts 3D Romhacking Suite v0.5.0 ::::::::::::::::::");
 Console.ForegroundColor = ConsoleColor.White;
 Console.WriteLine("________________________________________________________________________________");
 Console.ForegroundColor = ConsoleColor.Yellow;

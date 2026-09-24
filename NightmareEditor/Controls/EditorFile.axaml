@@ -5,7 +5,7 @@
              mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="50"
              x:Class="NightmareEditor.Controls.EditorFile">
     <UserControl.Resources>
-        <FontFamily x:Key="JetBrains Mono">avares://Nightmare Editor AUI/Assets/fonts#JetBrains Mono</FontFamily>
+        <FontFamily x:Key="JetBrains Mono">avares://NightmareEditor/Assets/fonts#JetBrains Mono</FontFamily>
     </UserControl.Resources>
     <Grid Name="Grid" Height="20" Cursor="Hand">
         <Border Name="Border" BorderBrush="#424242" BorderThickness="2" PointerPressed="Press" PointerReleased="Release" PointerExited="EndHover">

@@ -175,7 +175,7 @@ namespace NightmareEditor
                 {
                     return null;
                 }
-                return new Bitmap(AssetLoader.Open(new Uri($"avares://Nightmare Editor AUI/{resource}", UriKind.RelativeOrAbsolute)));
+                return new Bitmap(AssetLoader.Open(new Uri($"avares://{App.AssemblyName}/{resource}", UriKind.RelativeOrAbsolute)));
             }
             catch { return null; }
         }
@@ -206,14 +206,14 @@ namespace NightmareEditor
             string[] griditems = CountFolders(Paths.Folders.mods);
             Settings settings = new Settings();
             List<string> blacklist = new List<string>();
-            List<MusicEntry> musicEntries = JsonSerializer.Deserialize<List<MusicEntry>>(AssetLoader.Open(new Uri($"avares://Nightmare Editor AUI/Music/database.json", UriKind.RelativeOrAbsolute)), WriteIndented);
+            List<MusicEntry> musicEntries = JsonSerializer.Deserialize<List<MusicEntry>>(AssetLoader.Open(new Uri($"avares://{App.AssemblyName}/Music/database.json", UriKind.RelativeOrAbsolute)), WriteIndented);
             MusicInputBox.Items.Clear();
             MusicDescPanel.IsVisible = false;
             for (int i = 0; i < musicEntries.Count; i++)
             {
                 MusicInputBox.Items.Add(musicEntries[i].Track);
             }
-            List<MusicEntry> musicOutEntries = JsonSerializer.Deserialize<List<MusicEntry>>(AssetLoader.Open(new Uri($"avares://Nightmare Editor AUI/Music/replacedb.json", UriKind.RelativeOrAbsolute)), WriteIndented);
+            List<MusicEntry> musicOutEntries = JsonSerializer.Deserialize<List<MusicEntry>>(AssetLoader.Open(new Uri($"avares://{App.AssemblyName}/Music/replacedb.json", UriKind.RelativeOrAbsolute)), WriteIndented);
             MusicOutputBox.Items.Clear();
             MusicOutputBox.Items.Add("Custom File");
             for (int i = 0; i < musicOutEntries.Count; i++)
@@ -237,7 +237,7 @@ namespace NightmareEditor
                 {
                     settings.DefaultImage = 0;
                 }
-                Preview.Source = new Bitmap(AssetLoader.Open(new Uri($"avares://Nightmare Editor AUI/Images/Preview{settings.DefaultImage}.png", UriKind.RelativeOrAbsolute)));
+                Preview.Source = new Bitmap(AssetLoader.Open(new Uri($"avares://{App.AssemblyName}/Images/Preview{settings.DefaultImage}.png", UriKind.RelativeOrAbsolute)));
                 MusicCheckBox.IsChecked = settings.UseMusicReplacements;
             }
 
@@ -443,12 +443,12 @@ namespace NightmareEditor
                 }
                 else
                 {
-                    Preview.Source = new Bitmap(AssetLoader.Open(new Uri($"avares://Nightmare Editor AUI/Images/Preview{DefPrevBox.SelectedIndex}.png", UriKind.RelativeOrAbsolute)));
+                    Preview.Source = new Bitmap(AssetLoader.Open(new Uri($"avares://{App.AssemblyName}/Images/Preview{DefPrevBox.SelectedIndex}.png", UriKind.RelativeOrAbsolute)));
                 }
             }
             catch
             {
-                Preview.Source = new Bitmap(AssetLoader.Open(new Uri($"avares://Nightmare Editor AUI/Images/Preview{DefPrevBox.SelectedIndex}.png", UriKind.RelativeOrAbsolute)));
+                Preview.Source = new Bitmap(AssetLoader.Open(new Uri($"avares://{App.AssemblyName}/Images/Preview{DefPrevBox.SelectedIndex}.png", UriKind.RelativeOrAbsolute)));
             }
         }
 
@@ -699,7 +699,7 @@ namespace NightmareEditor
         {
             Meta row = (Meta)ModDataGrid.SelectedItem;
             MakePack edit = new MakePack(row);
-            Preview.Source = new Bitmap(AssetLoader.Open(new Uri($"avares://Nightmare Editor AUI/Images/Preview{DefPrevBox.SelectedIndex}.png", UriKind.RelativeOrAbsolute)));
+            Preview.Source = new Bitmap(AssetLoader.Open(new Uri($"avares://{App.AssemblyName}/Images/Preview{DefPrevBox.SelectedIndex}.png", UriKind.RelativeOrAbsolute)));
             try
             {
                 edit.ShowDialog(this);
@@ -852,7 +852,7 @@ namespace NightmareEditor
         {
             if (sender is ComboBox comboBox && comboBox.SelectedIndex != null && comboBox.SelectedValue != null)
             {
-                List<MusicEntry> musicEntries = JsonSerializer.Deserialize<List<MusicEntry>>(AssetLoader.Open(new Uri($"avares://Nightmare Editor AUI/Music/database.json", UriKind.RelativeOrAbsolute)), WriteIndented);
+                List<MusicEntry> musicEntries = JsonSerializer.Deserialize<List<MusicEntry>>(AssetLoader.Open(new Uri($"avares://{App.AssemblyName}/Music/database.json", UriKind.RelativeOrAbsolute)), WriteIndented);
                 var correct = musicEntries.FirstOrDefault(me => me.Track == comboBox.SelectedValue.ToString());
                 MusicInfoBox1.Text = correct.Description;
                 MusicInfoBox2.Text = correct.Filename;
@@ -889,7 +889,7 @@ namespace NightmareEditor
                 }
                 else
                 {
-                    List<MusicEntry> musicEntries = JsonSerializer.Deserialize<List<MusicEntry>>(AssetLoader.Open(new Uri($"avares://Nightmare Editor AUI/Music/replacedb.json", UriKind.RelativeOrAbsolute)), WriteIndented);
+                    List<MusicEntry> musicEntries = JsonSerializer.Deserialize<List<MusicEntry>>(AssetLoader.Open(new Uri($"avares://{App.AssemblyName}/Music/replacedb.json", UriKind.RelativeOrAbsolute)), WriteIndented);
                     var correct = musicEntries.FirstOrDefault(me => me.Track == comboBox.SelectedValue.ToString());
                     MusicOutInfoBox.Text = correct.Description;
                 }
@@ -916,7 +916,7 @@ namespace NightmareEditor
 
         private void MusicReplaceButton_OnClick(object? sender, RoutedEventArgs e)
         {
-            List<MusicEntry> musicEntries = JsonSerializer.Deserialize<List<MusicEntry>>(AssetLoader.Open(new Uri($"avares://Nightmare Editor AUI/Music/database.json", UriKind.RelativeOrAbsolute)), WriteIndented);
+            List<MusicEntry> musicEntries = JsonSerializer.Deserialize<List<MusicEntry>>(AssetLoader.Open(new Uri($"avares://{App.AssemblyName}/Music/database.json", UriKind.RelativeOrAbsolute)), WriteIndented);
             var correct = musicEntries.FirstOrDefault(me => me.Track == MusicInputBox.SelectedValue.ToString());
             MusicEntry replace;
             if (MusicOutputBox.SelectedIndex == 0)
@@ -931,7 +931,7 @@ namespace NightmareEditor
             }
             else
             {
-                List<MusicEntry> musicOutEntries = JsonSerializer.Deserialize<List<MusicEntry>>(AssetLoader.Open(new Uri($"avares://Nightmare Editor AUI/Music/replacedb.json", UriKind.RelativeOrAbsolute)), WriteIndented);
+                List<MusicEntry> musicOutEntries = JsonSerializer.Deserialize<List<MusicEntry>>(AssetLoader.Open(new Uri($"avares://{App.AssemblyName}/Music/replacedb.json", UriKind.RelativeOrAbsolute)), WriteIndented);
                 replace = musicOutEntries.FirstOrDefault(me => me.Track == MusicOutputBox.SelectedValue.ToString());
                 replace.IsInternalFile = true;
             }

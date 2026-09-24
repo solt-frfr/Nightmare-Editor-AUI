@@ -1528,7 +1528,7 @@ namespace NightmareEditor
             }
             if (windowSwap)
             {
-                Queue.Source = new Bitmap(AssetLoader.Open(new Uri($"avares://Nightmare Editor AUI/Images/unqueue.png", UriKind.RelativeOrAbsolute)));
+                Queue.Source = new Bitmap(AssetLoader.Open(new Uri($"avares://{App.AssemblyName}/Images/unqueue.png", UriKind.RelativeOrAbsolute)));
                 if (InfoWindow.IsVisible == true)
                 {
                     windowStore = true;
@@ -1543,7 +1543,7 @@ namespace NightmareEditor
             }
             else
             {
-                Queue.Source = new Bitmap(AssetLoader.Open(new Uri($"avares://Nightmare Editor AUI/Images/queue.png", UriKind.RelativeOrAbsolute)));
+                Queue.Source = new Bitmap(AssetLoader.Open(new Uri($"avares://{App.AssemblyName}/Images/queue.png", UriKind.RelativeOrAbsolute)));
                 if (windowStore)
                 {
                     InfoWindow.IsVisible = true;

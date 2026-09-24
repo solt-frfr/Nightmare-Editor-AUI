@@ -9,7 +9,7 @@
         <local:ViewLocator/>
     </Application.DataTemplates>
 	<Application.Resources>
-        <FontFamily x:Key="Ubuntu Sans">avares://Nightmare Editor AUI/Assets/fonts#Ubuntu Sans</FontFamily>
+        <FontFamily x:Key="Ubuntu Sans">avares://NightmareEditor/Assets/fonts#Ubuntu Sans</FontFamily>
 		<x:Double x:Key="DataGridSortIconMinWidth">0</x:Double> 
 		<x:Double x:Key="DataGridSortIconMinHeight">0</x:Double> 
 	</Application.Resources>

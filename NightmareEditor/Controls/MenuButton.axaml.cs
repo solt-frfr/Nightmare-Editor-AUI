@@ -87,7 +87,7 @@ public partial class MenuButton : UserControl
         InternalGrid.Margin = new Thickness(12 * Scale,0,0,0);
         InternalImage.Source = new SvgImage
         {
-            Source = SvgSource.Load($"avares://Nightmare Editor AUI/Images/menu_selected.svg")
+            Source = SvgSource.Load($"avares://{App.AssemblyName}/Images/menu_selected.svg")
         };
         InternalImage.Effect = new DropShadowEffect
         {
@@ -114,7 +114,7 @@ public partial class MenuButton : UserControl
 
         InternalImage.Source = new SvgImage
         {
-            Source = SvgSource.Load($"avares://Nightmare Editor AUI/Images/menu_option.svg")
+            Source = SvgSource.Load($"avares://{App.AssemblyName}/Images/menu_option.svg")
         };
         InternalImage.Effect = null;
 

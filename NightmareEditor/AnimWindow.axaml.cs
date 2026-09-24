@@ -552,13 +552,7 @@ namespace NightmareEditor
                 var open = await this.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
                 {
                     Title = "Select TXA File",
-                    FileTypeFilter = new List<FilePickerFileType>
-                {
-                    new FilePickerFileType("Texture Animation")
-                    {
-                        Patterns = new List<string> { "*.txa" }
-                    }
-                },
+                    FileTypeFilter = Paths.FileFilters.txa,
                     AllowMultiple = false
                 });
                 if (!(open is null))

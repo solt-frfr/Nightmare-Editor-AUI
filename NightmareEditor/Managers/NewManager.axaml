@@ -14,8 +14,8 @@
     <Window.Resources>
         <controls:PixelWidth x:Key="PixelWidth"/>
         <controls:PixelMargin x:Key="PixelMargin"/>
-        <FontFamily x:Key="JetBrains Mono">avares://Nightmare Editor AUI/Assets/fonts#JetBrains Mono</FontFamily>
-        <FontFamily x:Key="KH2 Menu">avares://Nightmare Editor AUI/Assets/fonts#KH2 ALL MENU</FontFamily>
+        <FontFamily x:Key="JetBrains Mono">avares://NightmareEditor/Assets/fonts#JetBrains Mono</FontFamily>
+        <FontFamily x:Key="KH2 Menu">avares://NightmareEditor/Assets/fonts#KH2 ALL MENU</FontFamily>
     </Window.Resources>
     <Grid Background="#000F" Grid.RowDefinitions="28*,160*,52*" IsVisible="True">
         <!-- Background separator thingy -->

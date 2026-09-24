@@ -9,9 +9,9 @@
 		xmlns:ctxt="clr-namespace:ColorTextBlock.Avalonia;assembly=ColorTextBlock.Avalonia"
 		Title="Help" Height="450" Width="800" Background="Black" KeyDown="Window_OnKeyDown">
     <Window.Resources>
-        <FontFamily x:Key="JetBrains Mono">avares://Nightmare Editor AUI/Assets/fonts#JetBrains Mono</FontFamily>
-        <FontFamily x:Key="KH2 Menu">avares://Nightmare Editor AUI/Assets/fonts#KH2 ALL MENU</FontFamily>
-        <FontFamily x:Key="Ubuntu Sans">avares://Nightmare Editor AUI/Assets/fonts#Ubuntu Sans</FontFamily>
+        <FontFamily x:Key="JetBrains Mono">avares://NightmareEditor/Assets/fonts#JetBrains Mono</FontFamily>
+        <FontFamily x:Key="KH2 Menu">avares://NightmareEditor/Assets/fonts#KH2 ALL MENU</FontFamily>
+        <FontFamily x:Key="Ubuntu Sans">avares://NightmareEditor/Assets/fonts#Ubuntu Sans</FontFamily>
     </Window.Resources>
     <Viewbox>
         <Grid Name="Main" RowDefinitions="Auto,*" ColumnDefinitions="*,5,3*" Width="{Binding Width, RelativeSource={RelativeSource AncestorType=Window}}" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}}">

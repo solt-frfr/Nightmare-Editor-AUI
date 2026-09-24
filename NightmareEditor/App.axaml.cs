@@ -14,6 +14,7 @@ namespace NightmareEditor
 {
     public partial class App : Application
     {
+        public static readonly string AssemblyName = "NightmareEditor";
         public override void Initialize()
         {
             AvaloniaXamlLoader.Load(this);

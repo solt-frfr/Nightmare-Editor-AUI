@@ -382,7 +382,7 @@ public static class Standard
                 if (track[1].IsInternalFile)
                 {
                     MemoryStream ms = new MemoryStream();
-                    AssetLoader.Open(new Uri($"avares://Nightmare Editor AUI/Music/{track[1].Filename}", UriKind.RelativeOrAbsolute)).CopyTo(ms);
+                    AssetLoader.Open(new Uri($"avares://{App.AssemblyName}/Music/{track[1].Filename}", UriKind.RelativeOrAbsolute)).CopyTo(ms);
                     byte[] bcstm = ms.ToArray();
                     File.WriteAllBytes(Path.Combine(musicpath, track[0].Filename), bcstm);
                 }

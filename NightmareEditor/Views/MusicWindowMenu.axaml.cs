@@ -44,7 +44,7 @@ public partial class MusicWindowMenu : UserControl
         await Dispatcher.UIThread.InvokeAsync(
             () => { }, DispatcherPriority.Background);
         
-        List<MusicEntry> musicEntries = JsonSerializer.Deserialize<List<MusicEntry>>(AssetLoader.Open(new Uri($"avares://Nightmare Editor AUI/Music/database.json", UriKind.RelativeOrAbsolute)), Managers.Standard.WriteIndented);
+        List<MusicEntry> musicEntries = JsonSerializer.Deserialize<List<MusicEntry>>(AssetLoader.Open(new Uri($"avares://{App.AssemblyName}/Music/database.json", UriKind.RelativeOrAbsolute)), Managers.Standard.WriteIndented);
         for (int i = 0; i < musicEntries.Count; i++)
         {
             MusicSlot ms = new MusicSlot
@@ -61,7 +61,7 @@ public partial class MusicWindowMenu : UserControl
                 () => { }, DispatcherPriority.Background);
         }
         
-        List<MusicEntry> musicOutEntries = JsonSerializer.Deserialize<List<MusicEntry>>(AssetLoader.Open(new Uri($"avares://Nightmare Editor AUI/Music/replacedb.json", UriKind.RelativeOrAbsolute)), Managers.Standard.WriteIndented);
+        List<MusicEntry> musicOutEntries = JsonSerializer.Deserialize<List<MusicEntry>>(AssetLoader.Open(new Uri($"avares://{App.AssemblyName}/Music/replacedb.json", UriKind.RelativeOrAbsolute)), Managers.Standard.WriteIndented);
         for (int i = 0; i < musicOutEntries.Count; i++)
         {
             MusicSlot ms = new MusicSlot

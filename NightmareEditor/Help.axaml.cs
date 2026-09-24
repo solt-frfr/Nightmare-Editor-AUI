@@ -78,7 +78,7 @@ namespace NightmareEditor
 
         private string QuickRead(string sender)
         {
-            var streamInfo = AssetLoader.Open(new Uri($"avares://Nightmare Editor AUI/{sender}", UriKind.RelativeOrAbsolute));
+            var streamInfo = AssetLoader.Open(new Uri($"avares://{App.AssemblyName}/{sender}", UriKind.RelativeOrAbsolute));
             using (var reader = new StreamReader(streamInfo))
             {
                 return reader.ReadToEnd();
