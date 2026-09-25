@@ -3,11 +3,25 @@
   <component name="AvaloniaProject">
     <option name="projectPerEditor">
       <map>
+        <entry key="NightmareEditor/AnimWindow.axaml" value="NightmareEditor/NightmareEditor.csproj" />
         <entry key="NightmareEditor/App.axaml" value="NightmareEditor/NightmareEditor.csproj" />
+        <entry key="NightmareEditor/Controls/ConfigSlot.axaml" value="NightmareEditor/NightmareEditor.csproj" />
+        <entry key="NightmareEditor/Controls/EditorFile.axaml" value="NightmareEditor/NightmareEditor.csproj" />
+        <entry key="NightmareEditor/Controls/ImageButton.axaml" value="NightmareEditor/NightmareEditor.csproj" />
+        <entry key="NightmareEditor/Controls/ImageButtonColor.axaml" value="NightmareEditor/NightmareEditor.csproj" />
+        <entry key="NightmareEditor/Controls/InfoButton.axaml" value="NightmareEditor/NightmareEditor.csproj" />
+        <entry key="NightmareEditor/Controls/KH3DText.axaml" value="NightmareEditor/NightmareEditor.csproj" />
+        <entry key="NightmareEditor/Controls/MenuButton.axaml" value="NightmareEditor/NightmareEditor.csproj" />
+        <entry key="NightmareEditor/Controls/ModSlot.axaml" value="NightmareEditor/NightmareEditor.csproj" />
+        <entry key="NightmareEditor/Controls/MusicSlot.axaml" value="NightmareEditor/NightmareEditor.csproj" />
+        <entry key="NightmareEditor/Controls/RemovableMusic.axaml" value="NightmareEditor/NightmareEditor.csproj" />
         <entry key="NightmareEditor/Editor.axaml" value="NightmareEditor/NightmareEditor.csproj" />
+        <entry key="NightmareEditor/Help.axaml" value="NightmareEditor/NightmareEditor.csproj" />
+        <entry key="NightmareEditor/MakePack.axaml" value="NightmareEditor/NightmareEditor.csproj" />
         <entry key="NightmareEditor/Managers/Manager.axaml" value="NightmareEditor/NightmareEditor.csproj" />
         <entry key="NightmareEditor/Managers/NewManager.axaml" value="NightmareEditor/NightmareEditor.csproj" />
         <entry key="NightmareEditor/MesgWindow.axaml" value="NightmareEditor/NightmareEditor.csproj" />
+        <entry key="NightmareEditor/PickText.axaml" value="NightmareEditor/NightmareEditor.csproj" />
         <entry key="NightmareEditor/Views/MusicWindowMenu.axaml" value="NightmareEditor/NightmareEditor.csproj" />
       </map>
     </option>
