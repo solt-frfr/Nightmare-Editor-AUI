@@ -1,0 +1,39 @@
+﻿<Window x:Class="NightmareEditor.PickText"
+        xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:NightmareEditor"
+        mc:Ignorable="d"
+        Title="PickText" Height="300" Width="800" CanResize="False" Background="Black">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="3*"/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="1" Background="DarkGray">
+            <Rectangle Name="TransRights" Stretch="Fill">
+				<Rectangle.Fill>
+					<ImageBrush Source="Images/transrights.png"
+								TileMode="Tile"
+                                DestinationRect="0,0,64,64"
+                                Stretch="None" />
+				</Rectangle.Fill>
+            </Rectangle>
+            <Image Name="Texture" Source="Images/plus.png" RenderOptions.BitmapInterpolationMode="HighQuality"/>
+        </Grid>
+        <StackPanel>
+            <TextBlock FontSize="35" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Top" TextAlignment="Center"><Run Text="Pick a Destination"/><LineBreak/><Run Text="Texture"/></TextBlock>
+            <TextBlock Name="Error" FontSize="15" FontWeight="Bold" Foreground="Black" HorizontalAlignment="Center" TextAlignment="Center"><Run Text="Please select a texture."/></TextBlock>
+            <ComboBox Height="25" Width="200" Name="Drop" SelectionChanged="Drop_SelectionChanged">
+            </ComboBox>
+        </StackPanel>
+        <Button Width="200" FontWeight="Black" Background="White" FontSize="15" VerticalAlignment="Bottom" Margin="0,0,0,30" Click="Accept_Click">
+            <Button.Content>
+                <Grid Background="White">
+                    <TextBlock Foreground="Black">Use Selected</TextBlock>
+                </Grid>
+            </Button.Content>
+        </Button>
+    </Grid>
+</Window>

@@ -1,0 +1,438 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:NightmareEditor"
+        xmlns:rewrite="clr-namespace:NightmareEditor"
+        xmlns:controls="clr-namespace:NightmareEditor.Controls"
+        xmlns:views="clr-namespace:NightmareEditor.Views"
+        xmlns:skia="clr-namespace:Avalonia.Svg.Skia;assembly=Svg.Controls.Skia.Avalonia"
+        x:Class="NightmareEditor.Managers.NewManager"
+        Title="Exam Editor - Menu Edition" Height="480" Width="800" Icon="/Assets/dreameater.ico"
+        SystemDecorations="Full" Background="Transparent" TransparencyLevelHint="Transparent"
+        KeyDown="Window_OnKeyDown">
+    <Window.Resources>
+        <controls:PixelWidth x:Key="PixelWidth"/>
+        <controls:PixelMargin x:Key="PixelMargin"/>
+        <FontFamily x:Key="JetBrains Mono">avares://NightmareEditor/Assets/fonts#JetBrains Mono</FontFamily>
+        <FontFamily x:Key="KH2 Menu">avares://NightmareEditor/Assets/fonts#KH2 ALL MENU</FontFamily>
+    </Window.Resources>
+    <Grid Background="#000F" Grid.RowDefinitions="28*,160*,52*" IsVisible="True">
+        <!-- Background separator thingy -->
+        <Grid Grid.RowSpan="3">
+            <Grid.Background>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                    <GradientStop Color="#000" Offset="0.075"/>
+                    <GradientStop Color="#B000" Offset="0.175"/>
+                    <GradientStop Color="#B000" Offset="0.825"/>
+                    <GradientStop Color="#000" Offset="0.925"/>
+                </LinearGradientBrush>
+            </Grid.Background>
+        </Grid>
+        
+        <!-- Middle Section -->
+        <Grid Grid.Row="1">
+            <StackPanel Name="MenuButtonsPanel" IsVisible="True" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=10|8}">
+                <controls:MenuButton Name="Menu_Mods" Click="Menu_Mods_OnClick" PointerEntered="MenuButton_Hover" Text="Mods" Description="Explore the mods that you've downloaded." HorizontalAlignment="Left" VerticalAlignment="Top" Scale="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|0|-1}"/>
+                <controls:MenuButton Name="Menu_Music" Click="Menu_Music_OnClick" PointerEntered="MenuButton_Hover" Text="Music" Description="Replace the game's music tracks with others or your own." HorizontalAlignment="Left" VerticalAlignment="Top" Scale="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|0|-1}"/>
+                <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Width="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=140}" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=18}"  Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=-5|0|0|0}">
+                    <controls:MenuButton Name="Menu_NE" Click="Menu_NE_OnClick" PointerEntered="MenuButton_Hover" Text="Nightmare Editor" Description="Open Nightmare Editor, the tool for making new mods." HorizontalAlignment="Left" VerticalAlignment="Top" Scale="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=5|0|0|-1}"/>
+                    <ProgressBar Name="ProgressBar" IsVisible="False" Background="#4FFF" Minimum="0" Maximum="1" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Grid}}" Width="{Binding Width, RelativeSource={RelativeSource AncestorType=Grid}}"/> 
+                </Grid>
+                <controls:MenuButton Name="Menu_Settings" Click="Menu_Settings_OnClick" PointerEntered="MenuButton_Hover" Text="Settings" Description="Change settings regarding your Deploy Path and more." HorizontalAlignment="Left" VerticalAlignment="Top" Scale="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|0|-1}"/>
+                <controls:MenuButton Name="Menu_Themes" Click="Menu_Themes_OnClick" PointerEntered="MenuButton_Hover" Text="Themes" Description="Change to one of the other themes or import your own." HorizontalAlignment="Left" VerticalAlignment="Top" Scale="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|0|-1}"/>
+                <controls:MenuButton Name="Menu_About" Click="Menu_About_OnClick" PointerEntered="MenuButton_Hover" Text="About" Description="Learn about this tool's creation and supporters." HorizontalAlignment="Left" VerticalAlignment="Top" Scale="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|0|-1}"/>
+                <controls:MenuButton Name="Menu_Download" Click="Menu_Download_OnClick" PointerEntered="MenuButton_Hover" Text="Open Gamebanana" Description="Open this game's Gamebanana page in your default browser." HorizontalAlignment="Left" VerticalAlignment="Top" Scale="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|0|-1}"/>
+                <controls:MenuButton Name="Menu_Quit" Click="Menu_Quit_OnClick" PointerEntered="MenuButton_Hover" Text="Quit" Description="Close the program." HorizontalAlignment="Left" VerticalAlignment="Top" Scale="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|0|-1}"/>
+            </StackPanel>
+            <Viewbox Name="SettingsWindow" IsVisible="False" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=13|5}">
+                <Grid Width="374" Height="150">
+                    <Grid.Background>
+                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                            <GradientStop Color="#1420ff" Offset="0"/>
+                            <GradientStop Color="#002a90" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Grid.Background>
+                    <Grid.Clip>
+                        <PathGeometry Figures="
+                            M 0,0
+                            L 370,0
+                            L 374,4
+                            L 374,150
+                            L 5,150
+                            A 5,5 0 0 1 0,145
+                            Z"/>
+                    </Grid.Clip>
+                    <Rectangle Height="1" VerticalAlignment="Bottom">
+                        <Rectangle.Fill>
+                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                                <GradientStop Color="#0000154c" Offset="0"/>
+                                <GradientStop Color="#00154c" Offset="0.02"/>
+                            </LinearGradientBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                    <Rectangle Width="1" HorizontalAlignment="Left">
+                        <Rectangle.Fill>
+                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                                <GradientStop Color="#535bff" Offset="0"/>
+                                <GradientStop Color="#4463ae" Offset="0.95"/>
+                                <GradientStop Color="#004463ae" Offset="0.99"/>
+                            </LinearGradientBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                    <Rectangle Width="1" HorizontalAlignment="Right">
+                        <Rectangle.Fill>
+                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                                <GradientStop Color="#0c15ab" Offset="0"/>
+                                <GradientStop Color="#001a64" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                    <Rectangle Height="1" Fill="#a1a6ff" VerticalAlignment="Top"></Rectangle>
+                    <StackPanel Name="SettingsPanel">
+                        <controls:ConfigSlot Name="DeployPathConfig" LeftText="Deploy Path" RightText="Browse" Click="DeployPathConfig_OnClick" PointerEntered="MenuButton_Hover" Description="After clicking Deploy, the mods will be placed in this path." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16,6,16,1"/>
+                        <controls:ConfigSlot Name="EmulatorConfig" LeftText="Using an Emulator" RightText="Yes" Click="EmulatorConfig_OnClick" PointerEntered="MenuButton_Hover" Description="Enable emulator-specific enhancements. Place the Deploy path in your emulator's /load folder." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16,0"/>
+                        <controls:ConfigSlot Name="RegionConfig" LeftText="Game Region" RightText="North America" Click="RegionConfig_OnClick" PointerEntered="MenuButton_Hover" Description="Used to ensure the directories are correct for your game version." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16,0"/>
+                        <controls:ConfigSlot Name="ETCConfig" LeftText="ETC1 Encoder" RightText="Yes" Click="ETCConfig_OnClick" PointerEntered="MenuButton_Hover" Description="Change the ETC1 Encoder used in Nightmare Editor. Wine is experimental." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16,0"/>
+                        <controls:ConfigSlot Name="UnpackRBINConfig" LeftText="Unpack RBIN" RightText="Browse" Click="UnpackRBINConfig_OnClick" PointerEntered="MenuButton_Hover" Description="Add an RBIN to use inside the program." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16,0"/>
+                        <controls:ConfigSlot Name="SwitchUIConfig" LeftText="Switch UI" RightText="Menu UI" Click="SwitchUIConfig_OnClick" PointerEntered="MenuButton_Hover" Description="Switch the UI." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16,0"/>
+                    </StackPanel>
+                    <StackPanel Name="ThemePanel">
+                        <controls:ConfigSlot Name="DefaultThemeSlot" LeftText="Default Themes" RightText="Default" Click="ChangeTheme_OnClick" PointerEntered="MenuButton_Hover" Description="Cycle to the next default theme." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16,6,16,1"/>
+                        <controls:ConfigSlot Name="ImportThemeSlot" LeftText="Import Theme" RightText="Browse" Click="ImportTheme_OnClick" PointerEntered="MenuButton_Hover" Description="Import a theme from a file." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16,0"/>
+                    </StackPanel>
+                    <StackPanel Name="MusicPanel" IsVisible="False">
+                        <controls:ConfigSlot Name="AddMusicEntrySlot" LeftText="Add Track" RightText="View Library" Click="MusicLibrary_OnClick" PointerEntered="MenuButton_Hover" Description="Add a music track replacement from the library available, or provide your own." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16,6,16,1"/>
+                        <controls:ConfigSlot Name="EnableMusicReplacementSlot" LeftText="Enable Replacements" RightText="Enabled" Click="EnableMusicReplacement_OnClick" PointerEntered="MenuButton_Hover" Description="Enable or Disable the replacing of music tracks." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16,0"/>
+                        <ScrollViewer>
+                            <StackPanel Name="MusicRemovePanel"/>
+                        </ScrollViewer>
+                    </StackPanel>
+                </Grid>
+            </Viewbox>
+            
+            <Grid Name="ModsWindow" IsVisible="False" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <LayoutTransformControl>
+                    <LayoutTransformControl.LayoutTransform>
+                        <ScaleTransform ScaleX="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" ScaleY="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}"/>
+                    </LayoutTransformControl.LayoutTransform>
+                    <Grid Width="311" Height="150" RowDefinitions="1,*" ColumnDefinitions="154,6,151">
+                        <Grid Grid.Row="1" Width="154" Height="149">
+                            <Grid.Background>
+                                <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                                    <GradientStop Color="#525252" Offset="0"/>
+                                </LinearGradientBrush>
+                            </Grid.Background>
+                            <Grid.Clip>
+                                <PathGeometry Figures="
+                                    M 0,0
+                                    L 124,0
+                                    L 128,4
+                                    L 128,12
+                                    L 150,12
+                                    L 154,16
+                                    L 154,149
+                                    L 5,149
+                                    A 5,5 0 0 1 0,144
+                                    Z"/>
+                            </Grid.Clip>
+                            <StackPanel AttachedToVisualTree="Mod_BG_Stack_AttatchedToVisualTree" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,17,0,0"/>
+                            <Grid>
+                                <Grid.Background>
+                                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                                        <GradientStop Color="#00000000" Offset="0"/>
+                                        <GradientStop Color="#40000000" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Grid.Background>
+                            </Grid>
+                            <ScrollViewer Margin="2,17,0,0" Height="128" VerticalAlignment="Top">
+                                <StackPanel Name="ModsPanel" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,0,0">
+                                </StackPanel>
+                            </ScrollViewer>
+                            <Grid RowDefinitions="12,*" ColumnDefinitions="128,*">
+                                <Rectangle Grid.RowSpan="2"  Width="1" HorizontalAlignment="Left">
+                                    <Rectangle.Fill>
+                                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                                            <GradientStop Color="#717171" Offset="0"/>
+                                            <GradientStop Color="#525252" Offset="0.95"/>
+                                            <GradientStop Color="#00525252" Offset="0.99"/>
+                                        </LinearGradientBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                                <Rectangle Grid.Row="1" Grid.Column="1" Width="1" HorizontalAlignment="Right">
+                                    <Rectangle.Fill>
+                                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                                            <GradientStop Color="#353535" Offset="0"/>
+                                            <GradientStop Color="#282828" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                                <Rectangle Width="1" HorizontalAlignment="Right">
+                                    <Rectangle.Fill>
+                                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                                            <GradientStop Color="#2f2f2f" Offset="0"/>
+                                            <GradientStop Color="#2f2f2f" Offset="0.75"/>
+                                            <GradientStop Color="#424242" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                                <Rectangle Grid.Row="1" Grid.Column="1" Height="1" VerticalAlignment="Top" Margin="-1,0,0,0">
+                                    <Rectangle.Fill>
+                                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                                            <GradientStop Color="#00ffffff" Offset="0"/>
+                                            <GradientStop Color="#bababa" Offset="0.2"/>
+                                            <GradientStop Color="#bababa" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                                <Rectangle Height="1" Fill="#bababa" VerticalAlignment="Top"></Rectangle>
+                                <Rectangle Grid.Row="1" Grid.ColumnSpan="2" Height="1" VerticalAlignment="Bottom">
+                                    <Rectangle.Fill>
+                                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                                            <GradientStop Color="#00202020" Offset="0"/>
+                                            <GradientStop Color="#202020" Offset="0.1"/>
+                                        </LinearGradientBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                                
+                                <Image Source="{skia:SvgImage /Images/keyblade.svg}" Width="11" Height="10" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="2,2,0,0"/>
+                                <controls:ImageButton Description="Deploy the enabled mods to the deploy path selected in the settings." Click="Deploy_OnClick" PointerEntered="MenuButton_Hover" Source="{skia:SvgImage /Images/arrow.svg}" Width="10" Height="10" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,2,2,0"/>
+                                <controls:ImageButton Description="Re-scan the mods folder." Click="Refresh_OnClick" PointerEntered="MenuButton_Hover" Source="{skia:SvgImage /Images/refresh.svg}" Width="10" Height="10" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,2,15,0"/>
+                                <controls:ImageButton Description="Open the mods folder." Click="MainFolder_OnClick" PointerEntered="MenuButton_Hover" Source="{skia:SvgImage /Images/folder.svg}" Width="12" Height="10" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,2,29,0"/>
+                                <controls:ImageButton Description="Select a .nem file to install." Click="Install_OnClick" PointerEntered="MenuButton_Hover" Source="{skia:SvgImage /Images/install.svg}" Width="12" Height="10" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,2,43,0"/>
+                                <controls:KH3DText Grid.RowSpan="2" Text="Mods" Color="White" Font="SmallAccurate" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="14,0,0,0"></controls:KH3DText>
+                            </Grid>
+                            
+                        </Grid>
+                        <Grid Grid.RowSpan="2" Grid.Column="2">
+                            <Grid Margin="5,0" VerticalAlignment="Top" Height="96">
+                                <Image Source="{skia:SvgImage /Images/mod_bg.svg}" Margin="3"/>
+                                <Image Name="ModPreview" Margin="3" RenderOptions.BitmapInterpolationMode="HighQuality"/>
+                                <Image Source="{skia:SvgImage /Images/mod_border.svg}" VerticalAlignment="Top"/>
+                            </Grid>
+                        </Grid>
+                        <Grid Grid.Row="1" Grid.Column="2" ColumnDefinitions="58,*" Height="59" VerticalAlignment="Bottom">
+                            <Rectangle Grid.ColumnSpan="2" Height="1" VerticalAlignment="Bottom" Margin="0,0,0,0">
+                                <Rectangle.Fill>
+                                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                                        <GradientStop Color="#03030300" Offset="0"/>
+                                        <GradientStop Color="#818143" Offset="0.25"/>
+                                        <GradientStop Color="#fbfbfb" Offset="0.5"/>
+                                        <GradientStop Color="#00818143" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Rectangle.Fill>
+                            </Rectangle>
+                            <Rectangle Grid.ColumnSpan="2" Height="1" VerticalAlignment="Bottom" Margin="0,0,0,18">
+                                <Rectangle.Fill>
+                                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                                        <GradientStop Color="#03030300" Offset="0"/>
+                                        <GradientStop Color="#818143" Offset="0.25"/>
+                                        <GradientStop Color="#fbfbfb" Offset="0.5"/>
+                                        <GradientStop Color="#00818143" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Rectangle.Fill>
+                            </Rectangle>
+                            <Grid Width="130" Height="14" Name="ModDisplay" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,9">
+                                <Grid Width="130" Height="14" Name="ModDisplay_AccentColor" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                    <Grid.Background>
+                                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                                            <GradientStop Color="#df9898" Offset="0"/>
+                                            <GradientStop Color="#740000" Offset="0.5"/>
+                                            <GradientStop Color="#300000" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Grid.Background>
+                                    <Grid.Clip>
+                                        <PathGeometry Figures="
+                                            M 0,7
+                                            L 7,0
+                                            L 123,0
+                                            L 130,7
+                                            L 123,14
+                                            L 7,14
+                                            Z"/>
+                                    </Grid.Clip>
+                                </Grid>
+                                <Grid Width="128" Height="12" Name="ModDisplay_MainColor" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                    <Grid.Background>
+                                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                                            <GradientStop Color="#a70000" Offset="0"/>
+                                            <GradientStop Color="#740000" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Grid.Background>
+                                    <Grid.Clip>
+                                        <PathGeometry Figures="
+                                            M 0.4,6
+                                            L 6.4,0
+                                            L 121.6,0
+                                            L 127.6,6
+                                            L 121.6,12
+                                            L 6.4,12
+                                            Z"/>
+                                    </Grid.Clip>
+                                </Grid>
+                                <controls:KH3DText Name="ModDisplay_Text" Text="" Font="SmallAccurate" Color="White" Margin="9,0"/>
+                            </Grid>
+                            <controls:KH3DText Text="Author(s)" Font="SmallAccurate" Color="#fcfc01" VerticalAlignment="Bottom" Margin="10,0,0,20"/>
+                            <ScrollViewer Grid.Column="1" VerticalAlignment="Bottom" Margin="4,0,20,20" 
+                                          HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled"
+                                          ToolTip.Tip="You can scroll this if you can't see the whole name!">
+                                <ScrollViewer.Styles>
+                                    <Style Selector="ScrollBar">
+                                        <Setter Property="MinHeight" Value="0"/>
+                                        <Setter Property="MinWidth" Value="0"/>
+                                    </Style>
+                                </ScrollViewer.Styles>
+                                <controls:KH3DText Name="AuthorKH3DText" Text="" Font="SmallAccurate" Color="White"/>
+                            </ScrollViewer>
+                            <controls:KH3DText Text="ID" Font="SmallAccurate" Color="#fcfc01" VerticalAlignment="Bottom" Margin="10,0,0,2"/>
+                            <ScrollViewer Grid.Column="1" VerticalAlignment="Bottom" Margin="4,0,20,2" 
+                                          HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" 
+                                          ToolTip.Tip="You can scroll this if you can't see the whole name!">
+                                <ScrollViewer.Styles>
+                                    <Style Selector="ScrollBar">
+                                        <Setter Property="MinHeight" Value="0"/>
+                                        <Setter Property="MinWidth" Value="0"/>
+                                    </Style>
+                                </ScrollViewer.Styles>
+                                <controls:KH3DText Name="IDKH3DText" Text="" Font="SmallAccurate" Color="White"/>
+                            </ScrollViewer>
+                        </Grid>
+                    </Grid>
+                </LayoutTransformControl>
+            </Grid>
+            
+            <Grid Name="MusicWindow" IsVisible="False">
+                <LayoutTransformControl Grid.Column="1">
+                    <LayoutTransformControl.LayoutTransform>
+                        <ScaleTransform ScaleX="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" ScaleY="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}"/>
+                    </LayoutTransformControl.LayoutTransform>
+                    <Grid>
+                        <views:MusicWindowMenu RequestRefresh="MusicWindowMenu_OnRequestRefresh" ReportDescription="MusicWindowMenu_OnReportDescription"/>
+                    </Grid>
+                </LayoutTransformControl>
+            </Grid>
+        </Grid>
+        
+        <!-- Upper Section -->
+        <Grid Name="BG_U">
+            <Grid.Background>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                    <GradientStop Color="#00001d" Offset="0"/>
+                    <GradientStop Color="#00006e" Offset="1"/>
+                </LinearGradientBrush>
+            </Grid.Background>
+            <Viewbox Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|7|0|0}" HorizontalAlignment="Left" VerticalAlignment="Top">
+                <Grid Height="20" Width="240">
+                    <Ellipse Height="16" Width="16" Margin="214,2,0,0" Fill="Black" HorizontalAlignment="Left"></Ellipse>
+                    <Rectangle Name="BGHighlightAlt1_U" Height="17" Width="220" Margin="0,1,0,0" Fill="#990000" HorizontalAlignment="Left" VerticalAlignment="Top"></Rectangle>
+                    <Ellipse Name="BGHighlightAlt2_U" Height="17" Width="17" Margin="212,1,0,0" Fill="#990000" HorizontalAlignment="Left" VerticalAlignment="Top"></Ellipse>
+                    <TextBlock FontFamily="{StaticResource 'KH2 Menu'}" Text="{Binding Text, ElementName=SubText}" VerticalAlignment="Bottom" FontSize="9" Margin="171,0,0,3" Foreground="Black"></TextBlock>
+                    <TextBlock Name="SubText" FontFamily="{StaticResource 'KH2 Menu'}" Text="Mods" VerticalAlignment="Bottom" FontSize="9" Margin="170,0,0,4" Foreground="White"></TextBlock>
+                    <Ellipse Height="20" Width="20" Margin="142,2,0,0" Fill="Black" HorizontalAlignment="Left"></Ellipse>
+                    <Rectangle Name="BGHighlight1_U" Height="20" Width="150" Fill="#002eff" HorizontalAlignment="Left"></Rectangle>
+                    <Ellipse Name="BGHighlight2_U" Height="20" Width="20" Margin="140,0,0,0" Fill="#002eff" HorizontalAlignment="Left"></Ellipse>
+                    <TextBlock FontFamily="{StaticResource 'KH2 Menu'}" Text="{Binding Text, ElementName=MainText}" FontSize="11" Margin="13,1,0,0" Foreground="Black"></TextBlock>
+                    <TextBlock Name="MainText" FontFamily="{StaticResource 'KH2 Menu'}" Text="Exam Editor" FontSize="11" Margin="12,0,0,0" Foreground="White"></TextBlock>
+                </Grid>
+            </Viewbox>
+            <Rectangle Name="MenuBar" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" Width="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=155}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|0|5}" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                <Rectangle.Fill>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                        <GradientStop Color="#00ff740c" Offset="0"/>
+                        <GradientStop Color="#ff740c" Offset="0.5"/>
+                    </LinearGradientBrush>
+                </Rectangle.Fill>
+            </Rectangle>
+            <controls:ImageButton Description="Open a window to install a git repository." Click="Git_OnClick" PointerEntered="MenuButton_Hover" Source="{skia:SvgImage /Images/gitdownload.svg}" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=16} " Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|100|6}" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+            <controls:ImageButton Description="Update all mods that contain a git repository." Click="UpdateGit_OnClick" PointerEntered="MenuButton_Hover" Source="{skia:SvgImage /Images/gitupdate.svg}" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=16} " Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|122|6}" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+            <Rectangle Name="BGHighlight3_U" Fill="#002eff" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=2}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"></Rectangle>
+        </Grid>
+        
+        <!-- Lower Section -->
+        <Grid Grid.Row="2" Grid.ColumnDefinitions="90*,308*">
+            <Grid Grid.Column="0" Grid.ColumnDefinitions="*,Auto" Grid.RowDefinitions="Auto,*" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|1|0}">
+                <Rectangle Name="BGHighlight1_L" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=2}" HorizontalAlignment="Stretch" Fill="#002eff"/>
+                <Rectangle Grid.Row="1" Grid.Column="1" Name="BGHighlight2_L" Width="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=2}" VerticalAlignment="Stretch" Fill="#002eff"/>
+                <Viewbox Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=2}" Grid.Column="1" StretchDirection="Both" >
+                    <Grid Width="25">
+                        <Ellipse Name="BGHighlight3_L" Width="50" Height="50" Fill="#002eff" Margin="-25,0,0,-25"></Ellipse>
+                    </Grid>
+                </Viewbox>
+                <!-- Lower-Left Body -->
+                <Grid Grid.Row="1" Name="BG_L">
+                    <Grid.Background>
+                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                            <GradientStop Color="#00006e" Offset="0"/>
+                            <GradientStop Color="#00001d" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Grid.Background>
+                    <Rectangle Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|13|0|0}" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+                        <Rectangle.Fill>
+                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                                <GradientStop Color="#ffc040" Offset="0.4"/>
+                                <GradientStop Color="#00ffc040" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                    <Rectangle Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|36|0|0}" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+                        <Rectangle.Fill>
+                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                                <GradientStop Color="#ff3e90" Offset="0.4"/>
+                                <GradientStop Color="#00ff3e90" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                    <TextBlock FontFamily="{StaticResource 'KH2 Menu'}" Text="{Binding Text, ElementName=BottomLeftTextUpper}" Foreground="Black" FontSize="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=8}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=4|2.5|0|0}"/>
+                    <TextBlock Name="BottomLeftTextUpper" FontFamily="{StaticResource 'KH2 Menu'}" Text="Mod Count" Foreground="#ffc040" FontSize="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=8}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=3|1.5|0|0}"/>
+                    <TextBlock FontFamily="{StaticResource 'KH2 Menu'}" Text="{Binding Text, ElementName=BottomLeftTextLower}" Foreground="Black" FontSize="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=8}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=4|25.5|0|0}"/>
+                    <TextBlock Name="BottomLeftTextLower" FontFamily="{StaticResource 'KH2 Menu'}" Text="Made By" Foreground="#ff3e90" FontSize="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=8}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=3|24.5|0|0}"/>
+                    <TextBlock FontFamily="{StaticResource 'KH2 Menu'}" Text="{Binding Text, ElementName=BottomLeftTextUpper2}" Foreground="Black" HorizontalAlignment="Right" FontSize="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=10}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|11|5|0}" Padding="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=1}"/>
+                    <TextBlock Name="BottomLeftTextUpper2" FontFamily="{StaticResource 'KH2 Menu'}" Text="0" Foreground="#fff642" HorizontalAlignment="Right" FontSize="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=10}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|10|6|0}" Padding="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=1}"/>
+                    <TextBlock FontFamily="{StaticResource 'KH2 Menu'}" Text="{Binding Text, ElementName=BottomLeftTextLower2}" Foreground="Black" HorizontalAlignment="Right" FontSize="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=10}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|34|5|0}" Padding="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=1}"/>
+                    <TextBlock Name="BottomLeftTextLower2" FontFamily="{StaticResource 'KH2 Menu'}" Text="Solt11" Foreground="#ff90ce" HorizontalAlignment="Right" PointerReleased="BottomLeftText2_OnClick" FontSize="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=10}" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|33|6|0}" Padding="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=1}"/>
+
+                </Grid>
+            </Grid>
+            <Grid Grid.Column="2" Grid.ColumnDefinitions="Auto,*" Grid.RowDefinitions="Auto,*" Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=1|0|0|0}">
+                <Rectangle Grid.Column="1" Name="BGHighlight1_R" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=2}" HorizontalAlignment="Stretch" Fill="#002eff"/>
+                <Rectangle Grid.Row="1" Name="BGHighlight2_R" Width="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=2}" VerticalAlignment="Stretch" Fill="#002eff"/>
+                <Viewbox Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=2}" StretchDirection="Both" >
+                    <Grid Width="25">
+                        <Ellipse Name="BGHighlight3_R" Width="50" Height="50" Fill="#002eff" Margin="0,0,-25,-25"></Ellipse>
+                    </Grid>
+                </Viewbox>
+                <!-- Lower-Right Body -->
+                <Grid Grid.Row="1" Grid.Column="1" Name="BG_R">
+                    <Grid.Background>
+                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                            <GradientStop Color="#00006e" Offset="0"/>
+                            <GradientStop Color="#00001d" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Grid.Background>
+                    <Grid Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=0|0|8|0}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=40}">
+                        <Viewbox>
+                            <Rectangle Name="Heart"  Fill="#004b9a" Height="5" Width="8">
+                                <Rectangle.OpacityMask>
+                                    <VisualBrush Stretch="Uniform">
+                                        <VisualBrush.Visual>
+                                            <Image Width="5" Height="8" Source="{skia:SvgImage /Images/menu_heart.svg}" />
+                                        </VisualBrush.Visual>
+                                    </VisualBrush>
+                                </Rectangle.OpacityMask>
+                            </Rectangle>
+                        </Viewbox>
+                    </Grid>
+                    
+                    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                        <LayoutTransformControl Margin="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelMargin}, ConverterParameter=9|0|40|0}">
+                            <LayoutTransformControl.LayoutTransform>
+                                <ScaleTransform ScaleX="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}" ScaleY="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=1}"/>
+                            </LayoutTransformControl.LayoutTransform>
+                            <controls:KH3DText Name="BottomRightText" Color="#fcfc01" Font="Accurate" Text="Explore the mods that you've downloaded." HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        </LayoutTransformControl>
+                    </ScrollViewer>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

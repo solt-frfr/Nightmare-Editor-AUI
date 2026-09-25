@@ -1,0 +1,43 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:NightmareEditor"
+             xmlns:rewrite="clr-namespace:NightmareEditor"
+             xmlns:controls="clr-namespace:NightmareEditor.Controls"
+             xmlns:skia="clr-namespace:Avalonia.Svg.Skia;assembly=Svg.Controls.Skia.Avalonia"
+             x:Class="NightmareEditor.Controls.ConfigSlot">
+    <LayoutTransformControl Name="InternalLayoutTransformControl" ClipToBounds="False">
+        <Grid Name="InternalGrid" ColumnDefinitions="163,15,*" Height="22" Width="340">
+            <Grid Grid.ColumnSpan="3">
+                <Grid.OpacityMask>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                        <GradientStop Color="#00000000" Offset="0"/>
+                        <GradientStop Color="#FF000000" Offset="0.2"/>
+                        <GradientStop Color="#FF000000" Offset="0.8"/>
+                        <GradientStop Color="#00000000" Offset="1"/>
+                    </LinearGradientBrush>
+                </Grid.OpacityMask>
+                <Border Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                            <GradientStop Color="#00000000" Offset="0.5"/>
+                            <GradientStop Color="#50000000" Offset="0.9"/>
+                            <GradientStop Color="#A0000000" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                </Border>
+            </Grid>
+            
+            
+            <Image Name="InfoImage" Source="{skia:SvgImage /Images/menu_setting_info.svg}" Height="18" Margin="0,2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <controls:KH3DText Name="InfoKH3DText" Color="White" Font="Accurate" Text="Deploy Path" Margin="0,0,0,2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <Grid Name="Selection" Grid.Column="2" PointerEntered="MenuButton_Hover" PointerExited="MenuButton_EndHover" PointerPressed="MenuButton_Press" PointerReleased="MenuButton_Release">
+                <Grid Grid.Column="2" Name="EffectAmplifier">
+                    <Image Name="SelectionImage" Source="{skia:SvgImage /Images/menu_setting_button.svg}" Height="18" Margin="0,2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Grid>
+                <controls:KH3DText Grid.Column="2" Name="SelectionKH3DText" Color="White" Font="Accurate" Text="Browse" Margin="0,0,0,2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Grid>
+        </Grid>
+    </LayoutTransformControl>
+</UserControl>

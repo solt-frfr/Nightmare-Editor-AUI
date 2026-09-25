@@ -1,0 +1,17 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:NightmareEditor"
+             xmlns:rewrite="clr-namespace:NightmareEditor"
+             xmlns:controls="clr-namespace:NightmareEditor.Controls"
+             xmlns:skia="clr-namespace:Avalonia.Svg.Skia;assembly=Svg.Controls.Skia.Avalonia"
+             x:Class="NightmareEditor.Controls.MenuButton">
+    <LayoutTransformControl Name="InternalLayoutTransformControl" ClipToBounds="False">
+        <Grid Name="InternalGrid" PointerEntered="MenuButton_Hover" PointerExited="MenuButton_EndHover" PointerPressed="MenuButton_Press" PointerReleased="MenuButton_Release" Height="19">
+            <Image Name="InternalImage" Source="{skia:SvgImage /Images/menu_option.svg}" Height="15" Margin="0,2"/>
+            <controls:KH3DText Name="InternalKH3DText" Color="White" Font="SmallAccurate" Text="Mods" Margin="8,2"/>
+        </Grid>
+    </LayoutTransformControl>
+   
+</UserControl>
