@@ -61,6 +61,23 @@ public static class Standard
         set => SetEnabledMods(value);
     }
     
+    public static List<string> GetEnabledMods()
+    {
+        if (!File.Exists(Paths.Jsons.enabled))
+        {
+            List<string> list = new List<string>();
+            string jsonString = JsonSerializer.Serialize<List<string>>(list, WriteIndented);
+            System.IO.File.WriteAllText(Paths.Jsons.enabled, jsonString);
+        }
+        return JsonSerializer.Deserialize<List<string>>(File.ReadAllText(Paths.Jsons.enabled), WriteIndented);
+    }
+    
+    public static void SetEnabledMods(List<string> newEnabledMods)
+    {
+        string jsonString = JsonSerializer.Serialize<List<string>>(newEnabledMods, WriteIndented);
+        System.IO.File.WriteAllText(Paths.Jsons.enabled, jsonString);
+    }
+    
     public static Themes.ThemeData CurrentTheme
     {
         get => GetTheme();
@@ -88,21 +105,35 @@ public static class Standard
         System.IO.File.WriteAllText(Paths.Jsons.theme, jsonString);
     }
     
-    public static List<string> GetEnabledMods()
+    
+    public static List<MusicEntry[]> MusicReplacements
     {
-        if (!File.Exists(Paths.Jsons.enabled))
-        {
-            List<string> list = new List<string>();
-            string jsonString = JsonSerializer.Serialize<List<string>>(list, WriteIndented);
-            System.IO.File.WriteAllText(Paths.Jsons.enabled, jsonString);
-        }
-        return JsonSerializer.Deserialize<List<string>>(File.ReadAllText(Paths.Jsons.enabled), WriteIndented);
+        get => GetMusicReplacements();
+        set => SetMusicReplacements(value);
     }
     
-    public static void SetEnabledMods(List<string> newEnabledMods)
+    public static List<MusicEntry[]> GetMusicReplacements()
     {
-        string jsonString = JsonSerializer.Serialize<List<string>>(newEnabledMods, WriteIndented);
-        System.IO.File.WriteAllText(Paths.Jsons.enabled, jsonString);
+        if (!File.Exists(Paths.Jsons.music))
+        {
+            MusicList ml = new MusicList();
+            ml.Music = new List<MusicEntry[]>();
+            string jsonString = JsonSerializer.Serialize<MusicList>(ml, WriteIndented);
+            System.IO.File.WriteAllText(Paths.Jsons.music, jsonString);
+        }
+
+        List<MusicEntry[]> returnValue =
+            JsonSerializer.Deserialize<MusicList>(File.ReadAllText(Paths.Jsons.music), WriteIndented).Music;
+        if (returnValue is null) returnValue = new List<MusicEntry[]>();
+        SetMusicReplacements(returnValue);
+        return returnValue;
+    }
+    
+    public static void SetMusicReplacements(List<MusicEntry[]> newMusic)
+    {
+        MusicList ml = new MusicList { Music = newMusic };
+        string jsonString = JsonSerializer.Serialize<MusicList>(ml, WriteIndented);
+        System.IO.File.WriteAllText(Paths.Jsons.music, jsonString);
     }
     
     public static readonly string UStitleID = "000400000008D300";

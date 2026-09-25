@@ -26,7 +26,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Input.Platform;
 using Avalonia.Threading;
-using NightmareEditor;
+using NightmareEditor.Managers;
 using NightmareEditor.Controls;
 
 

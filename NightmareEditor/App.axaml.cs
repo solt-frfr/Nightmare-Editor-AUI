@@ -8,6 +8,7 @@ using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using NightmareEditor;
 using NightmareEditor.ViewModels;
+using NightmareEditor.Managers;
 using static NightmareEditor.Managers.Standard;
 
 namespace NightmareEditor

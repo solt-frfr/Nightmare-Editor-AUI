@@ -7,7 +7,7 @@
         xmlns:controls="clr-namespace:NightmareEditor.Controls"
         xmlns:skia="clr-namespace:Avalonia.Svg.Skia;assembly=Svg.Controls.Skia.Avalonia"
         x:Class="NightmareEditor.MesgWindow"
-        Title="MesgWindow" SystemDecorations="None" Height="320" Width="684" Background="Transparent" TransparencyLevelHint="Transparent">
+        Title="MesgWindow" Height="320" Width="684" Background="Transparent" TransparencyLevelHint="Transparent">
     <Window.Resources>
         <controls:PixelWidthCustom x:Key="PixelWidth"/>
         <controls:PixelMarginCustom x:Key="PixelMargin"/>
@@ -23,17 +23,24 @@
             <Image Grid.Column="1" Stretch="Fill"  Source="{skia:SvgImage /Images/info_c.svg}" RenderOptions.BitmapInterpolationMode="None"/>
             <Image Grid.Column="1" Width="23" Source="{skia:SvgImage /Images/info_mark.svg}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="11,13"/>
             <controls:KH3DText Grid.Column="1" Name="TitleText" Text="INFORMATION" Margin="40,17" Color="Red"></controls:KH3DText>
-            <ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Margin="20,37">
-                <controls:KH3DText Name="Content" Text="Checking for the Circle Pad Pro . . . &#10;If it is in standby mode, press [ZL] or [ZR] ." Color="White"></controls:KH3DText>
-            </ScrollViewer>
-            <Image Grid.Column="2" Width="10" Stretch="Fill" Source="{skia:SvgImage /Images/info_r.svg}" RenderOptions.BitmapInterpolationMode="None"/>
-            <Grid Grid.Column="1" Name="EffectAmp">
-                <ReversibleStackPanel Grid.Column="1" Name="ButtonPanel" Orientation="Horizontal" ReverseOrder="True" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,8,14">
-                    <controls:InfoButton Name="AcceptButton" Text="OK" Click="AcceptButton_OnClick" IsVisible="False"/>
-                    <controls:InfoButton Name="ExtraButton" Text="IDK" Click="ExtraButton_OnClick" IsVisible="False"/>
-                    <controls:InfoButton Name="DeclineButton" Text="Cancel" Click="DeclineButton_OnClick" IsVisible="True"/>
-                </ReversibleStackPanel>
+            <Grid Grid.Column="1" Grid.RowDefinitions="*,Auto" Margin="20,37">
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                    <controls:KH3DText Name="Content" Text="Checking for the Circle Pad Pro . . . &#10;If it is in standby mode, press [ZL] or [ZR] ." Color="White"></controls:KH3DText>
+                </ScrollViewer>
+                <StackPanel Grid.Row="1" Name="GitPanel" IsVisible="True">
+                    <TextBox Name="GitBox" Height="18" FontSize="10" Watermark="user/repository@host (Host defaults to github.com)"/>
+                    <Grid Height="15">
+                        <ProgressBar Name="InternalProgressBar" Height="15"/>
+                        <controls:KH3DText Name="InternalKH3DText" Font="SmallAccurate" Color="White" HorizontalAlignment="Center" VerticalAlignment="Center"></controls:KH3DText>
+                    </Grid>
+                </StackPanel>
             </Grid>
+            <Image Grid.Column="2" Width="10" Stretch="Fill" Source="{skia:SvgImage /Images/info_r.svg}" RenderOptions.BitmapInterpolationMode="None"/>
+            <ReversibleStackPanel Grid.Column="1" Name="ButtonPanel" Orientation="Horizontal" ReverseOrder="True" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,8,14">
+                <controls:InfoButton Name="AcceptButton" Text="OK" Click="AcceptButton_OnClick" IsVisible="False"/>
+                <controls:InfoButton Name="ExtraButton" Text="IDK" Click="ExtraButton_OnClick" IsVisible="False"/>
+                <controls:InfoButton Name="DeclineButton" Text="Cancel" Click="DeclineButton_OnClick" IsVisible="True"/>
+            </ReversibleStackPanel>
         </Grid>
     </LayoutTransformControl>
 </Window>

@@ -37,7 +37,7 @@ using static NightmareEditor.Managers.Standard;
 using Path = System.IO.Path;
 
 
-namespace NightmareEditor
+namespace NightmareEditor.Managers
 {
     /// <summary>
     /// Interaction logic for Manager.axaml
@@ -47,7 +47,6 @@ namespace NightmareEditor
         /// This is largely copied from Pulsar. It's software also developed by me.
         private List<string> enabledmods = new List<string>();
         private bool isInitialized = false;
-        private List<MusicEntry[]> music = new List<MusicEntry[]>();
         private MainWindowViewModel viewModel = new MainWindowViewModel();
         private static Themes.Theme theme = CurrentTheme.Theme;
 
@@ -190,16 +189,6 @@ namespace NightmareEditor
                 }
                 catch { }
                 enabledmods = QuickJson(false, enabledmods, "enabledmods.json");
-            }
-            catch { }
-            try
-            {
-                try
-                {
-                    music.Clear();
-                }
-                catch { }
-                QuickMusicJson(false);
             }
             catch { }
             viewModel.AllMods.Clear();
@@ -776,31 +765,6 @@ namespace NightmareEditor
             }
         }
 
-        
-        private void QuickMusicJson(bool write)
-        {
-            if (write)
-            {
-                var jsonoptions = new JsonSerializerOptions
-                {
-                    WriteIndented = true
-                };
-                MusicList musiclist = new MusicList();
-                musiclist.Music = music;
-                string jsonString = JsonSerializer.Serialize<MusicList>(musiclist, jsonoptions);
-                File.WriteAllText(Paths.Jsons.music, jsonString);
-            }
-            else
-            {
-                var jsonoptions = new JsonSerializerOptions
-                {
-                    WriteIndented = true
-                };
-                string jsonString = File.ReadAllText(Paths.Jsons.music);
-                music = JsonSerializer.Deserialize<MusicList>(jsonString, jsonoptions).Music;
-            }
-        }
-
         private void Git_Click(object? sender, RoutedEventArgs e)
         {
             Repository.Clone("https://github.com/" + GitRepoBox.Text + ".git", Path.Combine(Paths.Folders.mods, GitRepoBox.Text.Replace('/', '.').Replace('\\', '.')));
@@ -936,18 +900,19 @@ namespace NightmareEditor
                 replace.IsInternalFile = true;
             }
 
+            List<MusicEntry[]> music = MusicReplacements;
             for (int i = 0; i < music.Count; i++)
             {
                 if (music[i][0].Track == correct.Track)
                 {
                     music[i][0] = correct;
                     music[i][1] = replace;
-                    QuickMusicJson(true);
+                    SetMusicReplacements(music);
                     return;
                 }
             }
             music.Add(new MusicEntry[] { correct, replace });
-            QuickMusicJson(true);
+            SetMusicReplacements(music);
         }
 
         private void SwitchUI_OnClick(object? sender, RoutedEventArgs e)
@@ -1265,6 +1230,7 @@ namespace NightmareEditor
         private void MusicCheckBoxGrid_OnPointerPressed(object? sender, PointerPressedEventArgs e)
         {
             MusicDescPanel.Children.Clear();
+            List<MusicEntry[]> music = MusicReplacements;
             for (int i = 0; i < music.Count; i++)
             {
                 var display = new NightmareEditor.Controls.RemovableMusic
@@ -1281,6 +1247,7 @@ namespace NightmareEditor
         private void MusicRemovalRequested(object? sender,
             NightmareEditor.Controls.RemovableMusic.MusicRemoveEventArgs e)
         {
+            List<MusicEntry[]> music = MusicReplacements;
             int index = -1;
             for (int i = 0; i < music.Count; i++)
             {
@@ -1293,7 +1260,7 @@ namespace NightmareEditor
 
             if (index == -1) return;
             music.RemoveAt(index);
-            QuickMusicJson(true);
+            SetMusicReplacements(music);
             MusicCheckBoxGrid_OnPointerPressed(null, null);
         }
     }

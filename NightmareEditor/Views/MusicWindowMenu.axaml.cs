@@ -15,6 +15,7 @@ using Avalonia.VisualTree;
 using NightmareEditor;
 using NightmareLibrary;
 using NightmareEditor.Controls;
+using static NightmareEditor.Managers.Standard;
 
 namespace NightmareEditor.Views;
 
@@ -151,7 +152,7 @@ public partial class MusicWindowMenu : UserControl
 
     private void ReplaceButton_Click(object? sender, EventArgs e)
     {
-        List<MusicEntry[]> music = JsonSerializer.Deserialize<MusicList>(File.ReadAllText(Paths.Jsons.music), Managers.Standard.WriteIndented).Music;
+        List<MusicEntry[]> music = MusicReplacements;
         MusicEntry replace = OutputSlot.MusicEntry;
         if (replace.Track == "Custom Track") replace.Description = "A custom track selected by the user.";
         for (int i = 0; i < music.Count; i++)
@@ -160,20 +161,13 @@ public partial class MusicWindowMenu : UserControl
             {
                 music[i][0] = InputSlot.MusicEntry;
                 music[i][1] = replace;
-                MusicList musiclistEarly = new MusicList();
-                musiclistEarly.Music = music;
-                string jsonStringEarly = JsonSerializer.Serialize<MusicList>(musiclistEarly, Managers.Standard.WriteIndented);
-                File.WriteAllText(Paths.Jsons.music, jsonStringEarly);
+                SetMusicReplacements(music);
                 return;
             }
         }
         music.Add(new MusicEntry[] { InputSlot.MusicEntry, replace });
-        MusicList musiclist = new MusicList();
-        musiclist.Music = music;
-        string jsonString = JsonSerializer.Serialize<MusicList>(musiclist, Managers.Standard.WriteIndented);
-        File.WriteAllText(Paths.Jsons.music, jsonString);
+        SetMusicReplacements(music);
         RequestRefresh?.Invoke(this, EventArgs.Empty);
-        
     }
 
     private void ReplaceButton_Hover(object? sender, PointerEventArgs e)

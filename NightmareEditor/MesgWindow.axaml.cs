@@ -1,7 +1,11 @@
 using System;
+using System.IO;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
+using LibGit2Sharp;
 using static NightmareEditor.Managers.Standard;
 
 namespace NightmareEditor;
@@ -36,7 +40,7 @@ public partial class MesgWindow : Window
             AcceptButton.IsVisible = true;
             DeclineButton.IsVisible = false;
             ExtraButton.IsVisible = false;
-            Title = "Nightmare Editor - INFORMATION";
+            Title = "Exam Editor - INFORMATION";
         }
         else if (msgBoxType == MsgBoxType.YesNo)
         {
@@ -45,20 +49,68 @@ public partial class MesgWindow : Window
             AcceptButton.IsVisible = true;
             DeclineButton.IsVisible = true;
             ExtraButton.IsVisible = false;
-            Title = "Nightmare Editor - WARNING";
+            Title = "Exam Editor - WARNING";
+        }
+        else if (msgBoxType == MsgBoxType.Git)
+        {
+            AcceptButton.Text = "Install";
+            DeclineButton.Text = "Done";
+            AcceptButton.IsVisible = true;
+            DeclineButton.IsVisible = true;
+            ExtraButton.IsVisible = false;
+            Title = "Exam Editor - Install a Git Repository";
+            GitPanel.IsVisible = true;
         }
     }
 
-    private void AcceptButton_OnClick(object? sender, EventArgs e)
+    private async void AcceptButton_OnClick(object? sender, EventArgs e)
     {
         if (_msgBoxType == MsgBoxType.Info)
         {
             Close();
         }
-        else if (_msgBoxType == MsgBoxType.YesNo || _msgBoxType == MsgBoxType.Git)
+        else if (_msgBoxType == MsgBoxType.YesNo)
         {
             Result = NightmareLibrary.Misc.ErrorCode.Success;
             Close();
+        }
+        else if (_msgBoxType == MsgBoxType.Git)
+        {
+            string[] splitbysource = GitBox.Text.Split('@');
+            string[] splitbyslash = splitbysource[0].Split('/');
+            if (splitbyslash.Length < 2)
+            {
+                InternalKH3DText.Text = "Invalid Repository";
+                return;
+            }
+            string source = splitbysource.Length > 1 ? splitbysource[1] : "github.com";
+            InternalProgressBar.IsIndeterminate = true;
+            ButtonPanel.IsEnabled = false;
+            ButtonPanel.Opacity = 0.5;
+            InternalKH3DText.Text = $"Cloning {splitbyslash[0]}/{splitbyslash[1]} at {source}...";
+            if (Directory.Exists(
+                    Path.Combine(Paths.Folders.mods, splitbysource[0].Replace('/', '.').Replace('\\', '.'))))
+            {
+                InternalKH3DText.Text = "Folder already exists. Delete it if you want to re-install.";
+            }
+            else
+            {
+                try
+                {
+                    await Dispatcher.UIThread.InvokeAsync(
+                        () => { }, DispatcherPriority.Background);
+                    await Task.Run(() => Repository.Clone($"https://{source}/{splitbyslash[0]}/{splitbyslash[1]}.git", Path.Combine(Paths.Folders.mods, splitbysource[0].Replace('/', '.').Replace('\\', '.')), new CloneOptions()));
+                    InternalKH3DText.Text = $"Finished cloning {splitbyslash[0]}/{splitbyslash[1]} at {source}";
+                }
+                catch (Exception exception)
+                {
+                    InternalKH3DText.Text = exception.Message;
+                    Console.WriteLine(exception.Message);
+                }
+            }
+            InternalProgressBar.IsIndeterminate = false;
+            ButtonPanel.IsEnabled = true;
+            ButtonPanel.Opacity = 1;
         }
     }
 

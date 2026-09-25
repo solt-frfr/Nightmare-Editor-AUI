@@ -34,7 +34,7 @@ using NightmareEditor.Managers;
 using SharpCompress.Archives;
 using Path = System.IO.Path;
 
-namespace NightmareEditor;
+namespace NightmareEditor.Managers;
 
 public partial class NewManager : Window
 {
@@ -45,8 +45,6 @@ public partial class NewManager : Window
         Directory.CreateDirectory(Paths.Folders.mods);
         Refresh();
     }
-    
-    
     
     private void Menu_Mods_OnClick(object? sender, EventArgs e)
     {
@@ -294,7 +292,7 @@ public partial class NewManager : Window
         }
 
         MusicRemovePanel.Children.Clear();
-        List<MusicEntry[]> music = JsonSerializer.Deserialize<MusicList>(File.ReadAllText(Paths.Jsons.music), Managers.Standard.WriteIndented).Music;
+        List<MusicEntry[]> music = MusicReplacements;
         for (int i = 0; i < music.Count; i++)
         {
             ConfigSlot musicRemoveSlot = new ConfigSlot
@@ -727,13 +725,10 @@ public partial class NewManager : Window
         Refresh();
     }
 
-    private void Git_OnClick(object? sender, EventArgs e)
+    private async void Git_OnClick(object? sender, EventArgs e)
     {
-        MesgWindow mw1 = new MesgWindow("INFORMATION", "Cloning git repo...", MesgWindow.MsgBoxType.Info);
-        mw1.Show();
-        Repository.Clone("https://github.com/" + GitRepoBox.Text + ".git", Path.Combine(Paths.Folders.mods, GitRepoBox.Text.Replace('/', '.').Replace('\\', '.')));
-        MesgWindow mw2 = new MesgWindow("INFORMATION", "Done cloning.", MesgWindow.MsgBoxType.Info);
-        mw2.Show();
+        MesgWindow mw = new MesgWindow("INSTALL REPOSITORY", "Type a git repository in the box below to install.", MesgWindow.MsgBoxType.Git);
+        await mw.ShowDialog(this);
         Refresh();
     }
     
@@ -978,22 +973,21 @@ public partial class NewManager : Window
 
     private void MusicReplaceSlot_Click(object? sender, EventArgs e)
     {
-        MusicList musiclist = JsonSerializer.Deserialize<MusicList>(File.ReadAllText(Paths.Jsons.music), Managers.Standard.WriteIndented);
+        List<MusicEntry[]> music = MusicReplacements;
         if (sender is ConfigSlot mrs)
         {
             int index = -1;
-            for (int i = 0; i < musiclist.Music.Count; i++)
+            for (int i = 0; i < music.Count; i++)
             {
-                if (musiclist.Music[i][0].Track == mrs.LeftText)
+                if (music[i][0].Track == mrs.LeftText)
                 {
                     index = i;
                     break;
                 }
             }
             if (index == -1) return;
-            musiclist.Music.RemoveAt(index);
-            string jsonString = JsonSerializer.Serialize<MusicList>(musiclist, Managers.Standard.WriteIndented);
-            File.WriteAllText(Paths.Jsons.music, jsonString);
+            music.RemoveAt(index);
+            SetMusicReplacements(music);
             Refresh();
         }
     }

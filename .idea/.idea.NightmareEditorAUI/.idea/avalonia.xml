@@ -3,7 +3,12 @@
   <component name="AvaloniaProject">
     <option name="projectPerEditor">
       <map>
+        <entry key="NightmareEditor/App.axaml" value="NightmareEditor/NightmareEditor.csproj" />
         <entry key="NightmareEditor/Editor.axaml" value="NightmareEditor/NightmareEditor.csproj" />
+        <entry key="NightmareEditor/Managers/Manager.axaml" value="NightmareEditor/NightmareEditor.csproj" />
+        <entry key="NightmareEditor/Managers/NewManager.axaml" value="NightmareEditor/NightmareEditor.csproj" />
+        <entry key="NightmareEditor/MesgWindow.axaml" value="NightmareEditor/NightmareEditor.csproj" />
+        <entry key="NightmareEditor/Views/MusicWindowMenu.axaml" value="NightmareEditor/NightmareEditor.csproj" />
       </map>
     </option>
   </component>
