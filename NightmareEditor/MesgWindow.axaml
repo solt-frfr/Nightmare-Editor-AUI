@@ -19,23 +19,25 @@
             <ScaleTransform ScaleX="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=160|1}" ScaleY="{Binding Height, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PixelWidth}, ConverterParameter=160|1}"/>
         </LayoutTransformControl.LayoutTransform>
         <Grid ColumnDefinitions="10,*,10">
-            <Image Grid.Column="0" Width="10" Stretch="Fill"  Source="{skia:SvgImage /Images/info_l.svg}" RenderOptions.BitmapInterpolationMode="None"/>
-            <Image Grid.Column="1" Stretch="Fill"  Source="{skia:SvgImage /Images/info_c.svg}" RenderOptions.BitmapInterpolationMode="None"/>
+            <Grid Grid.ColumnSpan="3" Name="BackgroundGrid" ColumnDefinitions="9,*,9" Opacity="0.925">
+                <Image Grid.Column="0" Grid.ColumnSpan="2" Width="10" Stretch="Fill" HorizontalAlignment="Left" Source="{skia:SvgImage /Images/info_l.svg}" RenderOptions.BitmapInterpolationMode="None"/>
+                <Image Grid.Column="1" Stretch="Fill"  Source="{skia:SvgImage /Images/info_c.svg}" RenderOptions.BitmapInterpolationMode="None"/>
+                <Image Grid.Column="1" Grid.ColumnSpan="2" Width="10" Stretch="Fill" HorizontalAlignment="Right" Source="{skia:SvgImage /Images/info_r.svg}" RenderOptions.BitmapInterpolationMode="None"/>
+            </Grid>
             <Image Grid.Column="1" Width="23" Source="{skia:SvgImage /Images/info_mark.svg}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="11,13"/>
             <controls:KH3DText Grid.Column="1" Name="TitleText" Text="INFORMATION" Margin="40,17" Color="Red"></controls:KH3DText>
             <Grid Grid.Column="1" Grid.RowDefinitions="*,Auto" Margin="20,37">
                 <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                     <controls:KH3DText Name="Content" Text="Checking for the Circle Pad Pro . . . &#10;If it is in standby mode, press [ZL] or [ZR] ." Color="White"></controls:KH3DText>
                 </ScrollViewer>
-                <StackPanel Grid.Row="1" Name="GitPanel" IsVisible="True">
-                    <TextBox Name="GitBox" Height="18" FontSize="10" Watermark="user/repository@host (Host defaults to github.com)"/>
+                <StackPanel Grid.Row="1" Name="GitPanel" IsVisible="False">
+                    <controls:KH3DTextBox Name="GitBox" Height="18" Watermark="user/repository@host (Host defaults to github.com)"/>
                     <Grid Height="15">
-                        <ProgressBar Name="InternalProgressBar" Height="15"/>
+                        <ProgressBar Name="InternalProgressBar" Height="15" CornerRadius="0" Foreground="#58adad"/>
                         <controls:KH3DText Name="InternalKH3DText" Font="SmallAccurate" Color="White" HorizontalAlignment="Center" VerticalAlignment="Center"></controls:KH3DText>
                     </Grid>
                 </StackPanel>
             </Grid>
-            <Image Grid.Column="2" Width="10" Stretch="Fill" Source="{skia:SvgImage /Images/info_r.svg}" RenderOptions.BitmapInterpolationMode="None"/>
             <ReversibleStackPanel Grid.Column="1" Name="ButtonPanel" Orientation="Horizontal" ReverseOrder="True" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,8,14">
                 <controls:InfoButton Name="AcceptButton" Text="OK" Click="AcceptButton_OnClick" IsVisible="False"/>
                 <controls:InfoButton Name="ExtraButton" Text="IDK" Click="ExtraButton_OnClick" IsVisible="False"/>

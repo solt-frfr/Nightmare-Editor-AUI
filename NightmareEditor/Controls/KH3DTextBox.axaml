@@ -1,0 +1,41 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:NightmareEditor.Controls"
+             mc:Ignorable="d" d:DesignWidth="100" d:DesignHeight="20"
+             x:Class="NightmareEditor.Controls.KH3DTextBox">
+    <Grid>
+        <Border BorderThickness="1" BorderBrush="#40000000" Focusable="True"
+                GotFocus="InputElement_OnGotFocus" LostFocus="InputElement_OnLostFocus" 
+                KeyDown="InputElement_OnKeyDown" PointerPressed="InputElement_OnPointerPressed">
+            <ScrollViewer Name="InternalScrollViewer" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled">
+                <Grid Background="#40FFFFFF">
+                    <controls:KH3DText Name="InternalKH3DText" Color="White" AllowFontChange="False"/>
+                    <controls:KH3DText Name="InternalKH3DWatermark" Color="Yellow" AllowFontChange="False" Font="SmallAccurate" Opacity="0.75"/>
+                    <Rectangle Name="Carat" IsVisible="False" Fill="Black" Width="1" Height="12"  HorizontalAlignment="Left">
+                        <Rectangle.Styles>
+                            <Style Selector="Rectangle">
+                                <Style.Animations>
+                                    <Animation Duration="0:0:1"
+                                               IterationCount="Infinite"
+                                               PlaybackDirection="Normal">
+                                        <KeyFrame Cue="0%">
+                                            <Setter Property="Opacity" Value="0"/>
+                                        </KeyFrame>
+                                        <KeyFrame Cue="49.999999999999999%">
+                                            <Setter Property="Opacity" Value="0"/>
+                                        </KeyFrame>
+                                        <KeyFrame Cue="50%">
+                                            <Setter Property="Opacity" Value="1"/>
+                                        </KeyFrame>
+                                    </Animation>
+                                </Style.Animations>
+                            </Style>
+                        </Rectangle.Styles>
+                    </Rectangle>
+                </Grid>
+            </ScrollViewer>
+        </Border>
+    </Grid>
+</UserControl>

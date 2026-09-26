@@ -69,8 +69,8 @@ public partial class NewManager : Window
         {
             BottomRightText.Text = ms.ModMeta.Description;
             AuthorKH3DText.Text = ms.ModMeta.Authors;
-            IDKH3DText.Text = ms.ModMeta.ID;
-            string modpath = GetModFolder(ms.ModMeta.ID);
+            FolderKH3DText.Text = ms.ModMeta.Folder;
+            string modpath = Path.Combine(Paths.Folders.mods, ms.ModMeta.Folder);
 
             try
             {
@@ -263,8 +263,7 @@ public partial class NewManager : Window
             string filepath = Path.Combine(modpath, "meta.json");
             if (!System.IO.File.Exists(filepath))
             {
-                string genid = modpath.Replace(Paths.Folders.mods, "");
-                mod.Name = mod.ID = genid = genid.TrimStart(Path.DirectorySeparatorChar);
+                mod.Name = Path.GetFileName(modpath);
                 mod.Description = mod.Authors = "";
                 string jsonString = JsonSerializer.Serialize(mod, WriteIndented);
                 System.IO.File.WriteAllText(filepath, jsonString);
@@ -273,11 +272,12 @@ public partial class NewManager : Window
             {
                 string jsonString = System.IO.File.ReadAllText(filepath);
                 mod = JsonSerializer.Deserialize<Meta>(jsonString, WriteIndented);
-                if (EnabledMods.Contains(mod.ID))
-                    mod.IsChecked = true;
-                else
-                    mod.IsChecked = false;
             }
+            if (File.Exists(Path.Combine(modpath, EnableFile)))
+                mod.IsChecked = true;
+            else
+                mod.IsChecked = false;
+            mod.Folder = Path.GetFileName(modpath);
             var slot = new ModSlot
             {
                 ModMeta = mod,
@@ -351,7 +351,7 @@ public partial class NewManager : Window
         if (sender is MenuItem mi &&
             mi.CommandParameter is ModSlot ms)
         {
-            string folder = GetModFolder(ms.ModMeta.ID);
+            string folder = Path.Combine(Paths.Folders.mods, ms.ModMeta.Folder);
             try
             {
                 if (Directory.Exists(folder))
@@ -391,47 +391,8 @@ public partial class NewManager : Window
         if (sender is MenuItem mi &&
             mi.CommandParameter is ModSlot ms)
         {
-            if (Directory.Exists(GetModFolder(ms.ModMeta.ID)))
-            {
-                try
-                {
-                    Misc.CopyDirectory(GetModFolder(ms.ModMeta.ID), Path.Combine(Paths.Folders.temp, ms.ModMeta.ID, ms.ModMeta.Name), true);
-
-                    var jsonoptions = new JsonSerializerOptions
-                    {
-                        WriteIndented = true
-                    };
-                    string jsonString = JsonSerializer.Serialize(ms.ModMeta, jsonoptions);
-                    string filepath = Path.Combine(Paths.Folders.temp, ms.ModMeta.ID, ms.ModMeta.Name, "meta.json");
-                    System.IO.File.WriteAllText(filepath, jsonString);
-
-                    var file = await this.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
-                    {
-                        Title = "Save Nightmare Editor Mod",
-                        FileTypeChoices = new List<FilePickerFileType>
-                        {
-                            new FilePickerFileType("Nightmare Editor Mod")
-                            {
-                                Patterns = new List<string> { "*.nem" }
-                            }
-                        }
-                    });
-
-                    if (file == null)
-                    {
-                        Console.WriteLine("Save file operation canceled.");
-                        return;
-                    }
-
-                    using var archive = SharpCompress.Archives.Zip.ZipArchive.CreateArchive();
-                    archive.AddAllFromDirectory(Path.Combine(Paths.Folders.temp, ms.ModMeta.ID));
-                    archive.SaveTo(file.Path.LocalPath, SharpCompress.Common.CompressionType.Deflate);
-                }
-                catch
-                {
-                }
-            }
-
+            ZipMod(ms.ModMeta, this);
+            
             Refresh();
         }
     }
@@ -447,7 +408,7 @@ public partial class NewManager : Window
 
             if (mw.Result == Misc.ErrorCode.Success)
             {
-                Directory.Delete(GetModFolder(ms.ModMeta.ID), true);
+                Directory.Delete(Path.Combine(Paths.Folders.mods, ms.ModMeta.Folder), true);
             }
 
             Refresh();
@@ -637,18 +598,17 @@ public partial class NewManager : Window
     {
         if (sender is ModSlot ms)
         {
-            var em = EnabledMods;
-            if (em.Contains(ms.ModMeta.ID))
+            string localEnableFile = Path.Combine(Paths.Folders.mods, ms.ModMeta.Folder, EnableFile);
+            if (File.Exists(localEnableFile))
             {
-                em.Remove(ms.ModMeta.ID);
+                File.Delete(localEnableFile);
                 ms.EquipE.IsVisible = false;
             }
             else
             {
-                em.Add(ms.ModMeta.ID);
+                File.Create(localEnableFile);
                 ms.EquipE.IsVisible = true;
             }
-            SetEnabledMods(em);
         }
     }
 
@@ -719,9 +679,9 @@ public partial class NewManager : Window
         OpenModsFolder();
     }
     
-    private void Install_OnClick(object? sender, EventArgs e)
+    private async void Install_OnClick(object? sender, EventArgs e)
     {
-        InstallArchive(this);
+        await InstallArchive(this);
         Refresh();
     }
 

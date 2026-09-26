@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Platform;
 using Avalonia.Platform.Storage;
@@ -20,6 +21,8 @@ public static class Standard
     {
         WriteIndented = true
     };
+
+    public static readonly string EnableFile = ".ne-enabled";
     
     public static Settings MainSettings
     {
@@ -53,29 +56,6 @@ public static class Standard
         if (newSettings.DefaultImage < 0) newSettings.DefaultImage = 0;
         string jsonString = JsonSerializer.Serialize<Settings>(newSettings, WriteIndented);
         System.IO.File.WriteAllText(Paths.Jsons.settings, jsonString);
-    }
-    
-    public static List<string> EnabledMods
-    {
-        get => GetEnabledMods();
-        set => SetEnabledMods(value);
-    }
-    
-    public static List<string> GetEnabledMods()
-    {
-        if (!File.Exists(Paths.Jsons.enabled))
-        {
-            List<string> list = new List<string>();
-            string jsonString = JsonSerializer.Serialize<List<string>>(list, WriteIndented);
-            System.IO.File.WriteAllText(Paths.Jsons.enabled, jsonString);
-        }
-        return JsonSerializer.Deserialize<List<string>>(File.ReadAllText(Paths.Jsons.enabled), WriteIndented);
-    }
-    
-    public static void SetEnabledMods(List<string> newEnabledMods)
-    {
-        string jsonString = JsonSerializer.Serialize<List<string>>(newEnabledMods, WriteIndented);
-        System.IO.File.WriteAllText(Paths.Jsons.enabled, jsonString);
     }
     
     public static Themes.ThemeData CurrentTheme
@@ -165,29 +145,6 @@ public static class Standard
         }
     }
 
-    public static string GetModFolder(string ID)
-    {
-        string[] folders = Directory.GetDirectories(Paths.Folders.mods);
-        string realFolder = "";
-        foreach (string folder in folders)
-        {
-            try
-            {
-                string jsonString = System.IO.File.ReadAllText(Path.Combine(folder, "meta.json"));
-                Meta meta = JsonSerializer.Deserialize<Meta>(jsonString, WriteIndented);
-                if (meta.ID == ID)
-                {
-                    realFolder = folder;
-                }
-            }
-            catch
-            {
-
-            }
-        }
-        return realFolder;
-    }
-
     public static void OpenModsFolder()
     {
         if (Directory.Exists(Paths.Folders.mods))
@@ -199,7 +156,7 @@ public static class Standard
         }
     }
 
-    public static async void InstallArchive(Window sender)
+    public static async Task InstallArchive(Window sender)
     {
         try
         {
@@ -297,17 +254,12 @@ public static class Standard
         }
         List<string> rbins = new List<string>();
         List<string> modFolders = new List<string>();
-        List<string> toRemove = new List<string>();
 
-        foreach (string ID in EnabledMods)
+        foreach (string modFolder in Directory.GetDirectories(Paths.Folders.mods))
         {
-            string folder = GetModFolder(ID);
-            if (string.IsNullOrWhiteSpace(folder))
-            {
-                toRemove.Add(ID);
-                continue;
-            }
+            string folder = modFolder;
             Meta meta = JsonSerializer.Deserialize<Meta>(File.ReadAllText(Path.Combine(folder, "meta.json")), WriteIndented);
+            if (!File.Exists(Path.Combine(modFolder, EnableFile))) continue;
             if (!string.IsNullOrWhiteSpace(meta.Prefix))
             {
                 folder = Path.Combine(folder, meta.Prefix);
@@ -324,7 +276,7 @@ public static class Standard
                         GetTitleIDFromRegion(settings.Region), "NightmareEditor"));
                     Editor.BetterDirCopy(Path.Combine(folder, "~emulator-textures"),
                         Path.Combine(deploypath, "textures", GetTitleIDFromRegion(settings.Region),
-                            "NightmareEditor", ID), false);
+                            "NightmareEditor", modFolder), false);
                 }
                 else if (!rbins.Contains(rbin) && Paths.accepted_rbins.Contains(rbin))
                 {
@@ -344,13 +296,6 @@ public static class Standard
                 }
             }
         }
-
-        List<string> em = EnabledMods;
-        foreach (string ID in toRemove)
-        {
-            em.Remove(ID);
-        }
-        SetEnabledMods(em);
         
         bool stop = false;
         string failed_rbins = "";
@@ -424,5 +369,39 @@ public static class Standard
             }
         }
         return (Misc.ErrorCode.Success, "");
+    }
+    
+    public static async Task ZipMod(Meta meta, Window sender)
+    {
+        string modPath = Path.Combine(Paths.Folders.mods, meta.Folder);
+        if (Directory.Exists(modPath))
+        {
+            try
+            {
+                Misc.CopyDirectory(modPath, Path.Combine(Paths.Folders.temp, meta.Folder, meta.Name), true);
+
+                var file = await sender.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+                {
+                    Title = "Save Nightmare Editor Mod",
+                    FileTypeChoices = new List<FilePickerFileType>
+                    {
+                        new FilePickerFileType("Nightmare Editor Mod")
+                        {
+                            Patterns = new List<string> { "*.nem" }
+                        }
+                    }
+                });
+
+                if (file == null)
+                {
+                    Console.WriteLine("Save file operation canceled.");
+                    return;
+                }
+                using var archive = SharpCompress.Archives.Zip.ZipArchive.CreateArchive();
+                archive.AddAllFromDirectory(Path.Combine(Paths.Folders.temp, meta.Folder));
+                archive.SaveTo(file.Path.LocalPath, SharpCompress.Common.CompressionType.Deflate);
+            }
+            catch { }
+        }
     }
 }

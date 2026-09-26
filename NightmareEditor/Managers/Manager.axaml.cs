@@ -45,7 +45,6 @@ namespace NightmareEditor.Managers
     public partial class Manager : Window
     {
         /// This is largely copied from Pulsar. It's software also developed by me.
-        private List<string> enabledmods = new List<string>();
         private bool isInitialized = false;
         private MainWindowViewModel viewModel = new MainWindowViewModel();
         private static Themes.Theme theme = CurrentTheme.Theme;
@@ -65,11 +64,6 @@ namespace NightmareEditor.Managers
             {
                 WriteIndented = true
             };
-            if (!System.IO.File.Exists(Paths.Jsons.enabled))
-            {
-                string jsonString = JsonSerializer.Serialize<List<string>>(new List<string>(), jsonoptions);
-                System.IO.File.WriteAllText(Paths.Jsons.enabled, jsonString);
-            }
             Refresh();
             isInitialized = true;
             DataContext = viewModel;
@@ -181,16 +175,6 @@ namespace NightmareEditor.Managers
         public void Refresh()
         {
             ThemeChange();
-            try
-            {
-                try
-                {
-                    enabledmods.Clear();
-                }
-                catch { }
-                enabledmods = QuickJson(false, enabledmods, "enabledmods.json");
-            }
-            catch { }
             viewModel.AllMods.Clear();
             string[] griditems = CountFolders(Paths.Folders.mods);
             Settings settings = new Settings();
@@ -236,8 +220,7 @@ namespace NightmareEditor.Managers
                 string filepath = Path.Combine(modpath, "meta.json");
                 if (!System.IO.File.Exists(filepath))
                 {
-                    string genid = modpath.Replace(Paths.Folders.mods, "");
-                    mod.Name = mod.ID = genid = genid.TrimStart(Path.DirectorySeparatorChar);
+                    mod.Name = Path.GetFileName(modpath);
                     mod.Description = mod.Authors = "";
                     string jsonString = JsonSerializer.Serialize(mod, WriteIndented);
                     System.IO.File.WriteAllText(filepath, jsonString);
@@ -246,15 +229,21 @@ namespace NightmareEditor.Managers
                 {
                     string jsonString = System.IO.File.ReadAllText(filepath);
                     mod = JsonSerializer.Deserialize<Meta>(jsonString, WriteIndented);
-                    if (!viewModel.AllMods.Contains(mod))
+                }
+                mod.Folder = Path.GetFileName(modpath);
+                if (!viewModel.AllMods.Contains(mod))
+                {
+                    string localEnableFile = Path.Combine(Paths.Folders.mods, mod.Folder, EnableFile);
+                    if (File.Exists(localEnableFile))
                     {
-                        if (enabledmods.Contains(mod.ID))
-                            mod.IsChecked = true;
-                        else
-                            mod.IsChecked = false;
-                        mod.LinkImage = CreateLinkImage(mod.Link);
-                        viewModel.AllMods.Add(mod);
+                        mod.IsChecked = true;
                     }
+                    else
+                    {
+                        mod.IsChecked = false;
+                    }
+                    mod.LinkImage = CreateLinkImage(mod.Link);
+                    viewModel.AllMods.Add(mod);
                 }
             }
             var sorted = viewModel.AllMods.OrderBy(i => i.Name).ToList();
@@ -287,12 +276,12 @@ namespace NightmareEditor.Managers
                 Meta row = (Meta)item;
                 if (row != null)
                 {
-                    if (Directory.Exists(Path.Combine(Paths.Folders.mods, row.ID)))
+                    if (Directory.Exists(Path.Combine(Paths.Folders.mods, row.Folder)))
                     {
                         try
                         {
                             ProcessStartInfo StartInformation = new ProcessStartInfo();
-                            StartInformation.FileName = Path.Combine(Paths.Folders.mods, row.ID);
+                            StartInformation.FileName = Path.Combine(Paths.Folders.mods, row.Folder);
                             StartInformation.UseShellExecute = true;
                             Process process = Process.Start(StartInformation);
                         }
@@ -309,43 +298,7 @@ namespace NightmareEditor.Managers
                 Meta row = (Meta)item;
                 if (row != null)
                 {
-                    if (Directory.Exists(GetModFolder(row.ID)))
-                    {
-                        try
-                        {
-                            Misc.CopyDirectory(GetModFolder(row.ID), Path.Combine(Paths.Folders.temp, row.ID, row.Name), true);
-
-                            var jsonoptions = new JsonSerializerOptions
-                            {
-                                WriteIndented = true
-                            };
-                            string jsonString = JsonSerializer.Serialize(row, jsonoptions);
-                            string filepath = Path.Combine(Paths.Folders.temp, row.ID, row.Name, "meta.json");
-                            System.IO.File.WriteAllText(filepath, jsonString);
-
-                            var file = await this.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
-                            {
-                                Title = "Save Nightmare Editor Mod",
-                                FileTypeChoices = new List<FilePickerFileType>
-                                {
-                                    new FilePickerFileType("Nightmare Editor Mod")
-                                    {
-                                        Patterns = new List<string> { "*.nem" }
-                                    }
-                                }
-                            });
-
-                            if (file == null)
-                            {
-                                Console.WriteLine("Save file operation canceled.");
-                                return;
-                            }
-                            using var archive = SharpCompress.Archives.Zip.ZipArchive.CreateArchive();
-                            archive.AddAllFromDirectory(Path.Combine(Paths.Folders.temp, row.ID));
-                            archive.SaveTo(file.Path.LocalPath, SharpCompress.Common.CompressionType.Deflate);
-                        }
-                        catch { }
-                    }
+                    ZipMod(row, this);
                 }
             }
             Refresh();
@@ -353,7 +306,7 @@ namespace NightmareEditor.Managers
 
         private async void Delete_OnClick(object sender, RoutedEventArgs e)
         {
-
+            string delete = "";
             foreach (var item in ModDataGrid.SelectedItems)
             {
                 Meta row = (Meta)item;
@@ -370,10 +323,11 @@ namespace NightmareEditor.Managers
 
                     if (result == ButtonResult.Yes)
                     {
-                        Directory.Delete(GetModFolder(row.ID), true);
+                        delete = Path.Combine(Paths.Folders.mods, row.Folder);
                     }
                 }
             }
+            if (!string.IsNullOrWhiteSpace(delete)) Directory.Delete(delete, true);
             Refresh();
         }
 
@@ -399,7 +353,7 @@ namespace NightmareEditor.Managers
             }
             try
             {
-                string modpath = GetModFolder(row.ID);
+                string modpath = Path.Combine(Paths.Folders.mods, row.Folder);
                 if (System.IO.File.Exists(Path.Combine(modpath, "preview.webp")))
                 {
                     string imagePath = Path.Combine(modpath, "preview.webp");
@@ -591,7 +545,8 @@ namespace NightmareEditor.Managers
 
         private async void InstallArchive_Click(object sender, EventArgs e)
         {
-            InstallArchive(this);
+            await InstallArchive(this);
+            Refresh();
         }
 
         private void OpenLink_Click(object sender, EventArgs e)
@@ -617,43 +572,22 @@ namespace NightmareEditor.Managers
                 var row = checkBox.DataContext as Meta;
                 if (row != null)
                 {
+                    string localEnableFile = Path.Combine(Paths.Folders.mods, row.Folder, EnableFile);
                     if (checkBox.IsChecked == true)
                     {
-                        if (!enabledmods.Contains(row.ID))
-                            enabledmods.Add(row.ID);
+                        if (!File.Exists(localEnableFile))
+                        {
+                            File.Create(localEnableFile);
+                        }
                     }
                     else
                     {
-                        if (enabledmods.Contains(row.ID))
-                            enabledmods.Remove(row.ID);
+                        if (File.Exists(localEnableFile))
+                        {
+                            File.Delete(localEnableFile);
+                        }
                     }
-                    QuickJson(true, enabledmods, "enabledmods.json");
-                    enabledmods = QuickJson(false, enabledmods, "enabledmods.json");
                 }
-            }
-        }
-
-        private List<string> QuickJson(bool write, List<string> what, string filename)
-        {
-            if (write)
-            {
-                var jsonoptions = new JsonSerializerOptions
-                {
-                    WriteIndented = true
-                };
-                string jsonString = JsonSerializer.Serialize(what, jsonoptions);
-                System.IO.File.WriteAllText(Path.Combine(Paths.Folders.program, filename), jsonString);
-                return null;
-            }
-            else
-            {
-                var jsonoptions = new JsonSerializerOptions
-                {
-                    WriteIndented = true
-                };
-                string jsonString = System.IO.File.ReadAllText(Path.Combine(Paths.Folders.program, filename));
-                what = JsonSerializer.Deserialize<List<string>>(jsonString, jsonoptions);
-                return what;
             }
         }
 
@@ -764,10 +698,47 @@ namespace NightmareEditor.Managers
                 }
             }
         }
-
-        private void Git_Click(object? sender, RoutedEventArgs e)
+        
+        private void GitRepoBox_OnKeyDown(object? sender, KeyEventArgs e)
         {
-            Repository.Clone("https://github.com/" + GitRepoBox.Text + ".git", Path.Combine(Paths.Folders.mods, GitRepoBox.Text.Replace('/', '.').Replace('\\', '.')));
+            GitRepoBox.Watermark = "user/repository@site";
+        }
+
+        private async void Git_Click(object? sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(GitRepoBox.Text)) GitRepoBox.Text = string.Empty;
+            await Dispatcher.UIThread.InvokeAsync(() => { });
+            string[] splitbysource = GitRepoBox.Text.Split('@');
+            string[] splitbyslash = splitbysource[0].Split('/');
+            if (splitbyslash.Length < 2)
+            {
+                GitRepoBox.Watermark = "Invalid repository.";
+                GitRepoBox.Text = string.Empty;
+                return;
+            }
+            string source = splitbysource.Length > 1 ? splitbysource[1] : "github.com";
+            if (!Directory.Exists(
+                    Path.Combine(Paths.Folders.mods, splitbysource[0].Replace('/', '.').Replace('\\', '.'))))
+            {
+                try
+                {
+                    await Task.Run(() =>
+                    {
+                        Repository.Clone($"https://{source}/{splitbyslash[0]}/{splitbyslash[1]}.git", Path.Combine(Paths.Folders.mods, splitbysource[0].Replace('/', '.').Replace('\\', '.')), new CloneOptions());
+                    });
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine(exception);
+                    GitRepoBox.Watermark = exception.Message;
+                    GitRepoBox.Text = string.Empty;
+                }
+            }
+            else
+            {
+                GitRepoBox.Watermark = "Folder already exists.";
+                GitRepoBox.Text = string.Empty;
+            }
             Refresh();
         }
         

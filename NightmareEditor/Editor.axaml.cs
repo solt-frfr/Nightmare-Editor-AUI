@@ -1417,13 +1417,8 @@ namespace NightmareEditor
         {
             MakePack finish = new MakePack(new Meta());
             await finish.ShowDialog(this);
-
-            var jsonoptions = new JsonSerializerOptions
-            {
-                WriteIndented = true
-            };
-            string jsonString = System.IO.File.ReadAllText(Paths.Jsons.temp);
-            Meta mod = JsonSerializer.Deserialize<Meta>(jsonString, jsonoptions);
+            Meta mod = finish.ModMeta;
+            
             foreach (string file in allfiles)
             {
                 if (file.EndsWith(".ctt"))
@@ -1470,7 +1465,7 @@ namespace NightmareEditor
                 }
                 if (file.Length - file.Replace(Path.DirectorySeparatorChar.ToString(), "").Length == 1)
                 {
-                    string endpath = NightmareEditor.Managers.Standard.GetModFolder(mod.ID);
+                    string endpath = Path.Combine(Paths.Folders.mods, mod.Folder);
                     if (!string.IsNullOrWhiteSpace(mod.Prefix))
                     {
                         endpath = Path.Combine(endpath, mod.Prefix);
@@ -1793,43 +1788,7 @@ namespace NightmareEditor
 
         private async void ZipMod(Meta meta)
         {
-            string folderpath = NightmareEditor.Managers.Standard.GetModFolder(meta.ID);
-            if (Directory.Exists(folderpath))
-            {
-                try
-                {
-                    Misc.CopyDirectory(folderpath, Path.Combine(Paths.Folders.temp, meta.ID, meta.Name), true);
-
-                    var jsonoptions = new JsonSerializerOptions
-                    {
-                        WriteIndented = true
-                    };
-                    string jsonString = JsonSerializer.Serialize(meta, jsonoptions);
-                    string filepath = Path.Combine(Paths.Folders.temp, meta.ID, meta.Name, "meta.json");
-                    System.IO.File.WriteAllText(filepath, jsonString);
-                    var file = await this.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
-                    {
-                        Title = "Save Nightmare Editor Mod",
-                        FileTypeChoices = new List<FilePickerFileType>
-                        {
-                            new FilePickerFileType("Nightmare Editor Mod")
-                            {
-                                Patterns = new List<string> { "*.nem" }
-                            }
-                        }
-                    });
-                    if (file == null)
-                    {
-                        Console.WriteLine("Save file operation canceled.");
-                        return;
-                    }
-                    using var archive = SharpCompress.Archives.Zip.ZipArchive.CreateArchive();
-                    archive.AddAllFromDirectory(Path.Combine(Paths.Folders.temp, meta.ID));
-                    archive.SaveTo(file.Path.LocalPath, SharpCompress.Common.CompressionType.Deflate);
-                    Directory.Delete(Path.Combine(Paths.Folders.temp, meta.ID, meta.Name), true);
-                }
-                catch { }
-            }
+            Managers.Standard.ZipMod(meta, this);
         }
 
         private void Search_KeyDown(object sender, KeyEventArgs e)

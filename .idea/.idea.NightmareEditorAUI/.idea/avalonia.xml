@@ -11,6 +11,7 @@
         <entry key="NightmareEditor/Controls/ImageButtonColor.axaml" value="NightmareEditor/NightmareEditor.csproj" />
         <entry key="NightmareEditor/Controls/InfoButton.axaml" value="NightmareEditor/NightmareEditor.csproj" />
         <entry key="NightmareEditor/Controls/KH3DText.axaml" value="NightmareEditor/NightmareEditor.csproj" />
+        <entry key="NightmareEditor/Controls/KH3DTextBox.axaml" value="NightmareEditor/NightmareEditor.csproj" />
         <entry key="NightmareEditor/Controls/MenuButton.axaml" value="NightmareEditor/NightmareEditor.csproj" />
         <entry key="NightmareEditor/Controls/ModSlot.axaml" value="NightmareEditor/NightmareEditor.csproj" />
         <entry key="NightmareEditor/Controls/MusicSlot.axaml" value="NightmareEditor/NightmareEditor.csproj" />

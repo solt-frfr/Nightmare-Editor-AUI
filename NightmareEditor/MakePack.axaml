@@ -10,7 +10,7 @@
         <StackPanel Width="300">
             <Grid ColumnDefinitions="*,2*" Height="30" Margin="0,5,0,0">
                 <TextBlock Text="Name" Foreground="#ffd9da" Margin="5" FontWeight="ExtraBold" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                <TextBox Name="NameBox" TextChanged="NameChanged" Margin="5" Grid.Column="1" Foreground="#ffd9da" Background="#a10943"/>
+                <TextBox Name="NameBox" Margin="5" Grid.Column="1" Foreground="#ffd9da" Background="#a10943"/>
             </Grid>
             <Grid ColumnDefinitions="*,2*" Height="90">
                 <TextBlock Text="Description" Margin="5" Foreground="#ffd9da" FontWeight="ExtraBold" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Top"/>
@@ -24,9 +24,9 @@
                 <TextBlock Text="Link" ToolTip.Tip="Gamebanana or other source link." Margin="5" Foreground="#ffd9da" FontWeight="ExtraBold" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 <TextBox Name="LinkBox" ToolTip.Tip="Gamebanana or other source link." Margin="5" Grid.Column="1" Foreground="#ffd9da" Background="#a10943"/>
             </Grid>
-            <Grid ColumnDefinitions="*,2*" Height="30">
-                <TextBlock Text="ID" ToolTip.Tip="Helps to differenciate mods that happen to have the same name. Will be used as the folder name." Margin="5" Foreground="#ffd9da" FontWeight="ExtraBold" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                <TextBox Name="IDBox" TextChanged="IDChanged" KeyDown="IDBox_KeyDown" ToolTip.Tip="Helps to differenciate mods that happen to have the same name. Will be used as the folder name." Margin="5" Grid.Column="1" Foreground="#ffd9da" Background="#a10943"/>
+            <Grid Name="FolderGrid" ColumnDefinitions="*,2*" Height="30">
+                <TextBlock Text="Folder" ToolTip.Tip="The name the folder that contains the mods will have." Margin="5" Foreground="#ffd9da" FontWeight="ExtraBold" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBox Name="FolderBox" TextChanged="FolderChanged" ToolTip.Tip="The name the folder that contains the mod will have." Margin="5" Grid.Column="1" Foreground="#ffd9da" Background="#a10943"/>
             </Grid>
             <Grid ColumnDefinitions="*,2*" Height="30">
                 <TextBlock Text="Prefix" ToolTip.Tip="Define what folder the files will be inside. If this is empty, they will be in the root folder of the mod." Margin="5" Foreground="#ffd9da" FontWeight="ExtraBold" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>

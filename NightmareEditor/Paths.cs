@@ -78,7 +78,6 @@ namespace NightmareEditor
         {
             public static readonly string music = Path.Combine(Folders.program, "music.json");
             public static readonly string settings = Path.Combine(Folders.program, "settings.json");
-            public static readonly string enabled = Path.Combine(Folders.program, "enabledmods.json");
             public static readonly string textures = Path.Combine(Folders.program, "textures.json");
             public static readonly string temp = Path.Combine(Folders.program, "temp.json");
             public static readonly string theme = Path.Combine(Folders.program, "theme.json");

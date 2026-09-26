@@ -84,7 +84,6 @@ public partial class MesgWindow : Window
                 return;
             }
             string source = splitbysource.Length > 1 ? splitbysource[1] : "github.com";
-            InternalProgressBar.IsIndeterminate = true;
             ButtonPanel.IsEnabled = false;
             ButtonPanel.Opacity = 0.5;
             InternalKH3DText.Text = $"Cloning {splitbyslash[0]}/{splitbyslash[1]} at {source}...";
@@ -97,10 +96,32 @@ public partial class MesgWindow : Window
             {
                 try
                 {
+                    InternalProgressBar.IsIndeterminate = true;
                     await Dispatcher.UIThread.InvokeAsync(
                         () => { }, DispatcherPriority.Background);
-                    await Task.Run(() => Repository.Clone($"https://{source}/{splitbyslash[0]}/{splitbyslash[1]}.git", Path.Combine(Paths.Folders.mods, splitbysource[0].Replace('/', '.').Replace('\\', '.')), new CloneOptions()));
-                    InternalKH3DText.Text = $"Finished cloning {splitbyslash[0]}/{splitbyslash[1]} at {source}";
+                    var cloneOptions = new CloneOptions
+                    {
+                        FetchOptions =
+                        {
+                            OnTransferProgress = OnTransferProgress
+                        }
+                    };
+
+                    bool OnTransferProgress(TransferProgress progress)
+                    {
+                        Dispatcher.UIThread.Post(() =>
+                        {
+                            InternalProgressBar.IsIndeterminate = false;
+                            InternalProgressBar.Minimum = 0;
+                            InternalProgressBar.Value = progress.ReceivedObjects;
+                            InternalProgressBar.Maximum = progress.TotalObjects; 
+                        });
+                        return true;
+                    }
+
+                    await Task.Run(() => Repository.Clone($"https://{source}/{splitbyslash[0]}/{splitbyslash[1]}.git", 
+                        Path.Combine(Paths.Folders.mods, splitbysource[0].Replace('/', '.').Replace('\\', '.')), cloneOptions));
+                    InternalKH3DText.Text = $"Cloned {splitbyslash[0]}/{splitbyslash[1]} at {source}";
                 }
                 catch (Exception exception)
                 {
@@ -108,7 +129,6 @@ public partial class MesgWindow : Window
                     Console.WriteLine(exception.Message);
                 }
             }
-            InternalProgressBar.IsIndeterminate = false;
             ButtonPanel.IsEnabled = true;
             ButtonPanel.Opacity = 1;
         }

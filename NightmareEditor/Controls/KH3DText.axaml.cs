@@ -25,7 +25,9 @@ public partial class KH3DText : UserControl
     public static readonly StyledProperty<ImmutableSolidColorBrush> ColorProperty =
         AvaloniaProperty.Register<KH3DText, ImmutableSolidColorBrush>(nameof(Color), defaultValue: new ImmutableSolidColorBrush(Avalonia.Media.Colors.Black));
     public static readonly StyledProperty<bool> DropShadowProperty =
-        AvaloniaProperty.Register<KH3DText, bool>(nameof(DropShadowProperty), defaultValue: true);
+        AvaloniaProperty.Register<KH3DText, bool>(nameof(DropShadow), defaultValue: true);
+    public static readonly StyledProperty<bool> AllowFontChangeProperty =
+        AvaloniaProperty.Register<KH3DText, bool>(nameof(AllowFontChange), defaultValue: true);
     
     public string Text
     {
@@ -73,6 +75,12 @@ public partial class KH3DText : UserControl
         get => GetValue(DropShadowProperty);
         set => SetValue(DropShadowProperty, value);
     }
+    
+    public bool AllowFontChange
+    {
+        get => GetValue(AllowFontChangeProperty);
+        set => SetValue(AllowFontChangeProperty, value);
+    }
 
     public void UpdateText()
     {
@@ -104,7 +112,7 @@ public partial class KH3DText : UserControl
                 foreach (string splitword in splitwords)
                 {
                     FontChoices fontToUse = Font;
-                    if (word != splitword)
+                    if (word != splitword && AllowFontChange)
                     {
                         if (Font == FontChoices.Accurate)
                         {

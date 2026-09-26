@@ -36,7 +36,8 @@ namespace NightmareEditor
         public string Description { get; set; }
         public string Authors { get; set; }
         public string Link { get; set; }
-        public string ID { get; set; }
+        [JsonIgnore]
+        public string Folder { get; set; }
         [JsonIgnore]
         public bool IsChecked { get; set; }
         [JsonIgnore]

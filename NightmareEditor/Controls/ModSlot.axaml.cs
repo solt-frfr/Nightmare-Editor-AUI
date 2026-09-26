@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Threading;
 using Avalonia;
 using Avalonia.Controls;
@@ -65,14 +66,6 @@ public partial class ModSlot : UserControl
         }
         InternalKH3DText.Font = (KH3DText.FontChoices)(int)Font;
         InternalKH3DText.Text = useableMeta.Name;
-        if (Managers.Standard.EnabledMods.Contains(useableMeta.ID))
-        {
-            EquipE.IsVisible = true;
-        }
-        else
-        {
-            EquipE.IsVisible = false;
-        }
 
         Color tempColor = Avalonia.Media.Color.Parse("#a80000");
         if (Avalonia.Media.Color.TryParse(useableMeta.Color, out var color))

@@ -26,27 +26,24 @@
             <Grid RowDefinitions="2*,3*">
                 <Viewbox>
                     <StackPanel Name="GitStackPanel" Orientation="Horizontal" HorizontalAlignment="Center">
-                        <TextBox Name="GitRepoBox" VerticalAlignment="Center" Width="150" HorizontalAlignment="Left" Watermark="user/repository"/>
+                        <ScrollViewer Width="150" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                            <TextBox Name="GitRepoBox" KeyDown="GitRepoBox_OnKeyDown" VerticalAlignment="Center" HorizontalAlignment="Left" Watermark="user/repository@site"/>
+                        </ScrollViewer>
                         <Button Click="Git_Click">Install from Git Repository</Button>
                         <Button Name="UpdateButton" Click="UpdateGit_Click">Update Mods</Button>
                     </StackPanel>
                 </Viewbox>
                 <Grid Grid.Row="2" VerticalAlignment="Bottom" ColumnDefinitions="*,*,*" Margin="5,5,5,0">
-                    <Grid Grid.Column="0">
-                        <Button Name="ModsButton" Margin="5,5,5,0" Click="Mods_Click" Cursor="Hand" Padding="0" BorderThickness="0">
-
-                        </Button>
-                    </Grid>
-                    <Grid Grid.Column="1">
-                        <Button Name="MusicButton" Margin="5,5,5,0" Click="Music_Click" Cursor="Hand" Padding="0" BorderThickness="0">
-                            
-                        </Button>
-                    </Grid>
-                    <Grid Grid.Column="2">
-                        <Button Name="SettingsButton" Margin="5,5,5,0" Click="Settings_Click" Cursor="Hand" Padding="0" BorderThickness="0">
-                            
-                        </Button>
-                    </Grid>
+                    <Grid.Styles>
+                        <Style Selector="Button">
+                            <Setter Property="Margin" Value="5,5,5,0"/>
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                        </Style>
+                    </Grid.Styles>
+                    <Button Grid.Column="0" Name="ModsButton" Click="Mods_Click"/>
+                    <Button Grid.Column="1" Name="MusicButton" Click="Music_Click"/>
+                    <Button Grid.Column="2" Name="SettingsButton" Click="Settings_Click"/>
                 </Grid>
             </Grid>
             <Grid Grid.RowSpan="2" Grid.Column="1" RowDefinitions="9*,1*,9*,3*" Name="ModContent" IsVisible="True" Margin="10">
@@ -161,12 +158,12 @@
                         <TextBlock Text="Settings" FontSize="25" FontWeight="SemiBold" TextDecorations="Underline"/>
                         <TextBlock Text="Deploy Path" FontSize="18" Grid.Row="1" ToolTip.Tip="After clicking Deploy, the mods will be placed in this path." VerticalAlignment="Center"/>
                         <TextBlock Text="Default Preview" FontSize="18" Grid.Row="2" ToolTip.Tip="The preview that will show up if none is found." VerticalAlignment="Center"/>
-                        <ScrollViewer Grid.Row="1" Grid.Column="1" HorizontalScrollBarVisibility="Auto">
-                            <StackPanel Orientation="Horizontal">
-                                <Button Name="PathButton" ToolTip.Tip="After clicking Deploy, the mods will be placed in this path." Click="Path_Click" Content="Browse"/>
+                        <Grid Grid.Row="1" Grid.Column="1" ColumnDefinitions="Auto,*">
+                            <Button Grid.Column="0" Name="PathButton" ToolTip.Tip="After clicking Deploy, the mods will be placed in this path." Click="Path_Click" Content="Browse"/>
+                            <ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Auto">
                                 <TextBox Name="PathBox" Classes="NoHover" ToolTip.Tip="After clicking Deploy, the mods will be placed in this path." Foreground="White" Padding="5" IsEnabled="False" TextChanged="PathBox_TextChanged"/>
-                            </StackPanel>
-                        </ScrollViewer>
+                            </ScrollViewer>
+                        </Grid>
                         
                         <ComboBox Name="DefPrevBox" Grid.Row="2" Grid.Column="1" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Black" SelectionChanged="DefPrevBox_SelectionChanged">
                             <ComboBoxItem IsSelected="True" Content="Dream Drop Distance" Foreground="Black"/>

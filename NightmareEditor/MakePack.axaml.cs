@@ -25,8 +25,7 @@ namespace NightmareEditor
     /// </summary>
     public partial class MakePack : Window
     {
-        private Meta modmetadata = new Meta();
-        private bool UserID = false;
+        public Meta ModMeta { get; private set; }
 
         public MakePack()
         {
@@ -37,26 +36,27 @@ namespace NightmareEditor
         {
             InitializeComponent();
             this.Topmost = true;
-            modmetadata = sender;
+            ModMeta = sender;
             try
             {
-                if (sender.Name != null || sender.ID != null)
+                if (sender.Name != null)
                 {
                     Title = $"Edit {sender.Name}";
                     NameBox.Text = sender.Name;
                     DescBox.Text = sender.Description;
                     AuthorBox.Text = sender.Authors;
                     LinkBox.Text = sender.Link;
-                    IDBox.Text = sender.ID;
                     PrefixBox.Text = sender.Prefix;
                     if (Avalonia.Media.Color.TryParse(sender.Color, out Avalonia.Media.Color color))
                     {
                         ColorPick.Color = color;
                     }
-                    if (!string.IsNullOrWhiteSpace(sender.ID))
+
+                    if (!string.IsNullOrWhiteSpace(sender.Folder))
                     {
-                        IDBox.IsEnabled = false;
-                        UserID = true;
+                        FolderGrid.Opacity = 0.5;
+                        FolderGrid.IsEnabled = false;
+                        FolderBox.Text = sender.Folder;
                     }
                     OpenButton.IsEnabled = !sender.ArchiveImage;
                 }
@@ -93,35 +93,28 @@ namespace NightmareEditor
 
         private void Confirm_Click(object sender, RoutedEventArgs e)
         {
-            string folder = Path.Combine(Paths.Folders.mods, IDBox.Text);
-            try
-            {
-                folder = NightmareEditor.Managers.Standard.GetModFolder(modmetadata.ID);
-            }
-            catch (Exception exception)
-            {
-                folder = Path.Combine(Paths.Folders.mods, IDBox.Text);
-            }
+            string folder = Path.Combine(Paths.Folders.mods, FolderBox.Text);
 
-            if (string.IsNullOrWhiteSpace(folder))
+            if (Directory.Exists(folder) && FolderGrid.IsEnabled)
             {
-                folder = Path.Combine(Paths.Folders.mods, IDBox.Text);
+                Confirm.Content = "Folder In Use";
+                return;
             }
-            modmetadata.Name = NameBox.Text;
-            modmetadata.Description = DescBox.Text;
-            modmetadata.Authors = AuthorBox.Text;
-            modmetadata.Link = LinkBox.Text;
-            modmetadata.ID = IDBox.Text;
-            modmetadata.Prefix = PrefixBox.Text;
+            ModMeta.Name = NameBox.Text;
+            ModMeta.Description = DescBox.Text;
+            ModMeta.Authors = AuthorBox.Text;
+            ModMeta.Link = LinkBox.Text;
+            ModMeta.Folder = FolderBox.Text;
+            ModMeta.Prefix = PrefixBox.Text;
             Avalonia.Media.Color color = ColorPick.HsvColor.ToRgb();
-            modmetadata.Color = $"#{color.R:X2}{color.G:X2}{color.B:X2}";
-            if (!string.IsNullOrWhiteSpace(modmetadata.ID))
+            ModMeta.Color = $"#{color.R:X2}{color.G:X2}{color.B:X2}";
+            if (!string.IsNullOrWhiteSpace(ModMeta.Folder))
             {
                 var jsonoptions = new JsonSerializerOptions
                 {
                     WriteIndented = true
                 };
-                string jsonString = JsonSerializer.Serialize(modmetadata, jsonoptions);
+                string jsonString = JsonSerializer.Serialize(ModMeta, jsonoptions);
                 string filepath = Path.Combine(folder, "meta.json");
                 Directory.CreateDirectory(folder);
                 File.WriteAllText(filepath, jsonString);
@@ -138,41 +131,16 @@ namespace NightmareEditor
             }
         }
 
-        private void NameChanged(object sender, TextChangedEventArgs e)
+        private void FolderChanged(object sender, TextChangedEventArgs e)
         {
-            string idtext = NameBox.Text.Trim();
-            idtext = idtext.ToLower();
-            idtext = idtext.Replace(" ", string.Empty);
-            if (UserID == false)
-                IDBox.Text = idtext;
-        }
-
-        private void IDChanged(object sender, TextChangedEventArgs e)
-        {
-            string idtext = IDBox.Text.Trim();
-            idtext = idtext.ToLower();
-            idtext = idtext.Replace(" ", string.Empty);
-            IDBox.Text = idtext;
-        }
-        private void IDBox_KeyDown(object sender, TextInputEventArgs e)
-        {
-            UserID = true;
-            if (string.IsNullOrEmpty(e.Text) || e.Text.Length != 1)
+            char[] charArray = FolderBox.Text.Trim().ToCharArray();
+            string folderText = "";
+            for (int i = 0; i < charArray.Length; i++)
             {
-                e.Handled = true;
-                return;
+                if (!char.IsLetterOrDigit(charArray[i]) || !char.IsPunctuation(charArray[i]))
+                    folderText += charArray[i];
             }
-            char keyChar = e.Text[0];
-            e.Handled = !char.IsLetterOrDigit(keyChar) || !char.IsPunctuation(keyChar);
-            if (e.Handled == false)
-            {
-                IDBox.Text = IDBox.Text.TrimEnd(keyChar);
-            }
-        }
-
-        private void IDBox_KeyDown(object sender, KeyEventArgs e)
-        {
-            UserID = true;
+            FolderBox.Text = folderText;
         }
     }
 }

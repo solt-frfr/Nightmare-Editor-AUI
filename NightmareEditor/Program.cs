@@ -20,7 +20,8 @@ namespace NightmareEditor
             GC.KeepAlive(typeof(Avalonia.Svg.Skia.Svg).Assembly);
             return AppBuilder.Configure<App>()
                 .UsePlatformDetect()
-                .LogToTrace();
+                .LogToTrace()
+                .With(new SkiaOptions { UseOpacitySaveLayer = true });
         }
     }
 }

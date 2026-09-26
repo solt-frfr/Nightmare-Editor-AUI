@@ -284,7 +284,7 @@
                                 </ScrollViewer.Styles>
                                 <controls:KH3DText Name="AuthorKH3DText" Text="" Font="SmallAccurate" Color="White"/>
                             </ScrollViewer>
-                            <controls:KH3DText Text="ID" Font="SmallAccurate" Color="#fcfc01" VerticalAlignment="Bottom" Margin="10,0,0,2"/>
+                            <controls:KH3DText Text="Folder" Font="SmallAccurate" Color="#fcfc01" VerticalAlignment="Bottom" Margin="10,0,0,2"/>
                             <ScrollViewer Grid.Column="1" VerticalAlignment="Bottom" Margin="4,0,20,2" 
                                           HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" 
                                           ToolTip.Tip="You can scroll this if you can't see the whole name!">
@@ -294,7 +294,7 @@
                                         <Setter Property="MinWidth" Value="0"/>
                                     </Style>
                                 </ScrollViewer.Styles>
-                                <controls:KH3DText Name="IDKH3DText" Text="" Font="SmallAccurate" Color="White"/>
+                                <controls:KH3DText Name="FolderKH3DText" Text="" Font="SmallAccurate" Color="White"/>
                             </ScrollViewer>
                         </Grid>
                     </Grid>
