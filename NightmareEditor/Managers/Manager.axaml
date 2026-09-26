@@ -27,7 +27,8 @@
                 <Viewbox>
                     <StackPanel Name="GitStackPanel" Orientation="Horizontal" HorizontalAlignment="Center">
                         <ScrollViewer Width="150" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
-                            <TextBox Name="GitRepoBox" KeyDown="GitRepoBox_OnKeyDown" VerticalAlignment="Center" HorizontalAlignment="Left" Watermark="user/repository@site"/>
+                            <TextBox Name="GitRepoBox" KeyDown="GitRepoBox_OnKeyDown" VerticalAlignment="Center" HorizontalAlignment="Left" 
+                                     Watermark="user/repository@site" MinWidth="150"/>
                         </ScrollViewer>
                         <Button Click="Git_Click">Install from Git Repository</Button>
                         <Button Name="UpdateButton" Click="UpdateGit_Click">Update Mods</Button>
@@ -126,9 +127,6 @@
                     </StackPanel>
                 </Grid>
             </Grid>
-            <Viewbox>
-                
-            </Viewbox>
             <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,5,0,0">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <controls:ImageButtonColor Name="DeployButton" Click="Deploy_Click" Color="#F04080" Source="/Images/Deploy.png" Cursor="Hand" ToolTip.Tip="Deploy mods to selected folder." HorizontalAlignment="Center"/>
@@ -139,10 +137,10 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Grid>
-                        <controls:ImageButtonColor Name="NewButton" Click="New_OnClick" Color="#F04080" Source="/Images/nightmare.png" Cursor="Hand" ToolTip.Tip="Go to Nightmare Editor" HorizontalAlignment="Center"/>
-                        <Viewbox Grid.Column="4" HorizontalAlignment="Center" Stretch="Fill" StretchDirection="Both">
-                            <ProgressBar Name="ProgressBar" Minimum="0" Maximum="1" IsVisible="False"/>
-                        </Viewbox>
+                        <controls:ImageButtonColor Name="NewButton" Click="New_OnClick" Color="#F04080" Source="/Images/nightmare.png" Cursor="Hand" 
+                                                   ToolTip.Tip="Go to Nightmare Editor" HorizontalAlignment="Right"/>
+                        <ProgressBar Name="ProgressBar" Minimum="0" Maximum="1" IsVisible="False"
+                                     HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                     </Grid>              
                 </StackPanel>
             </Grid>

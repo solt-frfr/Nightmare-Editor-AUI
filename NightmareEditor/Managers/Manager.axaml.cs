@@ -325,9 +325,14 @@ namespace NightmareEditor.Managers
                     {
                         delete = Path.Combine(Paths.Folders.mods, row.Folder);
                     }
+                    break;
                 }
             }
-            if (!string.IsNullOrWhiteSpace(delete)) Directory.Delete(delete, true);
+
+            await Task.Run(() =>
+            {
+                if (!string.IsNullOrWhiteSpace(delete)) Directory.Delete(delete, true);
+            });
             Refresh();
         }
 
@@ -722,6 +727,29 @@ namespace NightmareEditor.Managers
             {
                 try
                 {
+                    ProgressBar.IsVisible = true;
+                    ProgressBar.IsIndeterminate = true;
+                    GitStackPanel.IsEnabled = false;
+                    GitStackPanel.Opacity = 0.5;
+                    await Dispatcher.UIThread.InvokeAsync(
+                        () => { }, DispatcherPriority.Background);
+                    var cloneOptions = new CloneOptions
+                    {
+                        FetchOptions =
+                        {
+                            OnTransferProgress = OnTransferProgress
+                        }
+                    };
+
+                    bool OnTransferProgress(TransferProgress progress)
+                    {
+                        Dispatcher.UIThread.Post(() =>
+                        {
+                            ProgressBar.IsIndeterminate = false;
+                            ProgressBar.Value = progress.ReceivedObjects / progress.TotalObjects;
+                        });
+                        return true;
+                    }
                     await Task.Run(() =>
                     {
                         Repository.Clone($"https://{source}/{splitbyslash[0]}/{splitbyslash[1]}.git", Path.Combine(Paths.Folders.mods, splitbysource[0].Replace('/', '.').Replace('\\', '.')), new CloneOptions());
@@ -739,6 +767,9 @@ namespace NightmareEditor.Managers
                 GitRepoBox.Watermark = "Folder already exists.";
                 GitRepoBox.Text = string.Empty;
             }
+            ProgressBar.IsVisible = false;
+            GitStackPanel.IsEnabled = true;
+            GitStackPanel.Opacity = 1;
             Refresh();
         }
         
