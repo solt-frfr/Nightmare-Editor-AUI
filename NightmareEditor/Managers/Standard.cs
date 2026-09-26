@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Platform;
 using Avalonia.Platform.Storage;
+using LibGit2Sharp;
 using NightmareEditor;
 using NightmareLibrary;
 using SharpCompress.Archives;
@@ -17,10 +18,13 @@ namespace NightmareEditor.Managers;
 
 public static class Standard
 {
-    public static JsonSerializerOptions WriteIndented = new JsonSerializerOptions
+    public static readonly JsonSerializerOptions WriteIndented = new JsonSerializerOptions
     {
         WriteIndented = true
     };
+
+    public static readonly Signature GitSignature =
+        new Signature("NightmareEditor", "nightmare@editor", DateTimeOffset.Now);
 
     public static readonly string EnableFile = ".ne-enabled";
     

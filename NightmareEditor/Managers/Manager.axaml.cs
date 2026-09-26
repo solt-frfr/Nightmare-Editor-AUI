@@ -740,16 +740,6 @@ namespace NightmareEditor.Managers
                             OnTransferProgress = OnTransferProgress
                         }
                     };
-
-                    bool OnTransferProgress(TransferProgress progress)
-                    {
-                        Dispatcher.UIThread.Post(() =>
-                        {
-                            ProgressBar.IsIndeterminate = false;
-                            ProgressBar.Value = progress.ReceivedObjects / progress.TotalObjects;
-                        });
-                        return true;
-                    }
                     await Task.Run(() =>
                     {
                         Repository.Clone($"https://{source}/{splitbyslash[0]}/{splitbyslash[1]}.git", Path.Combine(Paths.Folders.mods, splitbysource[0].Replace('/', '.').Replace('\\', '.')), new CloneOptions());
@@ -773,44 +763,140 @@ namespace NightmareEditor.Managers
             Refresh();
         }
         
+        private bool OnTransferProgress(TransferProgress progress)
+        {
+            Dispatcher.UIThread.Post(() =>
+            {
+                ProgressBar.IsIndeterminate = false;
+                ProgressBar.Value = progress.ReceivedObjects / progress.TotalObjects;
+            });
+            return true;
+        }
+        
         private async void UpdateGit_Click(object? sender, RoutedEventArgs e)
         {
+            GitStackPanel.IsEnabled = false;
+            GitStackPanel.Opacity = 0.5;
             string[] folders = Directory.GetDirectories(Paths.Folders.mods);
+            List<string> updating = new List<string>();
+            List<string> updated = new List<string>();
+            List<string> skipped = new List<string>();
+            List<string> validFolders = new List<string>();
             foreach (string folder in folders)
             {
+                if (File.Exists(Path.Combine(folder, "meta.json")))
+                {
+                    string jsonString = System.IO.File.ReadAllText(Path.Combine(folder, "meta.json"));
+                    Meta meta = JsonSerializer.Deserialize<Meta>(jsonString, WriteIndented);
+                    validFolders.Add(folder);
+                    updating.Add(meta.Name);
+                }
+            }
+            var pullOptions = new PullOptions
+            {
+                FetchOptions = new FetchOptions
+                {
+                    OnTransferProgress = OnTransferProgress
+                }
+            };
+            foreach (string folder in validFolders)
+            {
+                string jsonString = System.IO.File.ReadAllText(Path.Combine(folder, "meta.json"));
+                Meta meta = JsonSerializer.Deserialize<Meta>(jsonString, WriteIndented);
                 try
                 {
-                    var jsonoptions = new JsonSerializerOptions
-                    {
-                        WriteIndented = true
-                    };
-                    string jsonString = System.IO.File.ReadAllText(Path.Combine(folder, "meta.json"));
-                    Meta meta = JsonSerializer.Deserialize<Meta>(jsonString, jsonoptions);
-                    if (meta.Link.Contains("github.com"))
+                    UpdateButton.Content = "Updating " + meta.Name;
+                    await Dispatcher.UIThread.InvokeAsync(() => { });
+                    await Task.Run(() =>
                     {
                         using var repo = new Repository(folder);
                         Commands.Pull(
                             repo,
-                            new Signature("NightmareEditor", "nightmare@editor", DateTimeOffset.Now),
-                            new PullOptions()
+                            GitSignature,
+                            pullOptions
                         );
-                        UpdateButton.Content = "Updating " + meta.Name;
+                    });
+                    updated.Add(meta.Name);
+                    updating.Remove(meta.Name);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    if (ex.Message.Contains("conflicts prevent checkout"))
+                    {
+                        var box2 = MessageBoxManager.GetMessageBoxStandard(
+                            $"{meta.Name} could not be updated",
+                            meta.Name + "\n" + ex.Message + "\nWould you like to update? This will delete any local changes to the mod.",
+                            ButtonEnum.YesNo,
+                            MsBox.Avalonia.Enums.Icon.Error
+                        );
+
+                        var result = await box2.ShowAsPopupAsync(this);
+                        
+                        if (result == ButtonResult.Yes)
+                        {
+                            try
+                            {
+                                await Task.Run(() =>
+                                {
+                                    using (var repo = new Repository(folder))
+                                    {
+                                        foreach (var item in repo.RetrieveStatus())
+                                        {
+                                            if (item.State == FileStatus.NewInWorkdir)
+                                            {
+                                                var path = Path.Combine(repo.Info.WorkingDirectory, item.FilePath);
+                                                if (File.Exists(path))
+                                                    File.Delete(path);
+                                            }
+                                        }
+                                
+                                        Commands.Pull(
+                                            repo,
+                                            GitSignature,
+                                            new PullOptions()
+                                        );
+                                    }
+                                    updated.Add(meta.Name);
+                                    updating.Remove(meta.Name);
+                                });
+                            }
+                            catch (Exception exception)
+                            {
+                                Console.WriteLine(exception);
+                                skipped.Add(meta.Name);
+                                updating.Remove(meta.Name);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        skipped.Add(meta.Name);
+                        updating.Remove(meta.Name);
                     }
                 }
-                catch
-                {
-                    
-                }
+            }
+            string contentUpdateText = "Updated mods:";
+            foreach (var mod in updated)
+            {
+                contentUpdateText += $"\n  - {mod}";
+            }
+            contentUpdateText += "\nSkipped mods:";
+            foreach (var mod in skipped)
+            {
+                contentUpdateText += $"\n  - {mod}";
             }
             UpdateButton.Content = "Update Mods";
             var box = MessageBoxManager.GetMessageBoxStandard(
                 $"Done",
-                $"Updated all git repositories.",
+                contentUpdateText,
                 ButtonEnum.Ok,
                 MsBox.Avalonia.Enums.Icon.Success
             );
 
             await box.ShowAsPopupAsync(this);
+            GitStackPanel.IsEnabled = true;
+            GitStackPanel.Opacity = 1;
             Refresh();
         }
 

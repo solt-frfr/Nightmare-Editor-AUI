@@ -127,15 +127,15 @@
                     </StackPanel>
                 </Grid>
             </Grid>
-            <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,5,0,0">
-                <StackPanel Orientation="Horizontal" Spacing="8">
+            <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Grid.ColumnDefinitions="Auto,*,Auto" Margin="0,5,0,0">
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8">
                     <controls:ImageButtonColor Name="DeployButton" Click="Deploy_Click" Color="#F04080" Source="/Images/Deploy.png" Cursor="Hand" ToolTip.Tip="Deploy mods to selected folder." HorizontalAlignment="Center"/>
                     <controls:ImageButtonColor Name="RefreshButton" Click="Refresh_Click" Color="#F04080" Source="/Images/Refresh.png" Cursor="Hand" ToolTip.Tip="Refresh mods and settings." HorizontalAlignment="Center"/>
                     <controls:ImageButtonColor Name="OpenFolderButton" Click="OpenFolder_Click" Color="#F04080" Source="/Images/OpenFolder.png" Cursor="Hand" ToolTip.Tip="Open the mods folder." HorizontalAlignment="Center"/>
                     <controls:ImageButtonColor Name="InstallArchiveButton" Click="InstallArchive_Click" Color="#F04080" Source="/Images/InstallArchive.png" Cursor="Hand" ToolTip.Tip="Install a mod from an archive." HorizontalAlignment="Center"/>
                     <controls:ImageButtonColor Name="DownloadButton" Source="/Images/Gamebanana.png" InterpolationMode="None" Click="Download_Click" Cursor="Hand" ToolTip.Tip="Open KH3D's Gamebanana page in your default browser."/>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
                     <Grid>
                         <controls:ImageButtonColor Name="NewButton" Click="New_OnClick" Color="#F04080" Source="/Images/nightmare.png" Cursor="Hand" 
                                                    ToolTip.Tip="Go to Nightmare Editor" HorizontalAlignment="Right"/>

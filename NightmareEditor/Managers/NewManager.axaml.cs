@@ -174,7 +174,7 @@ public partial class NewManager : Window
     
     private void Menu_About_OnClick(object? sender, EventArgs e)
     {
-        MesgWindow mw = new MesgWindow("ABOUT EXAM EDITOR v1.0.0", "Exam Editor is a mod manager made by Solt11 specifically for the 3DS version of Kingdom Hearts Dream Drop Distance.\nPlease use OpenKH for the PC version, any mods I make will likely have an equivalent PC version.\n\nNightmare Editor is the real program, and I go more in-depth on my explanations about what and why I made this in the FAQ section of Nightmare Editor's Help Window.\n\nQ: AUI?\nA: Avalonia UI. This is a port from the WPF version and has become the only supported version.", MesgWindow.MsgBoxType.Info);
+        MesgWindow mw = new MesgWindow("ABOUT EXAM EDITOR v1.0.0", "Exam Editor is a mod manager made by Solt11 specifically for the 3DS version of Kingdom Hearts Dream Drop Distance.\nPlease use OpenKH for the PC version, any mods I make will likely have an equivalent PC version.\n\nNightmare Editor is the real program, and I go more in-depth on my explanations about what and why I made this in the FAQ section of Nightmare Editor's Help Window.\n\nQ: AUI?\nA: Avalonia UI. This is a port from the WPF version and has become the only supported version.", MesgWindow.MsgBoxType.Info, Height/480);
         mw.Show(this);
     }
 
@@ -402,7 +402,7 @@ public partial class NewManager : Window
         if (sender is MenuItem mi &&
             mi.CommandParameter is ModSlot ms)
         {
-            MesgWindow mw = new MesgWindow("WARNING", "Are you sure you want to delete " + ms.ModMeta.Name + "?", MesgWindow.MsgBoxType.YesNo);
+            MesgWindow mw = new MesgWindow("WARNING", "Are you sure you want to delete " + ms.ModMeta.Name + "?", MesgWindow.MsgBoxType.YesNo, Height/480);
 
             await mw.ShowDialog(this);
 
@@ -533,7 +533,7 @@ public partial class NewManager : Window
                 }
                 catch
                 {
-                    MesgWindow mw = new MesgWindow("INFORMATION", "You attempted to unpack an already unpacked file.", MesgWindow.MsgBoxType.Info);
+                    MesgWindow mw = new MesgWindow("INFORMATION", "You attempted to unpack an already unpacked file.", MesgWindow.MsgBoxType.Info, Height/480);
 
                     await mw.ShowDialog(this);
                 }
@@ -626,7 +626,7 @@ public partial class NewManager : Window
                     text = $"This will delete all files inside the following directories:\n\n{Path.Combine(settings.DeployPath, "mods", GetTitleIDFromRegion(settings.Region), "romfs")}\n\n{Path.Combine(settings.DeployPath, "textures", GetTitleIDFromRegion(settings.Region), "NightmareEditor")}\n\nIs this okay?";
                 }
                 
-                MesgWindow mw = new MesgWindow("WARNING", text, MesgWindow.MsgBoxType.YesNo);
+                MesgWindow mw = new MesgWindow("WARNING", text, MesgWindow.MsgBoxType.YesNo, Height/480);
 
                 await mw.ShowDialog(this);
 
@@ -635,14 +635,14 @@ public partial class NewManager : Window
                     var returnValue = DeployMods(settings.DeployPath);
                     if (returnValue.errorCode == Misc.ErrorCode.Success)
                     {
-                        MesgWindow mw2 = new MesgWindow("INFORMATION", $@"Succesfully deployed mods to {settings.DeployPath}!", MesgWindow.MsgBoxType.Info);
+                        MesgWindow mw2 = new MesgWindow("INFORMATION", $@"Succesfully deployed mods to {settings.DeployPath}!", MesgWindow.MsgBoxType.Info, Height/480);
 
                         await mw2.ShowDialog(this);
                     }
 
                     if (returnValue.errorCode == Misc.ErrorCode.MissingRbin)
                     {
-                        MesgWindow mw2 = new MesgWindow("INFORMATION", $@"Missing rbin(s) {returnValue.errorMessage}. Unpack them using the unpack button in the settings tab.", MesgWindow.MsgBoxType.Info);
+                        MesgWindow mw2 = new MesgWindow("INFORMATION", $@"Missing rbin(s) {returnValue.errorMessage}. Unpack them using the unpack button in the settings tab.", MesgWindow.MsgBoxType.Info, Height/480);
 
                         await mw2.ShowDialog(this);
                     }
@@ -650,7 +650,7 @@ public partial class NewManager : Window
             }
             else
             {
-                MesgWindow mw2 = new MesgWindow("INFORMATION", "No output directory. Set one in the Settings tab.", MesgWindow.MsgBoxType.Info);
+                MesgWindow mw2 = new MesgWindow("INFORMATION", "No output directory. Set one in the Settings tab.", MesgWindow.MsgBoxType.Info, Height/480);
 
                 await mw2.ShowDialog(this);
             }
@@ -687,76 +687,15 @@ public partial class NewManager : Window
 
     private async void Git_OnClick(object? sender, EventArgs e)
     {
-        MesgWindow mw = new MesgWindow("INSTALL REPOSITORY", "Type a git repository in the box below to install.", MesgWindow.MsgBoxType.Git);
+        MesgWindow mw = new MesgWindow("INSTALL REPOSITORY", "Type a git repository in the box below to install.", MesgWindow.MsgBoxType.Git, Height/480);
         await mw.ShowDialog(this);
         Refresh();
     }
     
     private async void UpdateGit_OnClick(object? sender, EventArgs e)
     {
-        string[] folders = Directory.GetDirectories(Paths.Folders.mods);
-        string updated = "Updated the following mods:";
-        foreach (string folder in folders)
-        {
-            try
-            {
-                string jsonString = System.IO.File.ReadAllText(Path.Combine(folder, "meta.json"));
-                Meta meta = JsonSerializer.Deserialize<Meta>(jsonString, WriteIndented);
-                using var repo = new Repository(folder);
-                Commands.Pull(
-                    repo,
-                    new Signature("NightmareEditor", "nightmare@editor", DateTimeOffset.Now),
-                    new PullOptions()
-                );
-                updated += "\n-   " + meta.Name;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                if (ex.Message.Contains("conflicts prevent checkout"))
-                {
-                    string jsonString = System.IO.File.ReadAllText(Path.Combine(folder, "meta.json"));
-                    Meta meta = JsonSerializer.Deserialize<Meta>(jsonString, WriteIndented);
-                    MesgWindow mw2 = new MesgWindow("WARNING", meta.Name + "\n" + ex.Message + "\nWould you like to update? This will delete any local changes to the mod.", MesgWindow.MsgBoxType.YesNo);
-
-                    await mw2.ShowDialog(this);
-                    
-                    if (mw2.Result == Misc.ErrorCode.Success)
-                    {
-                        try
-                        {
-                            using (var repo = new Repository(folder))
-                            {
-                                foreach (var item in repo.RetrieveStatus())
-                                {
-                                    if (item.State == FileStatus.NewInWorkdir)
-                                    {
-                                        var path = Path.Combine(repo.Info.WorkingDirectory, item.FilePath);
-                                        if (File.Exists(path))
-                                            File.Delete(path);
-                                    }
-                                }
-                            
-                                Commands.Pull(
-                                repo,
-                                new Signature("NightmareEditor", "nightmare@editor", DateTimeOffset.Now),
-                                new PullOptions()
-                                );
-                            }
-                                
-                            updated += "\n-   " + meta.Name;
-                        }
-                        catch (Exception exception)
-                        {
-                            Console.WriteLine(exception);
-                        }
-                    }
-                }
-            }
-        }
-        MesgWindow mw = new MesgWindow("INFORMATION", updated, MesgWindow.MsgBoxType.Info);
-
-        mw.Show();
+        MesgWindow mw = new MesgWindow("UPDATING REPOSITORIES", "Would you like to update your mods?", MesgWindow.MsgBoxType.GitUpdate, Height/480);
+        await mw.ShowDialog(this);
         Refresh();
     }
 
@@ -787,7 +726,7 @@ public partial class NewManager : Window
         }
         catch (Exception e)
         {
-            MesgWindow mw = new MesgWindow("ERROR", "The file you selected does not contain Menu Theme data.", MesgWindow.MsgBoxType.Info);
+            MesgWindow mw = new MesgWindow("ERROR", "The file you selected does not contain Menu Theme data.", MesgWindow.MsgBoxType.Info, Height/480);
         }
         Refresh();
     }
