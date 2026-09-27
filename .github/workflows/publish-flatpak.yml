@@ -1,0 +1,23 @@
+name: Create flatpak build
+run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+on: [push]
+jobs:
+  Build-Flatpak-From-Script:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v6
+        
+      - name: Setup dotnet 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Run build script
+        run: cd ${{ github.workspace }} && bash build-flatpak.sh
+
+      - name: Upload flatpak
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightmare-editor.flatpak
+          path: nightmare-editor.flatpak
