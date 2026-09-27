@@ -60,15 +60,36 @@ namespace NightmareEditor
         /// </summary>
         public static class Folders
         {
-            public static readonly string program = AppContext.BaseDirectory;
+            private static string _program { get; set; }
+            public static string program
+            {
+                get
+                {
+                    if (string.IsNullOrWhiteSpace(_program)) program = "balls";
+                    return _program;
+                }
+                set
+                {
+                    try
+                    {
+                        File.WriteAllText(Path.Combine(AppContext.BaseDirectory, "check-write-access"), "");
+                        File.Delete(Path.Combine(AppContext.BaseDirectory, "check-write-access"));
+                        _program = AppContext.BaseDirectory;
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                        Console.WriteLine("Write access test failed, assuming flatpak...");
+                        _program = Environment.GetEnvironmentVariable("XDG_DATA_HOME");
+                    }
+                }
+            }
             public static readonly string temp = Path.Combine(program, "Temp");
             public static readonly string work = Path.Combine(program, "Work");
             public static readonly string pack = Path.Combine(program, "Pack");
             public static readonly string mods = Path.Combine(program, "Mods");
-            public static readonly string music = Path.Combine(program, "Music");
             public static readonly string basePath = Path.Combine(program, "Base");
             public static readonly string current = Path.Combine(program, "Current");
-            public static readonly string toolkit = Path.Combine(program, "DDD-Toolkit");
         }
 
         /// <summary>
@@ -79,7 +100,6 @@ namespace NightmareEditor
             public static readonly string music = Path.Combine(Folders.program, "music.json");
             public static readonly string settings = Path.Combine(Folders.program, "settings.json");
             public static readonly string textures = Path.Combine(Folders.program, "textures.json");
-            public static readonly string temp = Path.Combine(Folders.program, "temp.json");
             public static readonly string theme = Path.Combine(Folders.program, "theme.json");
             public static readonly string queue = Path.Combine(Folders.program, "queue.json");
         }

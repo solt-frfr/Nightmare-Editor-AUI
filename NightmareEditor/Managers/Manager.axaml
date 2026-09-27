@@ -42,9 +42,9 @@
                             <Setter Property="BorderThickness" Value="0"/>
                         </Style>
                     </Grid.Styles>
-                    <Button Grid.Column="0" Name="ModsButton" Click="Mods_Click"/>
-                    <Button Grid.Column="1" Name="MusicButton" Click="Music_Click"/>
-                    <Button Grid.Column="2" Name="SettingsButton" Click="Settings_Click"/>
+                    <Button Grid.Column="0" Name="ModsButton" Click="Mods_Click" Cursor="Hand"/>
+                    <Button Grid.Column="1" Name="MusicButton" Click="Music_Click" Cursor="Hand"/>
+                    <Button Grid.Column="2" Name="SettingsButton" Click="Settings_Click" Cursor="Hand"/>
                 </Grid>
             </Grid>
             <Grid Grid.RowSpan="2" Grid.Column="1" RowDefinitions="9*,1*,9*,3*" Name="ModContent" IsVisible="True" Margin="10">

@@ -89,6 +89,7 @@ public class RBIN
     /// </summary>
     public static RBINFile Load(string input, string output, bool recursive = true, bool silent = false, IProgress<(int current, int total, string message)>? progress = null)
     {
+        output = Path.Combine(output, Path.GetFileNameWithoutExtension(input));
         progress ??= new Progress<(int current, int total, string message)>();
         
         List<Entry> json = new List<Entry>();

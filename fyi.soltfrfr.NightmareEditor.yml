@@ -1,8 +1,8 @@
-app-id: org.flatpak.NightmareEditor
+app-id: fyi.soltfrfr.NightmareEditor
 runtime: org.freedesktop.Platform
-runtime-version: '21.08'
+runtime-version: '25.08'
 sdk: org.freedesktop.Sdk
-command: nightmare-editor
+command: NightmareEditor
 modules:
   - name: NightmareEditor
     buildsystem: simple
@@ -10,7 +10,8 @@ modules:
       - cp -r . /app/bin
     sources:
       - type: dir
-        path: /path/dist/linux-x64/
+        path: dist/linux-x64/
 finish-args:      
+  - --device=dri
   - --socket=x11
   - --socket=wayland

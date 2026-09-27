@@ -118,7 +118,6 @@ namespace NightmareEditor
                 string filepath = Path.Combine(folder, "meta.json");
                 Directory.CreateDirectory(folder);
                 File.WriteAllText(filepath, jsonString);
-                File.WriteAllText(Paths.Jsons.temp, jsonString);
                 filepath = Path.Combine(folder, "preview.webp");
                 if (File.Exists(PreviewBox.Text))
                 {

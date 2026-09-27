@@ -1,3 +1,7 @@
 
 .idea/.idea.Nightmare Editor AUI/.idea/vcs.xml
 /dist
+/repo
+nightmare-editor.flatpak
+/.flatpak-builder
+/flatpak-build

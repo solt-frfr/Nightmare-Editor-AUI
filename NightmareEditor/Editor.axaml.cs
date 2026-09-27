@@ -666,8 +666,8 @@ namespace NightmareEditor
                 _ => Files2.Children
             };
             InfoWindow.IsVisible = source == Column.File || source == Column.EmbeddedFile;
-            
-            if (Directory.Exists(Path.Combine(Paths.Folders.work, GetSelecedFilePathFolder(destination))) && Enum.IsDefined(destination))
+            string path = Path.Combine(Paths.Folders.work, GetSelecedFilePathFolder(destination));
+            if (Directory.Exists(path) && Enum.IsDefined(destination))
             {
                 await ListFiles(sender, destination, sourceColumn, destinationColumn);
                 await Dispatcher.UIThread.InvokeAsync(() =>
@@ -1220,7 +1220,6 @@ namespace NightmareEditor
                         if (Path.GetExtension(file[0].Path.LocalPath) == ".ctt")
                         {
                             File.Copy(file[0].Path.LocalPath, Path.Combine(Paths.Folders.work, GetSelectedFilePath(Column.EmbeddedFile, true)), true);
-                            File.Copy(file[0].Path.LocalPath, Path.Combine(Paths.Folders.toolkit, requestedContextMenu.Text), true);
                             CTT.Decode(Path.Combine(Paths.Folders.work, GetSelectedFilePath(Column.EmbeddedFile, true)));
 
                         }
@@ -1474,7 +1473,6 @@ namespace NightmareEditor
                     File.Copy(Path.Combine(Paths.Folders.work, file), Path.Combine(endpath, file), true);
                 }
             }
-            File.Delete(Paths.Jsons.temp);
             ZipMod(mod);
         }
 
@@ -1609,6 +1607,7 @@ namespace NightmareEditor
 
         private void Edit_Click(object sender, RoutedEventArgs e)
         {
+            
             if (FileLink.Text.EndsWith(".ctt"))
             {
                 Directory.CreateDirectory(Paths.Folders.temp);
