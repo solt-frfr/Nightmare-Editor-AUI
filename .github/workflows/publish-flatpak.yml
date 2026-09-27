@@ -9,15 +9,12 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y flatpak
+          sudo apt-get install -y flatpak-builder
 
       - name: Add flathub
         run: |
           sudo flatpak remote-add --if-not-exists flathub \
             https://dl.flathub.org/repo/flathub.flatpakrepo
-
-      - name: Install flatpak builder
-        run: |
-          sudo flatpak install -y flathub org.flatpak.Builder
     
       - name: Check out repository code
         uses: actions/checkout@v6
