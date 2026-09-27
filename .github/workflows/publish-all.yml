@@ -16,6 +16,7 @@ jobs:
       - name: Run build script
         run: |
           cd ${{ github.workspace }}
+          sudo mkdir dist
           sudo mkdir dist/zip
           sudo bash build-all.sh
 
