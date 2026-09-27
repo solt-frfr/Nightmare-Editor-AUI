@@ -1118,11 +1118,13 @@ namespace NightmareEditor.Managers
             
             ModDataGrid.Background = new SolidColorBrush(Color.Parse(theme.GridColorBG));
 
+            var toolTipStyle = new Style(x => x.OfType<ToolTip>().Descendant().OfType<TextBlock>());
+            toolTipStyle.Setters.Add(new Setter(ForegroundProperty, Brushes.Black));
             var settingsWindowTextBlockStyle = new Style(x => x.OfType<TextBlock>());
             var settingsWindowTextBoxStyle = new Style(x => x.OfType<TextBox>());
             var settingsWindowButtonStyle = new Style(x => x.OfType<Button>());
             var settingsWindowButtonHoverStyle = new Style(x => x.OfType<Button>().Class(":pointerover"));
-
+            
             settingsWindowButtonHoverStyle.Setters.Add(RemoveButtonHover());
             settingsWindowButtonHoverStyle.Setters.Add(new Setter(OpacityProperty, 0.75));
             settingsWindowButtonHoverStyle.Setters.Add(new Setter(CursorProperty, new Cursor(StandardCursorType.Hand)));
@@ -1195,6 +1197,7 @@ namespace NightmareEditor.Managers
             SettingsWindow.Styles.Add(settingsWindowTextBoxStyle);
             SettingsWindow.Styles.Add(settingsWindowButtonStyle);
             SettingsWindow.Styles.Add(settingsWindowButtonHoverStyle);
+            SettingsWindow.Styles.Add(toolTipStyle);
             
             GitStackPanel.Styles.Add(gitButtonStyle);
             GitStackPanel.Styles.Add(gitButtonHoverStyle);

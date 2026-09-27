@@ -49,10 +49,29 @@ public partial class NewManager : Window
     private void Menu_Mods_OnClick(object? sender, EventArgs e)
     {
         MenuButtonsPanel.IsVisible = false;
+        ModButtonsPanel.IsVisible = true;
+        BottomLeftTextLower.Text = "Return";
+        BottomLeftTextLower2.Text = "Back";
+    }
+    private void Menu_Mods_Installed_OnClick(object? sender, EventArgs e)
+    {
+        ModButtonsPanel.IsVisible = false;
         ModsWindow.IsVisible = true;
         MainText.Text = "Installed";
         BottomLeftTextLower.Text = "Return";
         BottomLeftTextLower2.Text = "Back";
+    }
+    private async void Menu_Mods_Git_OnClick(object? sender, EventArgs e)
+    {
+        MesgWindow mw = new MesgWindow("INSTALL REPOSITORY", "Type a git repository in the box below to install.", MesgWindow.MsgBoxType.Git, Height/480);
+        await mw.ShowDialog(this);
+        Refresh();
+    }
+    private async void Menu_Mods_Update_OnClick(object? sender, EventArgs e)
+    {
+        MesgWindow mw = new MesgWindow("UPDATING REPOSITORIES", "Would you like to update your mods?", MesgWindow.MsgBoxType.GitUpdate, Height/480);
+        await mw.ShowDialog(this);
+        Refresh();
     }
     
     private void MenuButton_Hover(object? sender, PointerEventArgs e)
@@ -210,6 +229,9 @@ public partial class NewManager : Window
 
     private void Refresh()
     {
+        Random random = new Random();
+        int index = random.Next(Locations.Count);
+        LocationText.Text = Locations[index];
         DeployPathConfig.Description = "After clicking Deploy, the mods will be placed in \" " + MainSettings.DeployPath + " \".";
         
         EmulatorConfig.RightText = "No";
@@ -419,9 +441,10 @@ public partial class NewManager : Window
     {
         if (e.Key == Key.Escape)
         {
-            if (SettingsWindow.IsVisible || ModsWindow.IsVisible)
+            if (SettingsWindow.IsVisible || ModsWindow.IsVisible || ModsPanel.IsVisible)
             {
                 MenuButtonsPanel.IsVisible = true;
+                ModButtonsPanel.IsVisible = false;
                 SettingsWindow.IsVisible = false;
                 ModsWindow.IsVisible = false;
                 MainText.Text = "Exam Editor";
@@ -685,20 +708,6 @@ public partial class NewManager : Window
         Refresh();
     }
 
-    private async void Git_OnClick(object? sender, EventArgs e)
-    {
-        MesgWindow mw = new MesgWindow("INSTALL REPOSITORY", "Type a git repository in the box below to install.", MesgWindow.MsgBoxType.Git, Height/480);
-        await mw.ShowDialog(this);
-        Refresh();
-    }
-    
-    private async void UpdateGit_OnClick(object? sender, EventArgs e)
-    {
-        MesgWindow mw = new MesgWindow("UPDATING REPOSITORIES", "Would you like to update your mods?", MesgWindow.MsgBoxType.GitUpdate, Height/480);
-        await mw.ShowDialog(this);
-        Refresh();
-    }
-
     private void Menu_Quit_OnClick(object? sender, EventArgs e)
     {
         Close();
@@ -800,6 +809,7 @@ public partial class NewManager : Window
         };
 
         BottomRightText.Color = new ImmutableSolidColorBrush(Color.Parse(theme.TextColor));
+        LocationText.Color = new ImmutableSolidColorBrush(Color.Parse(theme.TextColor));
         Heart.Fill = new ImmutableSolidColorBrush(Color.Parse(theme.HeartColor));
     }
 

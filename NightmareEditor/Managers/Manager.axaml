@@ -146,12 +146,6 @@
             </Grid>
             <Viewbox  Grid.Row="1" Grid.ColumnSpan="2" >
                 <Grid Name="SettingsWindow" ColumnDefinitions="*,*" IsVisible="False" Width="800">
-                    <Grid.Styles>
-                        <Style Selector="Span">
-                            <Setter Property="Foreground" Value="Black"/>
-                        </Style>
-                    </Grid.Styles>
-                    
                     <Grid ColumnDefinitions="*,*" RowDefinitions="*,*,*,*,*,*,*,*" Margin="5">
                         <TextBlock Text="Settings" FontSize="25" FontWeight="SemiBold" TextDecorations="Underline"/>
                         <TextBlock Text="Deploy Path" FontSize="18" Grid.Row="1" ToolTip.Tip="After clicking Deploy, the mods will be placed in this path." VerticalAlignment="Center"/>

@@ -86,10 +86,9 @@
     <PackageReference Include="Avalonia.Controls.ColorPicker" Version="11.3.20" />
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.3.13" />
     <PackageReference Include="Avalonia.Desktop" Version="11.3.20" />
-    <PackageReference Include="Avalonia.Diagnostics" Version="11.3.20" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="11.3.20" Condition="'$(Configuration)'=='Debug'" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.20" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.20" />
-    <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageReference Include="LibGit2Sharp" Version="0.32.0" />
     <PackageReference Include="Markdown.Avalonia" Version="11.0.3" />
@@ -104,12 +103,6 @@
     <Resource Include="Images\Deploy.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Images\DownloadSel.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Images\DownloadUnsel.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
     <Resource Include="Images\Gamebanana.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
@@ -120,18 +113,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Images\InstallArchive.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Images\ModsSel.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Images\ModsUnsel.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Images\MusicSel.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Images\MusicUnsel.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Images\nightmare.png">
@@ -162,12 +143,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Images\return.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Images\SettingsSel.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Images\SettingsUnsel.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Images\sora.svg">
