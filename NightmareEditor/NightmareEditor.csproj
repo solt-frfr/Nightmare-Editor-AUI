@@ -78,42 +78,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="DDD-Toolkit\BCSAR Tool.exe" />
-    <None Remove="DDD-Toolkit\ctr_WaveConverter32.7z" />
-    <None Remove="DDD-Toolkit\DDD Toolkit.exe" />
-    <None Remove="DDD-Toolkit\ETC.exe" />
-    <None Remove="DDD-Toolkit\kh3dswizzler.exe" />
-    <None Remove="DDD-Toolkit\LZOvlCUE.exe" />
-    <None Remove="DDD-Toolkit\Wii3DSUSoundTool.exe" />
-    <None Remove="DDD-Toolkit\Yata+.7z" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="Assets\nightmare.ico" />
-    <Content Include="DDD-Toolkit\BCSAR Tool.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="DDD-Toolkit\ctr_WaveConverter32.7z">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="DDD-Toolkit\DDD Toolkit.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="DDD-Toolkit\ETC.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="DDD-Toolkit\kh3dswizzler.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="DDD-Toolkit\LZOvlCUE.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="DDD-Toolkit\Wii3DSUSoundTool.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="DDD-Toolkit\Yata+.7z">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
   <ItemGroup>
