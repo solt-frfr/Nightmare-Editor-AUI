@@ -30,7 +30,7 @@ jobs:
       - name: Run build script
         run: |
           cd ${{ github.workspace }}
-          bash build-flatpak.sh
+          sudo bash build-flatpak.sh
 
       - name: Upload flatpak
         uses: actions/upload-artifact@v4
