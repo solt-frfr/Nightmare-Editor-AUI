@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+
+Name=Nightmare Editor
+Comment=A toolset for modding Kingdom Hearts 3D: Dream Drop Distance
+Categories=Graphics;Documentation;
+
+Icon=fyi.soltfrfr.NightmareEditor
+Exec=NightmareEditor
+Terminal=false

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>fyi.soltfrfr.NightmareEditor</id>
+  
+  <name>Nightmare Editor</name>
+  <summary>A toolset for modding Kingdom Hearts 3D: Dream Drop Distance</summary>
+
+  <developer id="fyi.soltfrfr">
+    <name>Solt11</name>
+  </developer>
+  
+  <metadata_license>CC-BY-4.0</metadata_license>
+  <project_license>Apache-2.0</project_license>
+
+  <release version="1.0.0" date="2026-09-27">
+    <url type="details">https://github.com/solt-frfr/Nightmare-Editor-AUI/releases/tag/1.0.0</url>
+    <description>
+      <p>Initial release</p>
+    </description>
+  </release>
+  
+  <description>
+    <p>
+      Nightmare Editor is a free, open source toolset focused on modding Kingdom Hearts 3D: Dream Drop Distance. Built in is its own mod manager, Exam Editor, focused on providing a simplified way to build multiple mods into the 3DS version of the game. This tool works with games running both on real 3DS hardware and emulators such as Azahar, with texture pack support for emulators.
+    </p>
+  </description>
+  
+  <launchable type="desktop-id">fyi.soltfrfr.NightmareEditor.desktop</launchable>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://ne.soltfrfr.fyi/images/pic05.png</image>
+    </screenshot>
+    <screenshot>
+      <image>https://ne.soltfrfr.fyi/images/pic01.png</image>
+    </screenshot>
+    <screenshot>
+      <image>https://ne.soltfrfr.fyi/images/pic02.png</image>
+    </screenshot>
+  </screenshots>
+</component>

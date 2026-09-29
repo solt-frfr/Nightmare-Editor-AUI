@@ -1,0 +1,49 @@
+app-id: fyi.soltfrfr.NightmareEditor
+runtime: org.freedesktop.Platform
+runtime-version: '25.08'
+sdk: org.freedesktop.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.dotnet8
+build-options:
+  prepend-path: /usr/lib/sdk/dotnet8/bin
+  append-ld-library-path: /usr/lib/sdk/dotnet8/lib
+  prepend-pkg-config-path: /usr/lib/sdk/dotnet8/lib/pkgconfig
+command: NightmareEditor
+
+finish-args:      
+  - --device=dri
+  - --share=ipc
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --filesystem=~/.var/app/org.azahar_emu.Azahar/data/azahar_emu
+  - --env=DOTNET_ROOT=/app/lib/dotnet
+
+modules:
+  - name: dotnet
+    buildsystem: simple
+    build-commands:
+      - /usr/lib/sdk/dotnet8/bin/install.sh
+  - name: nightmare-editor
+    buildsystem: simple
+    build-options:
+      env:
+        PUBLISH_PROFILE: linux-x64
+      arch:
+        x86_64:
+          env:
+            PUBLISH_PROFILE: linux-x64
+        aarch64:
+          env:
+            PUBLISH_PROFILE: linux-arm64
+    sources:
+      - type: git
+        disable-shallow-clone: true
+        url: https://github.com/solt-frfr/Nightmare-Editor-AUI.git
+      - ./nuget-sources.json
+    build-commands:
+      - dotnet publish NightmareEditor/NightmareEditor.csproj -c Release -p:DefineConstants=COMMITBUILD -p:PublishProfile=${PUBLISH_PROFILE} --no-self-contained --source ./nuget-sources --output ./dist/${PUBLISH_PROFILE}
+      - mkdir -p ${FLATPAK_DEST}/bin
+      - cp -r dist/${PUBLISH_PROFILE}/* ${FLATPAK_DEST}/bin
+      - install -Dm644 flatpak/nightmare.svg ${FLATPAK_DEST}/share/icons/hicolor/scalable/apps/${FLATPAK_ID}.svg
+      - install -Dm644 flatpak/${FLATPAK_ID}.metainfo.xml ${FLATPAK_DEST}/share/metainfo/${FLATPAK_ID}.metainfo.xml
+      - install -Dm644 flatpak/${FLATPAK_ID}.desktop ${FLATPAK_DEST}/share/applications/${FLATPAK_ID}.desktop
