@@ -51,7 +51,7 @@ Now that we have our textures, we'll replace the ones already on the Kingdom Key
      
      - Link - You'd put a Gamebanana link or Github link here, but for now leave it blank. You won't need it for this one.
      
-     - ID - The best practice is to do `author``.``name`, so I would probably put `solt-frfr.kingdomkeyd`. You're only allowed to use lowercase letters, numbers, and `-` or `.`.
+     - Folder - The best practice is to do `author``.``name`, so I would probably put `solt-frfr.kingdomkeyd`. It's best to only use lowercase letters, numbers, and `-` or `.`.
      
      - Prefix - leave blank.
      

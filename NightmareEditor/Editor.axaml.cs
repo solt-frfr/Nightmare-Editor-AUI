@@ -1472,6 +1472,7 @@ namespace NightmareEditor
                     Directory.CreateDirectory(Path.Combine(endpath, Path.GetDirectoryName(file)));
                     File.Copy(Path.Combine(Paths.Folders.work, file), Path.Combine(endpath, file), true);
                 }
+                File.WriteAllText(Path.Combine(Paths.Folders.mods, mod.Folder, Managers.Standard.EnableFile), "");
             }
             ZipMod(mod);
         }
