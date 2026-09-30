@@ -99,3 +99,36 @@ jobs:
         with:
           name: nightmare-editor.flatpak
           path: flatpak/nightmare-editor.flatpak
+
+  Build-Arm-Flatpak-From-Script:
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - name: Install flatpak
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y flatpak
+          sudo apt-get install -y flatpak-builder
+
+      - name: Add flathub
+        run: |
+          sudo flatpak remote-add --if-not-exists flathub \
+            https://dl.flathub.org/repo/flathub.flatpakrepo
+    
+      - name: Check out repository code
+        uses: actions/checkout@v6
+        
+      - name: Setup dotnet 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Run build script
+        run: |
+          cd ${{ github.workspace }}
+          sudo bash build-flatpak.sh
+
+      - name: Upload flatpak
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightmare-editor-arm.flatpak
+          path: flatpak/nightmare-editor.flatpak

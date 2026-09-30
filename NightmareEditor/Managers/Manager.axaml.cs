@@ -70,6 +70,8 @@ namespace NightmareEditor.Managers
             ModsButton.Content = MainButtonContent(true, "Mods");
             SettingsButton.Content = MainButtonContent(false, "Settings");
             MusicButton.Content = MainButtonContent(false, "Music");
+            AboutBox.Text = App.About;
+            VersionBlock.Text = "v" + App.Version + " ";
         }
         
         public static Grid MainButtonContent(bool on, string text)

@@ -187,8 +187,8 @@
                             <RowDefinition Height="7*"/>
                         </Grid.RowDefinitions>
                         <TextBlock Text="About Exam Editor" FontSize="25" FontWeight="SemiBold" TextDecorations="Underline"/>
-                        <TextBlock Text="v1.0.0 " FontSize="16" TextAlignment="Right" VerticalAlignment="Bottom" FontStyle="Italic" Margin="0,5"/>
-                        <TextBox IsReadOnly="True" Opacity="0.75" Classes="NoHover" Grid.Row="1" Focusable="False" BorderThickness="0" FontSize="12" ScrollViewer.VerticalScrollBarVisibility="Auto" TextWrapping="WrapWithOverflow" Text="Exam Editor is a mod manager made by Solt11 specifically for the 3DS version of Kingdom Hearts Dream Drop Distance.&#xA;Please use OpenKH for the PC version, any mods I make will likely have an equivalent PC version.&#xD;&#xA;&#xD;&#xA;Nightmare Editor is the real program, and I go more in-depth on my explanations about what and why I made this in the FAQ section of Nightmare Editor's Help Window.&#xD;&#xA;&#xD;&#xA;Q: AUI?&#xD;&#xA;A: Avalonia UI. This is a port from the WPF version and has become the only supported version."/>
+                        <TextBlock Name="VersionBlock" FontSize="16" TextAlignment="Right" VerticalAlignment="Bottom" FontStyle="Italic" Margin="0,5"/>
+                        <TextBox Name="AboutBox" IsReadOnly="True" Opacity="0.75" Classes="NoHover" Grid.Row="1" Focusable="False" BorderThickness="0" FontSize="12" ScrollViewer.VerticalScrollBarVisibility="Auto" TextWrapping="WrapWithOverflow"/>
                         <StackPanel Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Orientation="Horizontal" FlowDirection="RightToLeft">
                             <Button Margin="5" Click="SwitchUI_OnClick" ToolTip.Tip="Switch to the Menu UI.">Switch UI</Button>
                             <Button Margin="5" Click="ImportTheme_OnClick" ToolTip.Tip="Import a custom theme from a file.">Import Theme</Button>

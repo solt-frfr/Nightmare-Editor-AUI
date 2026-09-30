@@ -193,7 +193,7 @@ public partial class NewManager : Window
     
     private void Menu_About_OnClick(object? sender, EventArgs e)
     {
-        MesgWindow mw = new MesgWindow("ABOUT EXAM EDITOR v1.0.0", "Exam Editor is a mod manager made by Solt11 specifically for the 3DS version of Kingdom Hearts Dream Drop Distance.\nPlease use OpenKH for the PC version, any mods I make will likely have an equivalent PC version.\n\nNightmare Editor is the real program, and I go more in-depth on my explanations about what and why I made this in the FAQ section of Nightmare Editor's Help Window.\n\nQ: AUI?\nA: Avalonia UI. This is a port from the WPF version and has become the only supported version.", MesgWindow.MsgBoxType.Info, Height/480);
+        MesgWindow mw = new MesgWindow($"ABOUT EXAM EDITOR v{App.Version}", App.About, MesgWindow.MsgBoxType.Info, Height/480);
         mw.Show(this);
     }
 

@@ -21,6 +21,12 @@
   </content_rating>
 
   <releases>
+    <release version="1.0.3" date="2026-09-29">
+      <url type="details">https://github.com/solt-frfr/Nightmare-Editor-AUI/releases/tag/1.0.3</url>
+      <description>
+        <p>Code improvements - Created global variables for Version and About, as well as fixed a small visual error in the editor.</p>
+      </description>
+    </release>
     <release version="1.0.2" date="2026-09-29">
       <url type="details">https://github.com/solt-frfr/Nightmare-Editor-AUI/releases/tag/1.0.2</url>
       <description>

@@ -134,7 +134,9 @@
                                                     Stretch="None" />
                                     </Rectangle.Fill>
                                 </Rectangle>
-                                <Image Name="TextureSmall" Source="Images/plus.png" RenderOptions.BitmapInterpolationMode="HighQuality"/>
+                                <Viewbox>
+                                    <Image Name="TextureSmall" Source="Images/plus.png" StretchDirection="Both" RenderOptions.BitmapInterpolationMode="HighQuality"/>
+                                </Viewbox>
                             </Grid>
                         </Viewbox>
                     </Grid>
