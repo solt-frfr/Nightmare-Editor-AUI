@@ -1,0 +1,15 @@
+{
+  "Name": "Default",
+  "BGColorUp": "#ADD8E6",
+  "BGColorLow": "#FFA580",
+  "SettingsColor": "#005ada",
+  "GridColor": "#f04080",
+  "GridColorAlt": "#d02060",
+  "GridColorBG": "#ADD8E6",
+  "DescColor": "#f04080",
+  "TopButtonColor": "#FFA580",
+  "TopButtonHighlight": "#FFFFFF",
+  "TopButtonBorder": "#ADD8E6",
+  "TopButtonShadow": "#000000",
+  "ButtonColor": "#f04080"
+}

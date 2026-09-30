@@ -1,0 +1,16 @@
+{
+  "Name": "Default",
+  "BGColorUp_U": "#00001d",
+  "BGColorLow_U": "#00006e",
+  "BGHighlight_U": "#002eff",
+  "BGHighlightAlt_U": "#990000",
+  "BGColorUp_L": "#00006e",
+  "BGColorLow_L": "#00001d",
+  "BGHighlight_L": "#002eff",
+  "BGColorUp_R": "#00006e",
+  "BGColorLow_R": "#00001d",
+  "BGHighlight_R": "#002eff",
+  "TopBarColor": "#ff740c",
+  "TextColor": "#fcfc01",
+  "HeartColor": "#004b9a"
+}
