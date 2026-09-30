@@ -1,6 +1,6 @@
 name: Create flatpak build
 run-name: Creating flatpak build
-on: [push]
+on: [release]
 jobs:
   Build-Flatpak-From-Script:
     runs-on: ubuntu-latest

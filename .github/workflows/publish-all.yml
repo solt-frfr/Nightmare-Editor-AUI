@@ -1,6 +1,6 @@
 name: Create all builds
 run-name: Creating builds for multiple targets
-on: [push]
+on: [release]
 jobs:
   Build-Builds-From-Script:
     runs-on: ubuntu-latest

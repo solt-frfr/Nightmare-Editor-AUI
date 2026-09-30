@@ -39,8 +39,8 @@ modules:
       - type: git
         disable-shallow-clone: true
         url: https://github.com/solt-frfr/Nightmare-Editor-AUI.git
-        tag: 1.0.0
-        commit: b7bf15cc715628d67e826c9375ef479bde6a4cf8
+        tag: 1.0.2
+        commit: 25af2dd7e134d6440776bfb3d0a063fe365962d5
       - ./nuget-sources.json
     build-commands:
       - dotnet publish NightmareEditor/NightmareEditor.csproj -c Release -p:DefineConstants=COMMITBUILD -p:PublishProfile=${PUBLISH_PROFILE} --no-self-contained --source ./nuget-sources --output ./dist/${PUBLISH_PROFILE}
