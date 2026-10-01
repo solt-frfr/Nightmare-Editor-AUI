@@ -1,6 +1,9 @@
 name: Create all builds
 run-name: Creating builds for multiple targets
-on: [workflow_dispatch, published]
+on:
+  release:
+    types: [published]
+  workflow_dispatch: {}
 jobs:
   Build-Builds-From-Script:
     runs-on: ubuntu-latest
