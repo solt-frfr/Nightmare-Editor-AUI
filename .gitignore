@@ -5,3 +5,4 @@
 nightmare-editor.flatpak
 /.flatpak-builder
 /flatpak-build
+/flatpak/repo

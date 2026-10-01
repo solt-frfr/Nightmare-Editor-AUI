@@ -21,52 +21,53 @@ jobs:
           sudo bash build-all.sh
 
       - name: Upload win-x64
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
-          name: win-x64.zip
           path: dist/zip/win-x64.zip
+          archive: false
 
       - name: Upload win-arm64
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
-          name: win-arm64.zip
           path: dist/zip/win-arm64.zip
-
+          archive: false
+          
       - name: Upload win-x86
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
-          name: win-x86.zip
           path: dist/zip/win-x86.zip
+          archive: false
 
       - name: Upload linux-x64
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
-          name: linux-x64.zip
           path: dist/zip/linux-x64.zip
+          archive: false
 
       - name: Upload linux-arm64
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
-          name: linux-arm64.zip
           path: dist/zip/linux-arm64.zip
+          archive: false
 
       - name: Upload linux-arm
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
-          name: linux-arm.zip
           path: dist/zip/linux-arm.zip
+          archive: false
 
       - name: Upload osx-x64
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
-          name: osx-x64.zip
           path: dist/zip/osx-x64.zip
+          archive: false
 
       - name: Upload osx-arm64
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
-          name: osx-arm64.zip
           path: dist/zip/osx-arm64.zip
+          archive: false
+
   Build-Flatpak-From-Script:
     runs-on: ubuntu-latest
     steps:
@@ -95,10 +96,10 @@ jobs:
           sudo bash build-flatpak.sh
 
       - name: Upload flatpak
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
-          name: nightmare-editor.flatpak
           path: flatpak/nightmare-editor.flatpak
+          archive: false
 
   Build-Arm-Flatpak-From-Script:
     runs-on: ubuntu-24.04-arm
@@ -126,9 +127,10 @@ jobs:
         run: |
           cd ${{ github.workspace }}
           sudo bash build-flatpak.sh
+          mv flatpak/nightmare-editor.flatpak flatpak/nightmare-editor-arm.flatpak
 
       - name: Upload flatpak
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
-          name: nightmare-editor-arm.flatpak
-          path: flatpak/nightmare-editor.flatpak
+          path: flatpak/nightmare-editor-arm.flatpak
+          archive: false
