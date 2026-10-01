@@ -304,8 +304,9 @@ public partial class NewManager : Window
             {
                 ModMeta = mod,
                 Font = ModSlot.FontChoices.SmallAccurate,
-                Margin = new Thickness(-1)
+                Margin = new Thickness(-1),
             };
+            slot.EquipE.IsVisible = mod.IsChecked;
             var context = ModContext(slot);
             slot.ContextMenu = context; 
             slot.PointerEntered += MenuButton_Hover;
