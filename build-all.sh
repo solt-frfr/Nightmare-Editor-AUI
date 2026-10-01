@@ -8,7 +8,7 @@ for TARGET in "${BUILDS[@]}"; do
         -c Release --runtime "$TARGET" --sc \
         --output "./dist/$TARGET" -p:PublishSingleFile=true
 
-    zip -r "dist/zip/$TARGET.zip" "dist/$TARGET/"
+    zip -r -j "dist/zip/$TARGET.zip" "dist/$TARGET/"
 
 done
 
