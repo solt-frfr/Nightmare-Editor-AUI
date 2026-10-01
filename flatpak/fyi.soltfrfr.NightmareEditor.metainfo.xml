@@ -3,7 +3,12 @@
   <id>fyi.soltfrfr.NightmareEditor</id>
   
   <name>Nightmare Editor</name>
-  <summary>A toolset for modding Kingdom Hearts 3D: Dream Drop Distance</summary>
+  <summary>Edit and mod KH3D's files</summary>
+
+  <branding>
+    <color type="primary" scheme_preference="light">#f04080</color>
+    <color type="primary" scheme_preference="dark">#323b4a</color>
+  </branding>
 
   <developer id="fyi.soltfrfr">
     <name>Solt11</name>
@@ -21,6 +26,12 @@
   </content_rating>
 
   <releases>
+    <release version="1.0.4" date="2026-09-29">
+      <url type="details">https://github.com/solt-frfr/Nightmare-Editor-AUI/releases/tag/1.0.4</url>
+      <description>
+        <p>Bugfix - Menu UI now correctly reports whether a mod is enabled.</p>
+      </description>
+    </release>
     <release version="1.0.3" date="2026-09-29">
       <url type="details">https://github.com/solt-frfr/Nightmare-Editor-AUI/releases/tag/1.0.3</url>
       <description>
