@@ -24,49 +24,49 @@ jobs:
           sudo bash build-all.sh
 
       - name: Upload win-x64
-      - uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7
         with:
           path: dist/zip/win-x64.zip
           archive: false
 
       - name: Upload win-arm64
-      - uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7
         with:
           path: dist/zip/win-arm64.zip
           archive: false
           
       - name: Upload win-x86
-      - uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7
         with:
           path: dist/zip/win-x86.zip
           archive: false
 
       - name: Upload linux-x64
-      - uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7
         with:
           path: dist/zip/linux-x64.zip
           archive: false
 
       - name: Upload linux-arm64
-      - uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7
         with:
           path: dist/zip/linux-arm64.zip
           archive: false
 
       - name: Upload linux-arm
-      - uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7
         with:
           path: dist/zip/linux-arm.zip
           archive: false
 
       - name: Upload osx-x64
-      - uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7
         with:
           path: dist/zip/osx-x64.zip
           archive: false
 
       - name: Upload osx-arm64
-      - uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7
         with:
           path: dist/zip/osx-arm64.zip
           archive: false
@@ -99,7 +99,7 @@ jobs:
           sudo bash build-flatpak.sh
 
       - name: Upload flatpak
-      - uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7
         with:
           path: flatpak/nightmare-editor.flatpak
           archive: false
@@ -133,7 +133,7 @@ jobs:
           mv flatpak/nightmare-editor.flatpak flatpak/nightmare-editor-arm.flatpak
 
       - name: Upload flatpak
-      - uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7
         with:
           path: flatpak/nightmare-editor-arm.flatpak
           archive: false
