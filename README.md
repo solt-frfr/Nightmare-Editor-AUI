@@ -4,6 +4,8 @@ Nightmare Editor is a free, open source toolset focused on modding Kingdom Heart
 
 ## Installation
 
+[<img width="240" src="https://flathub.org/assets/badges/flathub-badge-en.png">](https://flathub.org/apps/details/fyi.soltfrfr.NightmareEditor)
+
 ### Windows
 
 A zip file is provided containing a portable program in the Releases page. There is no installer version currently.
