@@ -16,7 +16,7 @@ namespace NightmareEditor
     public partial class App : Application
     {
         public static readonly string AssemblyName = "NightmareEditor";
-        public static readonly string Version = "1.0.3";
+        public static readonly string Version = "1.0.5";
 
         public static readonly string About = """
                                               Exam Editor is a mod manager made by Solt11 specifically for the 3DS version of Kingdom Hearts Dream Drop Distance.
