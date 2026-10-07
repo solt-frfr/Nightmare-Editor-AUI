@@ -212,6 +212,7 @@ namespace NightmareEditor
             "chara_e_obj",
             "chara_enemy",
             "chara_f_obj",
+            "chara_high",
             "chara_npc",
             "chara_pc",
             "chara_wep",
